@@ -1,0 +1,17 @@
+{
+  "date_utc": "2026-10-16",
+  "host": "87a4973038ca",
+  "platform": "Linux x86_64",
+  "environment": "assigned cloud workspace, no user-computer access",
+  "project_directory": "yamato-geometry-cleanup-candidate-20261016",
+  "git_branch": "local/yamato-bounded-repair",
+  "new_recovered_original_baseline_commit": "488fd05a6ce28a7d4e4ca552dc9bf8620d482965",
+  "git_remote": null,
+  "node_version": "v24.19.0",
+  "python_version": "3.12.14",
+  "git_version": "2.52.0",
+  "source_writer": "bounded Yamato repair task only",
+  "browser_or_gpu_used": false,
+  "remote_dependencies_executed": false,
+  "uploads_or_publishing": false
+}

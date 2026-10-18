@@ -1,0 +1,976 @@
+{
+  "format": "yamato-public-import-v1",
+  "target_repository": "https://github.com/DaytimeBlues/yamato",
+  "upstream_reviewed_local_commit": "732fa38a94edcb5326b5def8526693c054b5d56d",
+  "upstream_reviewed_local_tree": "9bed8bf82f61ed704014e4b9e0ae45aa9d97ff29",
+  "source_entry": "src/ijn_battleship_yamato_1_1_scale_3d_simulation.html",
+  "source_entry_sha256": "f59f4c1d3cdb0ad691b4a9c20dc65cdef4774489e2837b39e81031999545e61d",
+  "source_entry_bytes": 161488,
+  "original_tracked_file_count": 93,
+  "imported_original_files": 93,
+  "unchanged_original_files": 90,
+  "metadata_substitutions": [
+    {
+      "path": "CAMERA_CADENCE.md",
+      "replacement_literal": "PRIVATE_CHECKPOINT_REFERENCE",
+      "original_reference_sha256": "ebdc0a7b12a5e5ac88b5ab57aab297fb6b750eb3116ac6180985292f58e75c4f",
+      "occurrences": 1,
+      "purpose": "Remove a private provider checkpoint identifier; ZIP size/hash and restore caveats retained."
+    },
+    {
+      "path": "PROVENANCE.md",
+      "replacement_literal": "PRIVATE_CHECKPOINT_REFERENCE",
+      "original_reference_sha256": "b97dcf497388e26468ca058b73686d52242a3db255f03bdc1620fe2f2abb8149",
+      "occurrences": 1,
+      "purpose": "Remove a private provider checkpoint identifier; ZIP size/hash and restore caveats retained."
+    },
+    {
+      "path": "tools/camera_delta_checkpoint.py",
+      "replacement_literal": "PRIVATE_CHECKPOINT_REFERENCE",
+      "original_reference_sha256": "ebdc0a7b12a5e5ac88b5ab57aab297fb6b750eb3116ac6180985292f58e75c4f",
+      "occurrences": 1,
+      "purpose": "Remove a private provider checkpoint identifier; ZIP size/hash and restore caveats retained."
+    }
+  ],
+  "inventory": [
+    {
+      "path": "CAMERA_CADENCE.md",
+      "mode": "100644",
+      "original_git_blob": "876a34fa85d06788e1ae23422cdebf41faeb70f8",
+      "original_sha256": "dde886d2a2f715fcf44c3d71be40ddd328bfa2d367e77d9d3b34549b95bde8fd",
+      "original_bytes": 5740,
+      "import_sha256": "96df24207ffea27c8d7fac2f78a599c30ceda63ac5d1431a0f488b8abcd1d766",
+      "import_bytes": 5728,
+      "changed": true
+    },
+    {
+      "path": "CHECKPOINT_SPEC.json",
+      "mode": "100644",
+      "original_git_blob": "6a57a58134cc234e81ee114c9774ee4830a465db",
+      "original_sha256": "4d6dbd6920997e24bfe449cc664fc37aa9bb13614d3908fc811418b875005f82",
+      "original_bytes": 3856,
+      "import_sha256": "4d6dbd6920997e24bfe449cc664fc37aa9bb13614d3908fc811418b875005f82",
+      "import_bytes": 3856,
+      "changed": false
+    },
+    {
+      "path": "DEPENDENCIES.json",
+      "mode": "100644",
+      "original_git_blob": "c6c8f4b203c05ac52edeb9bdd205a2699dbd012f",
+      "original_sha256": "053c6176d25662206e808812c116a143b4735f352785e5364780bedbf58ecbc9",
+      "original_bytes": 1344,
+      "import_sha256": "053c6176d25662206e808812c116a143b4735f352785e5364780bedbf58ecbc9",
+      "import_bytes": 1344,
+      "changed": false
+    },
+    {
+      "path": "PROVENANCE.md",
+      "mode": "100644",
+      "original_git_blob": "e4d2a2466f424021b6d97eea84e088b42be825b3",
+      "original_sha256": "78783ee28f6db48cc63d9fa8544e79880863c3072c34ce365deb1c07cc19d1db",
+      "original_bytes": 6239,
+      "import_sha256": "299fcf4c4a57669842fc07770ee132dd896e2e8c801b586db03083f72cd792e5",
+      "import_bytes": 6227,
+      "changed": true
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "original_git_blob": "8d480c6642c13baee9aee1983f3c4efa9b9ed13a",
+      "original_sha256": "4434fa2769fc8316e38047922743b6dc528f4a65537e2563fb3c9cbd3c70f7f7",
+      "original_bytes": 4874,
+      "import_sha256": "4434fa2769fc8316e38047922743b6dc528f4a65537e2563fb3c9cbd3c70f7f7",
+      "import_bytes": 4874,
+      "changed": false
+    },
+    {
+      "path": "baseline/aa-cadence-approved-delta.json",
+      "mode": "100644",
+      "original_git_blob": "45f6e7fde4ddcbb39614766f5546b568ee6512e4",
+      "original_sha256": "50fb3b25c676ca1bac4e08120e223f004b82d0354a897dbc767de6bf2865846a",
+      "original_bytes": 1833,
+      "import_sha256": "50fb3b25c676ca1bac4e08120e223f004b82d0354a897dbc767de6bf2865846a",
+      "import_bytes": 1833,
+      "changed": false
+    },
+    {
+      "path": "baseline/camera-cadence-approved-delta.json",
+      "mode": "100644",
+      "original_git_blob": "3b44bb4d271fd93fcdd27d31a37cf60faf7b52be",
+      "original_sha256": "3f58d4fff8d6eac0f8df5ba8f4df0b46d9afb61fa9286299ae4879e00b6f7645",
+      "original_bytes": 1456,
+      "import_sha256": "3f58d4fff8d6eac0f8df5ba8f4df0b46d9afb61fa9286299ae4879e00b6f7645",
+      "import_bytes": 1456,
+      "changed": false
+    },
+    {
+      "path": "baseline/geometry-cleanup-3aec708.html",
+      "mode": "100644",
+      "original_git_blob": "211a1ec00ea919c3937e519009639f7efae5c486",
+      "original_sha256": "3ef3661c981e2464869dc57de326a09651b14ad698034df5a574b81e84bff4f7",
+      "original_bytes": 157433,
+      "import_sha256": "3ef3661c981e2464869dc57de326a09651b14ad698034df5a574b81e84bff4f7",
+      "import_bytes": 157433,
+      "changed": false
+    },
+    {
+      "path": "baseline/input-ownership-approved-delta.json",
+      "mode": "100644",
+      "original_git_blob": "4dbabd7718b6847dc9ffe3199526567d5ad0939e",
+      "original_sha256": "99bc98279d75e3eb823757e3ea7e64f88b8fae03602d73b58cd334620e4033a9",
+      "original_bytes": 578,
+      "import_sha256": "99bc98279d75e3eb823757e3ea7e64f88b8fae03602d73b58cd334620e4033a9",
+      "import_bytes": 578,
+      "changed": false
+    },
+    {
+      "path": "baseline/recovered-original.html",
+      "mode": "100644",
+      "original_git_blob": "08037e52d48df60d3a6773ea33714180bb941fcb",
+      "original_sha256": "228d3e4c4421965e21b50e49dbabf9116ae7b6a71ff8f269c60522746f893c1d",
+      "original_bytes": 156963,
+      "import_sha256": "228d3e4c4421965e21b50e49dbabf9116ae7b6a71ff8f269c60522746f893c1d",
+      "import_bytes": 156963,
+      "changed": false
+    },
+    {
+      "path": "evidence/bounded-source.patch",
+      "mode": "100644",
+      "original_git_blob": "ad6dd8630af3abde672e2c1cf499a6c90681e892",
+      "original_sha256": "5238f6f9f2ef95a87e1d59a67116e3de92e5cadf152123d4b02235d6a5cf1785",
+      "original_bytes": 2745,
+      "import_sha256": "5238f6f9f2ef95a87e1d59a67116e3de92e5cadf152123d4b02235d6a5cf1785",
+      "import_bytes": 2745,
+      "changed": false
+    },
+    {
+      "path": "evidence/camera-cadence/baseline-red.json",
+      "mode": "100644",
+      "original_git_blob": "77d5c070d6388c3f8afa6d4e1d1921d7513aa584",
+      "original_sha256": "09a25367464764f52b4b778793485f889bb137f19a38b14c82094941c35a6f67",
+      "original_bytes": 4383,
+      "import_sha256": "09a25367464764f52b4b778793485f889bb137f19a38b14c82094941c35a6f67",
+      "import_bytes": 4383,
+      "changed": false
+    },
+    {
+      "path": "evidence/camera-cadence/camera-mutations.json",
+      "mode": "100644",
+      "original_git_blob": "59f03c908b496b995c6bb9b2bf6cb7b05cd838b0",
+      "original_sha256": "2368acbcb7b2ca2d2762ed551aff8ee2d56319b3f23191ea8cace8103e4b67a5",
+      "original_bytes": 849,
+      "import_sha256": "2368acbcb7b2ca2d2762ed551aff8ee2d56319b3f23191ea8cace8103e4b67a5",
+      "import_bytes": 849,
+      "changed": false
+    },
+    {
+      "path": "evidence/camera-cadence/camera-regression.tap",
+      "mode": "100644",
+      "original_git_blob": "5c2806de037126eb39d0f26c4b7a1c8a18b46aaf",
+      "original_sha256": "8d8796f8cb8efb9bd6671030a31ea09d9e2e14a28ac6e900e8a10c4875583778",
+      "original_bytes": 1776,
+      "import_sha256": "8d8796f8cb8efb9bd6671030a31ea09d9e2e14a28ac6e900e8a10c4875583778",
+      "import_bytes": 1776,
+      "changed": false
+    },
+    {
+      "path": "evidence/camera-cadence/candidate-measurements.json",
+      "mode": "100644",
+      "original_git_blob": "360dab2745864008094b40e416432e54ae224912",
+      "original_sha256": "6acc67a2af486d6e8f1fb605b092369cc5a84e745cd08d5304f258a656d59672",
+      "original_bytes": 10766,
+      "import_sha256": "6acc67a2af486d6e8f1fb605b092369cc5a84e745cd08d5304f258a656d59672",
+      "import_bytes": 10766,
+      "changed": false
+    },
+    {
+      "path": "evidence/camera-cadence/input-mutations/allow-repeat-rearm.tap",
+      "mode": "100644",
+      "original_git_blob": "cfbf3bb9b35dd1686da335f74f9fc237c7ecfd4c",
+      "original_sha256": "26c68cb3b2843fdd7a5990371e84f4ee513c3ce94e1131ecab336845333f4635",
+      "original_bytes": 1140,
+      "import_sha256": "26c68cb3b2843fdd7a5990371e84f4ee513c3ce94e1131ecab336845333f4635",
+      "import_bytes": 1140,
+      "changed": false
+    },
+    {
+      "path": "evidence/camera-cadence/input-mutations/allow-zero-distance.tap",
+      "mode": "100644",
+      "original_git_blob": "ecf64ce21d42a07086218472f12c87b87f7244b6",
+      "original_sha256": "027e2e2087078f1e39df03f02ca203bb6fe39044722dd7ec5dbe67c0e32b993d",
+      "original_bytes": 1379,
+      "import_sha256": "027e2e2087078f1e39df03f02ca203bb6fe39044722dd7ec5dbe67c0e32b993d",
+      "import_bytes": 1379,
+      "changed": false
+    },
+    {
+      "path": "evidence/camera-cadence/input-mutations/disable-editable-guard.tap",
+      "mode": "100644",
+      "original_git_blob": "4273f4f8acbcc757088af3c3070bb879be5bba6b",
+      "original_sha256": "6814598f8a8119294cd654d5d77b9c73f4b32fcdc540e14ab7e94d45a7e46b32",
+      "original_bytes": 1130,
+      "import_sha256": "6814598f8a8119294cd654d5d77b9c73f4b32fcdc540e14ab7e94d45a7e46b32",
+      "import_bytes": 1130,
+      "changed": false
+    },
+    {
+      "path": "evidence/camera-cadence/input-mutations/mutation-receipt.json",
+      "mode": "100644",
+      "original_git_blob": "366ed406741a78a15759c55654ab929eb161418f",
+      "original_sha256": "12f1569e97f8c65b383f60053b7a290e3c598b2c7211e759d8100dc7672679ef",
+      "original_bytes": 2202,
+      "import_sha256": "12f1569e97f8c65b383f60053b7a290e3c598b2c7211e759d8100dc7672679ef",
+      "import_bytes": 2202,
+      "changed": false
+    },
+    {
+      "path": "evidence/camera-cadence/input-mutations/omit-blur.tap",
+      "mode": "100644",
+      "original_git_blob": "6b466a95bedffc627deb49d35e22592e23a3a6a9",
+      "original_sha256": "4b8768cd5d0ea82f70b3e7fd9771dcb53fb212bcf871f9b39664155022414f9d",
+      "original_bytes": 1139,
+      "import_sha256": "4b8768cd5d0ea82f70b3e7fd9771dcb53fb212bcf871f9b39664155022414f9d",
+      "import_bytes": 1139,
+      "changed": false
+    },
+    {
+      "path": "evidence/camera-cadence/input-mutations/omit-composition-state.tap",
+      "mode": "100644",
+      "original_git_blob": "58c41ec5a762fe4821fa7a01609885285f6fd441",
+      "original_sha256": "bed26b0d206dcf723b053c9be43a15281a405321a351e75da0a44a9d7c6d6453",
+      "original_bytes": 1150,
+      "import_sha256": "bed26b0d206dcf723b053c9be43a15281a405321a351e75da0a44a9d7c6d6453",
+      "import_bytes": 1150,
+      "changed": false
+    },
+    {
+      "path": "evidence/camera-cadence/input-mutations/omit-ctrl-guard.tap",
+      "mode": "100644",
+      "original_git_blob": "c9216b5952d41bcefe03a62ca5bef739f0890b98",
+      "original_sha256": "326bc7e66b7b7e641b031ba2c8f949a79d7ecef7a2dc993c0a7e9145c80bbc61",
+      "original_bytes": 1095,
+      "import_sha256": "326bc7e66b7b7e641b031ba2c8f949a79d7ecef7a2dc993c0a7e9145c80bbc61",
+      "import_bytes": 1095,
+      "changed": false
+    },
+    {
+      "path": "evidence/camera-cadence/input-mutations/omit-focus-clear.tap",
+      "mode": "100644",
+      "original_git_blob": "1a2fc63ac9770fd25e5c018fe3b4a32add46914b",
+      "original_sha256": "6040aab7d5c33c5ac4d140cdf4a53b91a9d52ddd55ff109d61f89feacc253453",
+      "original_bytes": 1130,
+      "import_sha256": "6040aab7d5c33c5ac4d140cdf4a53b91a9d52ddd55ff109d61f89feacc253453",
+      "import_bytes": 1130,
+      "changed": false
+    },
+    {
+      "path": "evidence/camera-cadence/input-mutations/omit-no-button-clear.tap",
+      "mode": "100644",
+      "original_git_blob": "265826e7400cf4f0c4a8ab70a8fa9dea22a7efd2",
+      "original_sha256": "8ae848d273182a95fe1e7a8294d93aa09f6d328981d9a50a74e903132a686c67",
+      "original_bytes": 1166,
+      "import_sha256": "8ae848d273182a95fe1e7a8294d93aa09f6d328981d9a50a74e903132a686c67",
+      "import_bytes": 1166,
+      "changed": false
+    },
+    {
+      "path": "evidence/camera-cadence/input-mutations/omit-pagehide.tap",
+      "mode": "100644",
+      "original_git_blob": "c36da090b851fe401d3d18749e210d90ca5d7182",
+      "original_sha256": "3ee64f7168349a0a4f25f7ff4208bde2a1441a65661851fe9b0c5b70d30da012",
+      "original_bytes": 1111,
+      "import_sha256": "3ee64f7168349a0a4f25f7ff4208bde2a1441a65661851fe9b0c5b70d30da012",
+      "import_bytes": 1111,
+      "changed": false
+    },
+    {
+      "path": "evidence/camera-cadence/input-mutations/omit-touch-ownership.tap",
+      "mode": "100644",
+      "original_git_blob": "4a9131ce7faf321e822eee79332d34f3ba6f7de0",
+      "original_sha256": "9aa0ad0b735f66092f0f0652b34098ab7f987727853eb9671e7f37439103147e",
+      "original_bytes": 1380,
+      "import_sha256": "9aa0ad0b735f66092f0f0652b34098ab7f987727853eb9671e7f37439103147e",
+      "import_bytes": 1380,
+      "changed": false
+    },
+    {
+      "path": "evidence/camera-cadence/input-mutations/omit-touchcancel.tap",
+      "mode": "100644",
+      "original_git_blob": "adc0bf32b965509d5aacf767e3b8867060e3a217",
+      "original_sha256": "153bc04a59f4103da27d2915b9d079141d7dbb35dbf816b4ec1dffcaa7fdab8b",
+      "original_bytes": 1377,
+      "import_sha256": "153bc04a59f4103da27d2915b9d079141d7dbb35dbf816b4ec1dffcaa7fdab8b",
+      "import_bytes": 1377,
+      "changed": false
+    },
+    {
+      "path": "evidence/camera-cadence/input-mutations/omit-visibility.tap",
+      "mode": "100644",
+      "original_git_blob": "1c9aea34807d8e637e1845fae3cdd643e95fa239",
+      "original_sha256": "d0b7504cedf390474d027a9618b1b89ed99e39484f6e18ea5f9b42f863d1aaa4",
+      "original_bytes": 1142,
+      "import_sha256": "d0b7504cedf390474d027a9618b1b89ed99e39484f6e18ea5f9b42f863d1aaa4",
+      "import_bytes": 1142,
+      "changed": false
+    },
+    {
+      "path": "evidence/camera-cadence/retained-regressions/candidate-input-regression.tap",
+      "mode": "100644",
+      "original_git_blob": "25680f1851648cd1738cd04772de0bef1f906ac3",
+      "original_sha256": "8a227863a9aab5471c68af8492dd6c6cb55e5a71a6f926b0312560ec0e24152b",
+      "original_bytes": 3693,
+      "import_sha256": "8a227863a9aab5471c68af8492dd6c6cb55e5a71a6f926b0312560ec0e24152b",
+      "import_bytes": 3693,
+      "changed": false
+    },
+    {
+      "path": "evidence/camera-cadence/retained-regressions/candidate-regression.tap",
+      "mode": "100644",
+      "original_git_blob": "3203b1eb3937fb194b6f6e3cbdfb492c07efd335",
+      "original_sha256": "b79b5203b93b9fe39ef9a1f3b7351dbc04d3b6dffa547eddbee4ec33790a6037",
+      "original_bytes": 2406,
+      "import_sha256": "b79b5203b93b9fe39ef9a1f3b7351dbc04d3b6dffa547eddbee4ec33790a6037",
+      "import_bytes": 2406,
+      "changed": false
+    },
+    {
+      "path": "evidence/camera-cadence/retained-regressions/geometry-baseline-input-regression.tap",
+      "mode": "100644",
+      "original_git_blob": "c2f34b89c7454b371cc733dd43d7e85682b8a181",
+      "original_sha256": "0a11fc469e94f65bd528abbfce8d72b1657fc5c5362835a6267a7025e030abdd",
+      "original_bytes": 14230,
+      "import_sha256": "0a11fc469e94f65bd528abbfce8d72b1657fc5c5362835a6267a7025e030abdd",
+      "import_bytes": 14230,
+      "changed": false
+    },
+    {
+      "path": "evidence/camera-cadence/retained-regressions/original-input-regression.tap",
+      "mode": "100644",
+      "original_git_blob": "e3fb74a1ed553e2ff48080f4b56a5c84b8593cdc",
+      "original_sha256": "03f1ebce62644f7dc2008c49d7f6b6bb625212df8196b0815498e7f0264277a4",
+      "original_bytes": 14231,
+      "import_sha256": "03f1ebce62644f7dc2008c49d7f6b6bb625212df8196b0815498e7f0264277a4",
+      "import_bytes": 14231,
+      "changed": false
+    },
+    {
+      "path": "evidence/camera-cadence/retained-regressions/original-regression.tap",
+      "mode": "100644",
+      "original_git_blob": "d297cefc643cc518f3b52b3ee0140737d608ddde",
+      "original_sha256": "851187ca4dda185772ff795dfdfb7943f68effe86852b360b65a2f2be03261a1",
+      "original_bytes": 8180,
+      "import_sha256": "851187ca4dda185772ff795dfdfb7943f68effe86852b360b65a2f2be03261a1",
+      "import_bytes": 8180,
+      "changed": false
+    },
+    {
+      "path": "evidence/camera-cadence/retained-regressions/regression-receipt.json",
+      "mode": "100644",
+      "original_git_blob": "633b2b0a6599bf39ee1326697dbfbf2381ae2fbd",
+      "original_sha256": "fdda8cf3e5447686c43bf77dd3c336d29086e273c0751c50f1fbfef36f5d1d8e",
+      "original_bytes": 4239,
+      "import_sha256": "fdda8cf3e5447686c43bf77dd3c336d29086e273c0751c50f1fbfef36f5d1d8e",
+      "import_bytes": 4239,
+      "changed": false
+    },
+    {
+      "path": "evidence/camera-cadence/retained-regressions/source-measurements.json",
+      "mode": "100644",
+      "original_git_blob": "7f4ac3da23143fb85425eeb10f7e44d1f6689a57",
+      "original_sha256": "ff14266e8a8de52c1c7d1f6d3404aafd1cbbfd70e121e245965d8b9b761f1037",
+      "original_bytes": 1766,
+      "import_sha256": "ff14266e8a8de52c1c7d1f6d3404aafd1cbbfd70e121e245965d8b9b761f1037",
+      "import_bytes": 1766,
+      "changed": false
+    },
+    {
+      "path": "evidence/camera-cadence/writer-receipt.json",
+      "mode": "100644",
+      "original_git_blob": "0c9ac9e70b0e5fc875f05e704299274979fce6fd",
+      "original_sha256": "ef1034740ae5a4fb41633036a4374dcd7638bfae25f17cc1c833f6ca5274566e",
+      "original_bytes": 2183,
+      "import_sha256": "ef1034740ae5a4fb41633036a4374dcd7638bfae25f17cc1c833f6ca5274566e",
+      "import_bytes": 2183,
+      "changed": false
+    },
+    {
+      "path": "evidence/candidate-regression.tap",
+      "mode": "100644",
+      "original_git_blob": "6f5d01ccd038a239108f7dcd6b21e7e211ad09e0",
+      "original_sha256": "11353800d7d5b1df0753069d99cc9f5c750d1e10b78b8c576b695ed4b2cba7ee",
+      "original_bytes": 2407,
+      "import_sha256": "11353800d7d5b1df0753069d99cc9f5c750d1e10b78b8c576b695ed4b2cba7ee",
+      "import_bytes": 2407,
+      "changed": false
+    },
+    {
+      "path": "evidence/environment.json",
+      "mode": "100644",
+      "original_git_blob": "98953a10114a2d47435d2048a4e0ed9c08eab47e",
+      "original_sha256": "bd9cd590ca9ab6ea303d575f1b7a65f9965259a0c017e59854810735d34ba960",
+      "original_bytes": 632,
+      "import_sha256": "bd9cd590ca9ab6ea303d575f1b7a65f9965259a0c017e59854810735d34ba960",
+      "import_bytes": 632,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/baseline-listener-negative-controls.tap",
+      "mode": "100644",
+      "original_git_blob": "28b15bb4fb8511505af455592579634169d0198d",
+      "original_sha256": "ee081eff217f7d13dfb63d33875348eadf8afd727e3118dbafda4e418c362207",
+      "original_bytes": 14067,
+      "import_sha256": "ee081eff217f7d13dfb63d33875348eadf8afd727e3118dbafda4e418c362207",
+      "import_bytes": 14067,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/candidate-listener-regression.tap",
+      "mode": "100644",
+      "original_git_blob": "06ff1aae65fe0306fd41357055231d5d4838e570",
+      "original_sha256": "ed647cdf80220c518b7dfd7b7c8b6b0d4a2a6e11d7dca72125955bfe61bcc516",
+      "original_bytes": 3690,
+      "import_sha256": "ed647cdf80220c518b7dfd7b7c8b6b0d4a2a6e11d7dca72125955bfe61bcc516",
+      "import_bytes": 3690,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/cumulative-source.patch",
+      "mode": "100644",
+      "original_git_blob": "18dc44eee8820bbe5090151281a14c76d85d3c8c",
+      "original_sha256": "c85fcbe44414d8e8b204e12fdf44bd36fd039caa0e6e19b7ed587bbf01996b4b",
+      "original_bytes": 9474,
+      "import_sha256": "c85fcbe44414d8e8b204e12fdf44bd36fd039caa0e6e19b7ed587bbf01996b4b",
+      "import_bytes": 9474,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/environment.json",
+      "mode": "100644",
+      "original_git_blob": "0b4d633e9129bfd690c01b611d1757c6742635bd",
+      "original_sha256": "1bff9423e258980545e0a4186ba88ff50492adfaad697e27e2c60d25b0936b75",
+      "original_bytes": 960,
+      "import_sha256": "1bff9423e258980545e0a4186ba88ff50492adfaad697e27e2c60d25b0936b75",
+      "import_bytes": 960,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/final-regressions/candidate-input-regression.tap",
+      "mode": "100644",
+      "original_git_blob": "218b1a2c099a545ed6b828313696811932d18b35",
+      "original_sha256": "3eef09a464ccddd44f4e1011b7c78b03c5bad4533cadbee5236d3313ae3336fe",
+      "original_bytes": 3690,
+      "import_sha256": "3eef09a464ccddd44f4e1011b7c78b03c5bad4533cadbee5236d3313ae3336fe",
+      "import_bytes": 3690,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/final-regressions/candidate-regression.tap",
+      "mode": "100644",
+      "original_git_blob": "70f1d94aa5744d75d85e865b0dc789ca3a131ba1",
+      "original_sha256": "38d1c364d8079676661d6024991e91234f91539bd2d41b4b2bcac659fff7ce11",
+      "original_bytes": 2406,
+      "import_sha256": "38d1c364d8079676661d6024991e91234f91539bd2d41b4b2bcac659fff7ce11",
+      "import_bytes": 2406,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/final-regressions/geometry-baseline-input-regression.tap",
+      "mode": "100644",
+      "original_git_blob": "97f1a9cfab43e424dfd7af8b36eb95d147f64ed3",
+      "original_sha256": "1e89b56c0fe95a43c6e7b007734d18a7bcbdc5660ee8b0ba3dfb2da77836f282",
+      "original_bytes": 14286,
+      "import_sha256": "1e89b56c0fe95a43c6e7b007734d18a7bcbdc5660ee8b0ba3dfb2da77836f282",
+      "import_bytes": 14286,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/final-regressions/original-input-regression.tap",
+      "mode": "100644",
+      "original_git_blob": "1090eb8c8d54cd2b6505d6b547de8982332d6c70",
+      "original_sha256": "7ac65dc835a048734d680615ff09616cb16902756dc066125345d628ebcaed62",
+      "original_bytes": 14286,
+      "import_sha256": "7ac65dc835a048734d680615ff09616cb16902756dc066125345d628ebcaed62",
+      "import_bytes": 14286,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/final-regressions/original-regression.tap",
+      "mode": "100644",
+      "original_git_blob": "9983898dbc6d6665cf5090bb48e9baa827827356",
+      "original_sha256": "e2e9d8bc435795920bfd2beae5edcf1263287110eee7a9ccc20a349b1fd78abb",
+      "original_bytes": 8242,
+      "import_sha256": "e2e9d8bc435795920bfd2beae5edcf1263287110eee7a9ccc20a349b1fd78abb",
+      "import_bytes": 8242,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/final-regressions/regression-receipt.json",
+      "mode": "100644",
+      "original_git_blob": "11481dce5ec46131ed55fd6aaf94cb12501d0d60",
+      "original_sha256": "2cc3ac9826792af14e15e9013671976b8f888fbb8a7bd4068ef665420332f760",
+      "original_bytes": 4239,
+      "import_sha256": "2cc3ac9826792af14e15e9013671976b8f888fbb8a7bd4068ef665420332f760",
+      "import_bytes": 4239,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/final-regressions/source-measurements.json",
+      "mode": "100644",
+      "original_git_blob": "ca85033bae297ca48ce5dc1cf6157a974bb5479f",
+      "original_sha256": "fbbbb9e63f09ba4f35db310d5370adf68234f1229214446e74ce12399bafb5e0",
+      "original_bytes": 1766,
+      "import_sha256": "fbbbb9e63f09ba4f35db310d5370adf68234f1229214446e74ce12399bafb5e0",
+      "import_bytes": 1766,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/geometry-preservation-regression.tap",
+      "mode": "100644",
+      "original_git_blob": "9b91d125e0ff20e4ffe426798619d5f407e4e305",
+      "original_sha256": "417bfcd4fa146ab22d588de8e3d120bac51389c79193e7a3d26f3e94ed802bc6",
+      "original_bytes": 2403,
+      "import_sha256": "417bfcd4fa146ab22d588de8e3d120bac51389c79193e7a3d26f3e94ed802bc6",
+      "import_bytes": 2403,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/implementation-receipt.md",
+      "mode": "100644",
+      "original_git_blob": "0a0ee594b60778ab94c4592aa076a08f96697e0c",
+      "original_sha256": "5443a8726dae56eb5dfd86df4529362731e23f6b75c26647a01fd63ce9c7be6f",
+      "original_bytes": 2575,
+      "import_sha256": "5443a8726dae56eb5dfd86df4529362731e23f6b75c26647a01fd63ce9c7be6f",
+      "import_bytes": 2575,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/independent-review.md",
+      "mode": "100644",
+      "original_git_blob": "a8dba903da94abf6bcbf7a60291f4bb54f1d8ee5",
+      "original_sha256": "c78beb81a5ac2ce5c82cea944aa639ef15aba47b899324e02ca9a6d36f28663f",
+      "original_bytes": 3099,
+      "import_sha256": "c78beb81a5ac2ce5c82cea944aa639ef15aba47b899324e02ca9a6d36f28663f",
+      "import_bytes": 3099,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/input-only-source.patch",
+      "mode": "100644",
+      "original_git_blob": "38af871234ff592d3fe9dc9a289a6f8bbe01e7fb",
+      "original_sha256": "3ba709204a120011aa2aed617f12724c71ed105a6079dfe90d94b67ae9ce308d",
+      "original_bytes": 7050,
+      "import_sha256": "3ba709204a120011aa2aed617f12724c71ed105a6079dfe90d94b67ae9ce308d",
+      "import_bytes": 7050,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/mutations/allow-repeat-rearm.tap",
+      "mode": "100644",
+      "original_git_blob": "25bd4d16a080de5a90b87ac0b93c90280d8ed04d",
+      "original_sha256": "275b5862b5431a01c7d0d771ca6140512f84036fb3381370832e6b78465c8fbe",
+      "original_bytes": 1142,
+      "import_sha256": "275b5862b5431a01c7d0d771ca6140512f84036fb3381370832e6b78465c8fbe",
+      "import_bytes": 1142,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/mutations/allow-zero-distance.tap",
+      "mode": "100644",
+      "original_git_blob": "99aef23fb356c5e1653e4578c4d16830d311b122",
+      "original_sha256": "72c757fc7accd7bc9dd6bdbdc6d3e3dbdf0b506f039206ae0dac9aae5fddefec",
+      "original_bytes": 1389,
+      "import_sha256": "72c757fc7accd7bc9dd6bdbdc6d3e3dbdf0b506f039206ae0dac9aae5fddefec",
+      "import_bytes": 1389,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/mutations/disable-editable-guard.tap",
+      "mode": "100644",
+      "original_git_blob": "56ba6f4b07e590006591699996a486d3fa30cefd",
+      "original_sha256": "278bc6f7c9c00ebb65c4a980d7e1a7e5d03f1161c3f68665d292c69f2bd4f53b",
+      "original_bytes": 1134,
+      "import_sha256": "278bc6f7c9c00ebb65c4a980d7e1a7e5d03f1161c3f68665d292c69f2bd4f53b",
+      "import_bytes": 1134,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/mutations/mutation-receipt.json",
+      "mode": "100644",
+      "original_git_blob": "366ed406741a78a15759c55654ab929eb161418f",
+      "original_sha256": "12f1569e97f8c65b383f60053b7a290e3c598b2c7211e759d8100dc7672679ef",
+      "original_bytes": 2202,
+      "import_sha256": "12f1569e97f8c65b383f60053b7a290e3c598b2c7211e759d8100dc7672679ef",
+      "import_bytes": 2202,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/mutations/omit-blur.tap",
+      "mode": "100644",
+      "original_git_blob": "c7582fdea3fe8cacfcae16753ee55a726d833196",
+      "original_sha256": "a1fac907a0bee95fef87b7dc343389f314e3132e7dcb5e01f51b4648f957755a",
+      "original_bytes": 1143,
+      "import_sha256": "a1fac907a0bee95fef87b7dc343389f314e3132e7dcb5e01f51b4648f957755a",
+      "import_bytes": 1143,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/mutations/omit-composition-state.tap",
+      "mode": "100644",
+      "original_git_blob": "743e3608de97ba8b00e4fb243268a29635d31c3f",
+      "original_sha256": "24dd95b84c2102b6c942d3709f476aaaeb2210e044563d86accdcf39bc1b059e",
+      "original_bytes": 1154,
+      "import_sha256": "24dd95b84c2102b6c942d3709f476aaaeb2210e044563d86accdcf39bc1b059e",
+      "import_bytes": 1154,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/mutations/omit-ctrl-guard.tap",
+      "mode": "100644",
+      "original_git_blob": "c4b13b0723f372acc6da93d39e32b65f1ce152ea",
+      "original_sha256": "9cff8e1ac77c007cef3f652817d16013f36f0be5391a44aabfebe061e73dbbfe",
+      "original_bytes": 1099,
+      "import_sha256": "9cff8e1ac77c007cef3f652817d16013f36f0be5391a44aabfebe061e73dbbfe",
+      "import_bytes": 1099,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/mutations/omit-focus-clear.tap",
+      "mode": "100644",
+      "original_git_blob": "3990732c9703890494574b440575f49f06c49a3a",
+      "original_sha256": "668e6d175b6285a6e1b2e9d5b5ce31920a1c776c2878778f4ab2a09cc093fc07",
+      "original_bytes": 1132,
+      "import_sha256": "668e6d175b6285a6e1b2e9d5b5ce31920a1c776c2878778f4ab2a09cc093fc07",
+      "import_bytes": 1132,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/mutations/omit-no-button-clear.tap",
+      "mode": "100644",
+      "original_git_blob": "c7aac8a54f4f58f9358ef856eb3ec7996d9bc859",
+      "original_sha256": "e4859dfb52a1703da71d09b76f59afd4e1452a78733efa088d32abb122db9f13",
+      "original_bytes": 1177,
+      "import_sha256": "e4859dfb52a1703da71d09b76f59afd4e1452a78733efa088d32abb122db9f13",
+      "import_bytes": 1177,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/mutations/omit-pagehide.tap",
+      "mode": "100644",
+      "original_git_blob": "6b24f921b09460f251175929932ee4d7e83f1aa3",
+      "original_sha256": "a72c67283b4de9d98cafc483e8aac4cafa805f5b76eb00512fa3c189162ce177",
+      "original_bytes": 1114,
+      "import_sha256": "a72c67283b4de9d98cafc483e8aac4cafa805f5b76eb00512fa3c189162ce177",
+      "import_bytes": 1114,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/mutations/omit-touch-ownership.tap",
+      "mode": "100644",
+      "original_git_blob": "07533d79a47f234879e12b4bfc26117d54379808",
+      "original_sha256": "bb888bb5aa962d31a63f6419c91f01362a6f9d97ad31f45b3f1981f8d236deb3",
+      "original_bytes": 1388,
+      "import_sha256": "bb888bb5aa962d31a63f6419c91f01362a6f9d97ad31f45b3f1981f8d236deb3",
+      "import_bytes": 1388,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/mutations/omit-touchcancel.tap",
+      "mode": "100644",
+      "original_git_blob": "d32215bac4120bd3554c71218c97621c28caa76d",
+      "original_sha256": "30ec844d969d361bcf965dbfdf2ed7007b2de439065655b5b01fdb2e9d2bad42",
+      "original_bytes": 1390,
+      "import_sha256": "30ec844d969d361bcf965dbfdf2ed7007b2de439065655b5b01fdb2e9d2bad42",
+      "import_bytes": 1390,
+      "changed": false
+    },
+    {
+      "path": "evidence/input-ownership/mutations/omit-visibility.tap",
+      "mode": "100644",
+      "original_git_blob": "97f9041878b4160196b924800f8511d69d74b873",
+      "original_sha256": "e21c1171cab0bd23ec43c8d7f8a48639058f09c34cf6c86761f4cf5802d89f19",
+      "original_bytes": 1144,
+      "import_sha256": "e21c1171cab0bd23ec43c8d7f8a48639058f09c34cf6c86761f4cf5802d89f19",
+      "import_bytes": 1144,
+      "changed": false
+    },
+    {
+      "path": "evidence/original-regression.tap",
+      "mode": "100644",
+      "original_git_blob": "f408e2a600d6e175abdd2ad12694d3e766c4b141",
+      "original_sha256": "7c8e902c549491e698fd2f929d3423f552c85fd372be2e96dab07c79740d8b1e",
+      "original_bytes": 8261,
+      "import_sha256": "7c8e902c549491e698fd2f929d3423f552c85fd372be2e96dab07c79740d8b1e",
+      "import_bytes": 8261,
+      "changed": false
+    },
+    {
+      "path": "evidence/regression-receipt.json",
+      "mode": "100644",
+      "original_git_blob": "7b1bd0e9b9f4320c485f5fec230d694417ebc9cc",
+      "original_sha256": "1f6eec99ab4ebe361d3ec2952e618b4de7c9cb1c2f9fb7686312660d717ae7fa",
+      "original_bytes": 1384,
+      "import_sha256": "1f6eec99ab4ebe361d3ec2952e618b4de7c9cb1c2f9fb7686312660d717ae7fa",
+      "import_bytes": 1384,
+      "changed": false
+    },
+    {
+      "path": "evidence/review.md",
+      "mode": "100644",
+      "original_git_blob": "c88e53c44c638cad6874e10d0c8c120d255df299",
+      "original_sha256": "1beffd179c35f10c7d62393bb0a47a6340290d6591cc5cc3036da1e78cdef4b0",
+      "original_bytes": 6576,
+      "import_sha256": "1beffd179c35f10c7d62393bb0a47a6340290d6591cc5cc3036da1e78cdef4b0",
+      "import_bytes": 6576,
+      "changed": false
+    },
+    {
+      "path": "evidence/source-measurements.json",
+      "mode": "100644",
+      "original_git_blob": "90bd427a2300b7109ef465b42a46f81b4bdaa623",
+      "original_sha256": "338ba8788fc38190632e3683bfef9a08ec0b41d425dd7a33ca0910d04d7a81db",
+      "original_bytes": 1766,
+      "import_sha256": "338ba8788fc38190632e3683bfef9a08ec0b41d425dd7a33ca0910d04d7a81db",
+      "import_bytes": 1766,
+      "changed": false
+    },
+    {
+      "path": "evidence/workflow-receipt.md",
+      "mode": "100644",
+      "original_git_blob": "59ef524950886f1f7bba89479c1fee0d3924622f",
+      "original_sha256": "a9e288915e3e5a29669b77e63fc1bd873ae7a62849dcb12d86da970801c39f0a",
+      "original_bytes": 1587,
+      "import_sha256": "a9e288915e3e5a29669b77e63fc1bd873ae7a62849dcb12d86da970801c39f0a",
+      "import_bytes": 1587,
+      "changed": false
+    },
+    {
+      "path": "src/ijn_battleship_yamato_1_1_scale_3d_simulation.html",
+      "mode": "100644",
+      "original_git_blob": "cac63e82b3fed09021d238ab9c2fef77a919999f",
+      "original_sha256": "f59f4c1d3cdb0ad691b4a9c20dc65cdef4774489e2837b39e81031999545e61d",
+      "original_bytes": 161488,
+      "import_sha256": "f59f4c1d3cdb0ad691b4a9c20dc65cdef4774489e2837b39e81031999545e61d",
+      "import_bytes": 161488,
+      "changed": false
+    },
+    {
+      "path": "tests/aa-checks.mjs",
+      "mode": "100644",
+      "original_git_blob": "89eaa736983af63eb3f71fafe19feeeae1d88882",
+      "original_sha256": "1d7b68f246f37c2a36a76dd60cf6205bb1be2306f4ad1b97f24a6dad6b68c529",
+      "original_bytes": 11318,
+      "import_sha256": "1d7b68f246f37c2a36a76dd60cf6205bb1be2306f4ad1b97f24a6dad6b68c529",
+      "import_bytes": 11318,
+      "changed": false
+    },
+    {
+      "path": "tests/aa-mutations.mjs",
+      "mode": "100644",
+      "original_git_blob": "cb2028f0e04c1522b59bf6c2b81195d2320b2d01",
+      "original_sha256": "a4058e6145510f98c33649a162040bc9ca12340d718e0fa0625d613465cb2f79",
+      "original_bytes": 2625,
+      "import_sha256": "a4058e6145510f98c33649a162040bc9ca12340d718e0fa0625d613465cb2f79",
+      "import_bytes": 2625,
+      "changed": false
+    },
+    {
+      "path": "tests/aa-scope.mjs",
+      "mode": "100644",
+      "original_git_blob": "c01bc6ecaf7c0eee4609f36bd00065fe7308f569",
+      "original_sha256": "b6464a05af54cd2ce06515f797f0cff5c854c6ec3050b2f1af40b5bacb7d4bec",
+      "original_bytes": 1985,
+      "import_sha256": "b6464a05af54cd2ce06515f797f0cff5c854c6ec3050b2f1af40b5bacb7d4bec",
+      "import_bytes": 1985,
+      "changed": false
+    },
+    {
+      "path": "tests/aa.test.mjs",
+      "mode": "100644",
+      "original_git_blob": "c03a13a05d201745eaed6722f131cebef2cbace3",
+      "original_sha256": "35d3bc1e665abe469f984eb6887c022f037425a3cd6a75db04d99e7e35003553",
+      "original_bytes": 1751,
+      "import_sha256": "35d3bc1e665abe469f984eb6887c022f037425a3cd6a75db04d99e7e35003553",
+      "import_bytes": 1751,
+      "changed": false
+    },
+    {
+      "path": "tests/camera-checks.mjs",
+      "mode": "100644",
+      "original_git_blob": "b0d9c062ba9370b076be82fcadec97342a65599e",
+      "original_sha256": "afb2d34dad109cbbefb84e995a157e4253f5213f01d7ab3ab75d5f9a24e46dc7",
+      "original_bytes": 3652,
+      "import_sha256": "afb2d34dad109cbbefb84e995a157e4253f5213f01d7ab3ab75d5f9a24e46dc7",
+      "import_bytes": 3652,
+      "changed": false
+    },
+    {
+      "path": "tests/camera-harness.mjs",
+      "mode": "100644",
+      "original_git_blob": "b015516f26e2acb9472db89c7539fac70501acd8",
+      "original_sha256": "66cfaeab6687fa5f3dc67b4e2488fc4ba3b043b24af8bd9e7863d56b2bc5214c",
+      "original_bytes": 3401,
+      "import_sha256": "66cfaeab6687fa5f3dc67b4e2488fc4ba3b043b24af8bd9e7863d56b2bc5214c",
+      "import_bytes": 3401,
+      "changed": false
+    },
+    {
+      "path": "tests/camera-scope.mjs",
+      "mode": "100644",
+      "original_git_blob": "82fb1cde9b54e7a6c8c3a18023c436b5c3752094",
+      "original_sha256": "612def4193e8e082b4bec30a7153042374976ba66f6b19161b02c6961ceb7e70",
+      "original_bytes": 1491,
+      "import_sha256": "612def4193e8e082b4bec30a7153042374976ba66f6b19161b02c6961ceb7e70",
+      "import_bytes": 1491,
+      "changed": false
+    },
+    {
+      "path": "tests/camera.test.mjs",
+      "mode": "100644",
+      "original_git_blob": "7b7c0027511d89cb1eb4a0bd3aa5b879f0e20abc",
+      "original_sha256": "19b637890aba8f3b71020dfc77692a55ca9ece9efedbbc6b6d383f03430f76c5",
+      "original_bytes": 3865,
+      "import_sha256": "19b637890aba8f3b71020dfc77692a55ca9ece9efedbbc6b6d383f03430f76c5",
+      "import_bytes": 3865,
+      "changed": false
+    },
+    {
+      "path": "tests/input-harness.mjs",
+      "mode": "100644",
+      "original_git_blob": "c22b7fec33ce0ed6d75db1a51b4f162b8c63cd62",
+      "original_sha256": "efc35cae64da70757fc0ba5d79ecb0b630a5a50b1ec54ca67999d2f3a800f0be",
+      "original_bytes": 3235,
+      "import_sha256": "efc35cae64da70757fc0ba5d79ecb0b630a5a50b1ec54ca67999d2f3a800f0be",
+      "import_bytes": 3235,
+      "changed": false
+    },
+    {
+      "path": "tests/input-scope.mjs",
+      "mode": "100644",
+      "original_git_blob": "816e9c7fc685a3c5ef01b991c2cf6a4796832ac7",
+      "original_sha256": "8fc34134d41405757cd8c04d992b254126d188958dd158b1e0e7958fba456f7a",
+      "original_bytes": 1658,
+      "import_sha256": "8fc34134d41405757cd8c04d992b254126d188958dd158b1e0e7958fba456f7a",
+      "import_bytes": 1658,
+      "changed": false
+    },
+    {
+      "path": "tests/input.test.mjs",
+      "mode": "100644",
+      "original_git_blob": "ecfdae2ea9959cf261a871563dcb678806070ef2",
+      "original_sha256": "785e7d45ad34c304807681d059f2b5cfd773739ab261ad9b4b08a4f963bfac4c",
+      "original_bytes": 9849,
+      "import_sha256": "785e7d45ad34c304807681d059f2b5cfd773739ab261ad9b4b08a4f963bfac4c",
+      "import_bytes": 9849,
+      "changed": false
+    },
+    {
+      "path": "tests/measure-source.mjs",
+      "mode": "100644",
+      "original_git_blob": "e757098b9413ba6eaec025742499eaceb20d016f",
+      "original_sha256": "ab9ca9e4fd4659922a35b683fafee8249f894e0c05b10516c9d337062b2f73d8",
+      "original_bytes": 1530,
+      "import_sha256": "ab9ca9e4fd4659922a35b683fafee8249f894e0c05b10516c9d337062b2f73d8",
+      "import_bytes": 1530,
+      "changed": false
+    },
+    {
+      "path": "tests/regression.test.mjs",
+      "mode": "100644",
+      "original_git_blob": "27d209de9e8c7d8c772d5c5ff73834945f19a1d4",
+      "original_sha256": "c9cf5bed342d7164fa4c114deea4aaaeae9631809ee5946e23972077f1c8c9f0",
+      "original_bytes": 8289,
+      "import_sha256": "c9cf5bed342d7164fa4c114deea4aaaeae9631809ee5946e23972077f1c8c9f0",
+      "import_bytes": 8289,
+      "changed": false
+    },
+    {
+      "path": "tests/source-harness.mjs",
+      "mode": "100644",
+      "original_git_blob": "6fb90a854ab1e2ea1a2c6ba12caf63bd8c7294aa",
+      "original_sha256": "0687c32c7d5c52f8c9b1e9616b095c7f7b60de3b54df5ff7a88f5f7b7bf20210",
+      "original_bytes": 7136,
+      "import_sha256": "0687c32c7d5c52f8c9b1e9616b095c7f7b60de3b54df5ff7a88f5f7b7bf20210",
+      "import_bytes": 7136,
+      "changed": false
+    },
+    {
+      "path": "tools/camera_delta_checkpoint.py",
+      "mode": "100644",
+      "original_git_blob": "537183f134d44283234f63a00c7cf0013b55ec74",
+      "original_sha256": "86af9dc99d841293934ca49eaffb7bf4c0788bc70c8c9d55baa22c28463d2f8f",
+      "original_bytes": 11661,
+      "import_sha256": "6f4430b020477861a08120986cd5663555dfe0a12df6fb7d7e3c79a94a223335",
+      "import_bytes": 11649,
+      "changed": true
+    },
+    {
+      "path": "tools/local_checkpoint.py",
+      "mode": "100644",
+      "original_git_blob": "e8cfa374e43d09efb4d01d949b0a6d72197ff96c",
+      "original_sha256": "234b323b7200b8d83af700fa600bf409195dda5bd9f8f1b81d7d9e17c2508dd8",
+      "original_bytes": 8136,
+      "import_sha256": "234b323b7200b8d83af700fa600bf409195dda5bd9f8f1b81d7d9e17c2508dd8",
+      "import_bytes": 8136,
+      "changed": false
+    },
+    {
+      "path": "tools/probe_camera_baseline.mjs",
+      "mode": "100644",
+      "original_git_blob": "aa5a946d2e2592c8f09b9bfa355d9d56531921d0",
+      "original_sha256": "7076201c7f28883af8b75f38570cf5bd643725806c9a4b54fb887ed84da910f9",
+      "original_bytes": 907,
+      "import_sha256": "7076201c7f28883af8b75f38570cf5bd643725806c9a4b54fb887ed84da910f9",
+      "import_bytes": 907,
+      "changed": false
+    },
+    {
+      "path": "tools/probe_camera_mutations.mjs",
+      "mode": "100644",
+      "original_git_blob": "6ad5597dce1677ed8562425270314c7d7625d06a",
+      "original_sha256": "2ad91fa0d70cf15e8696caa8235bb0a5598bb30c825021600f4d05ff6e8c912d",
+      "original_bytes": 1284,
+      "import_sha256": "2ad91fa0d70cf15e8696caa8235bb0a5598bb30c825021600f4d05ff6e8c912d",
+      "import_bytes": 1284,
+      "changed": false
+    },
+    {
+      "path": "tools/probe_input_mutations.py",
+      "mode": "100644",
+      "original_git_blob": "6a24f9ca11aa3391dbe6871bf9cc9774238902ef",
+      "original_sha256": "bd189ef2d21bd5f1dd27fd82a33fba45ae1a45aa9e62dc6f6f8f49be9973f5bf",
+      "original_bytes": 3139,
+      "import_sha256": "bd189ef2d21bd5f1dd27fd82a33fba45ae1a45aa9e62dc6f6f8f49be9973f5bf",
+      "import_bytes": 3139,
+      "changed": false
+    },
+    {
+      "path": "tools/run_aa_regressions.mjs",
+      "mode": "100644",
+      "original_git_blob": "c7d526b60c431f8452e8b3f27f3e08a794fd106a",
+      "original_sha256": "57a5ac7649446ab5e6f5153b1bc4890cbae93086133a0426b2556b775c8de75e",
+      "original_bytes": 6108,
+      "import_sha256": "57a5ac7649446ab5e6f5153b1bc4890cbae93086133a0426b2556b775c8de75e",
+      "import_bytes": 6108,
+      "changed": false
+    },
+    {
+      "path": "tools/run_regressions.py",
+      "mode": "100644",
+      "original_git_blob": "44710b86c35925b2c5482bdad8cc8ac53d73b423",
+      "original_sha256": "22bc8331b81d5120ae552ba9963b829a6ba883b08c2812baab88165411e7c8cc",
+      "original_bytes": 5176,
+      "import_sha256": "22bc8331b81d5120ae552ba9963b829a6ba883b08c2812baab88165411e7c8cc",
+      "import_bytes": 5176,
+      "changed": false
+    }
+  ],
+  "excluded_from_publication": [
+    "Original seven-commit history bundle, because its historical metadata contains private checkpoint identifiers.",
+    "Private original checkout, private restore, exact literal-before substitution receipt and local review/test receipts."
+  ],
+  "history_preservation": "Original 7-commit recovery history is retained privately in a verified self-contained Git bundle. The GitHub import commit has a separate identity and does not claim the original source history as its branch ancestry.",
+  "asset_provenance": "Procedural geometry and generated canvas textures inherited from recovered supplied source; no external models or artwork added. Original source authorship/licence was not independently established, and this import grants no new licence.",
+  "runtime_dependencies": "Existing external Three.js r128, Tailwind CDN and Google Fonts retained unchanged. Complete offline runtime is not claimed.",
+  "test_status": "Source-level reviews passed at upstream identity; an import-stage execution receipt is recorded separately after running unchanged tests. This is not browser, GPU, performance or ordinary-render acceptance.",
+  "deployment": "No workflow or deployment configuration exists in the imported source. No deployment, Pages setting, or account/security setting is enabled or changed by this import."
+}

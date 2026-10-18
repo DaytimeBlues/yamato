@@ -1,0 +1,2997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IJN Yamato (1945) - 1:1 Scale Interactive 3D Model</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #0b131e;
+            font-family: 'Inter', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        .hud-panel {
+            background: rgba(10, 18, 28, 0.82);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(148, 163, 184, 0.22);
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6);
+        }
+        .title-font {
+            font-family: 'Cinzel', serif;
+        }
+        .mono-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .btn-naval {
+            background: linear-gradient(180deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-naval:hover {
+            border-color: #eab308;
+            background: linear-gradient(180deg, rgba(51, 65, 85, 0.95) 0%, rgba(30, 41, 59, 1) 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(234, 179, 8, 0.2);
+        }
+        .btn-naval.active {
+            border-color: #eab308;
+            background: linear-gradient(180deg, rgba(161, 98, 7, 0.45) 0%, rgba(113, 63, 18, 0.6) 100%);
+            color: #fef08a;
+        }
+        .btn-fire {
+            background: linear-gradient(180deg, #dc2626 0%, #991b1b 100%);
+            border: 1px solid #f87171;
+            box-shadow: 0 0 15px rgba(220, 38, 38, 0.4);
+            transition: all 0.15s ease;
+        }
+        .btn-fire:hover {
+            background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.75);
+            transform: scale(1.03);
+        }
+        .btn-fire:active {
+            transform: scale(0.97);
+        }
+        /* Custom range slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: rgba(51, 65, 85, 0.7);
+            height: 6px;
+            border-radius: 3px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #eab308;
+            cursor: pointer;
+            border: 2px solid #fff;
+        }
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.4);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.4);
+            border-radius: 3px;
+        }
+        .label-3d {
+            position: absolute;
+            pointer-events: auto;
+            cursor: pointer;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.2s, transform 0.2s;
+            z-index: 10;
+        }
+        .label-3d:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            z-index: 20;
+        }
+    </style>
+</head>
+<body class="text-slate-100">
+
+    <!-- 3D WebGL Canvas Container -->
+    <div id="canvas-container"></div>
+
+    <!-- 3D Floating Pin Container -->
+    <div id="labels-container" class="absolute inset-0 pointer-events-none overflow-hidden z-10"></div>
+
+    <header class="fixed top-3 left-3 right-3 z-20 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
+        <!-- Ship Identity -->
+        <div class="hud-panel px-4 py-2.5 rounded-xl pointer-events-auto flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-amber-500/20 border border-amber-400/60 flex items-center justify-center shadow-inner">
+                <!-- 16-Petal Chrysanthemum SVG -->
+                <svg class="w-7 h-7 text-amber-400" viewBox="0 0 100 100" fill="currentColor">
+                    <circle cx="50" cy="50" r="14"/>
+                    <g stroke="currentColor" stroke-width="6" stroke-linecap="round">
+                        <line x1="50" y1="6" x2="50" y2="30"/><line x1="50" y1="70" x2="50" y2="94"/>
+                        <line x1="6" y1="50" x2="30" y2="50"/><line x1="70" y1="50" x2="94" y2="50"/>
+                        <line x1="19" y1="19" x2="36" y2="36"/><line x1="64" y1="64" x2="81" y2="81"/>
+                        <line x1="81" y1="19" x2="64" y2="36"/><line x1="36" y1="64" x2="19" y2="81"/>
+                        <line x1="33" y1="9" x2="43" y2="32"/><line x1="57" y1="68" x2="67" y2="91"/>
+                        <line x1="9" y1="33" x2="32" y2="43"/><line x1="68" y1="57" x2="91" y2="67"/>
+                        <line x1="9" y1="67" x2="32" y2="57"/><line x1="68" y1="43" x2="91" y2="33"/>
+                        <line x1="33" y1="91" x2="43" y2="68"/><line x1="57" y1="32" x2="67" y2="9"/>
+                    </g>
+                </svg>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <h1 class="title-font text-lg md:text-xl font-bold tracking-wider text-amber-400">IJN YAMATO (大和)</h1>
+                    <span class="text-[10px] mono-font uppercase px-2 py-0.5 bg-amber-500/20 border border-amber-400/40 text-amber-300 rounded-full">1:1 Exact Metric Scale</span>
+                </div>
+                <p class="text-xs text-slate-300">263.0m LOA • 38.9m Beam • 72,800t Full Load • 9× 46cm/45 Type 94 Guns • Crew: 2,750</p>
+            </div>
+        </div>
+
+        <!-- Live Scale & Telemetry Readout -->
+        <div class="hud-panel px-4 py-2 rounded-xl pointer-events-auto hidden lg:flex items-center gap-5 text-xs mono-font">
+            <div>
+                <span class="text-slate-400 block text-[10px]">CAMERA FOCUS</span>
+                <span id="hud-focus-name" class="text-amber-400 font-semibold">Full Ship Overview</span>
+            </div>
+            <div class="h-7 w-px bg-slate-700"></div>
+            <div>
+                <span class="text-slate-400 block text-[10px]">MAIN BATTERY BEARING</span>
+                <span id="hud-turret-angle" class="text-emerald-400 font-semibold">000° REL (Bow)</span>
+            </div>
+            <div class="h-7 w-px bg-slate-700"></div>
+            <div>
+                <span class="text-slate-400 block text-[10px]">PERSONNEL RENDERED</span>
+                <span id="hud-crew-count" class="text-sky-400 font-semibold">158 Officers & Sailors</span>
+            </div>
+            <div class="h-7 w-px bg-slate-700"></div>
+            <button id="btn-toggle-pins" class="btn-naval active px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                3D Markers: ON
+            </button>
+            <button id="btn-toggle-ai-panel" class="btn-naval active px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 border-amber-400/60 text-amber-300">
+                <span>✨</span> AI Bridge Comms
+            </button>
+        </div>
+    </header>
+
+    <aside id="ai-command-panel" class="fixed top-24 right-3 z-20 w-96 max-w-[calc(100vw-1.5rem)] hud-panel rounded-xl p-4 pointer-events-auto flex flex-col gap-3 max-h-[calc(100vh-11rem)] transition-transform duration-300">
+        <div class="flex items-center justify-between border-b border-slate-700/80 pb-2.5">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                <div>
+                    <span class="text-[10px] mono-font uppercase tracking-widest text-amber-400 block">GEMINI 3 FLASH + TTS VOICE</span>
+                    <h2 class="text-sm font-bold text-white">IJN Yamato AI Bridge & Tactical Link</h2>
+                </div>
+            </div>
+            <button id="btn-collapse-ai" class="text-slate-400 hover:text-white p-1 rounded-lg" title="Minimize AI Panel">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+        </div>
+
+        <div id="ai-panel-body" class="flex flex-col gap-3 overflow-hidden">
+            <!-- Persona Selector -->
+            <div>
+                <label class="text-[10px] mono-font uppercase text-slate-400 block mb-1">Select Officer / Historical Specialist</label>
+                <div class="grid grid-cols-2 gap-1.5 text-[11px]">
+                    <button data-persona="aruga" class="ai-persona-btn btn-naval active px-2.5 py-1.5 rounded-lg text-left truncate font-medium">
+                        🔭 Capt. Kosaku Aruga
+                    </button>
+                    <button data-persona="ito" class="ai-persona-btn btn-naval px-2.5 py-1.5 rounded-lg text-left truncate font-medium">
+                        ⚓ Vice Adm. Seiichi Ito
+                    </button>
+                    <button data-persona="gunner" class="ai-persona-btn btn-naval px-2.5 py-1.5 rounded-lg text-left truncate font-medium">
+                        🎯 46cm Gunnery Officer
+                    </button>
+                    <button data-persona="architect" class="ai-persona-btn btn-naval px-2.5 py-1.5 rounded-lg text-left truncate font-medium">
+                        📐 Kure Naval Architect
+                    </button>
+                </div>
+            </div>
+
+            <!-- AI Action / Tactical Scenario Generator (Structured JSON Output -> 3D Ship Control) -->
+            <div class="bg-slate-900/90 border border-amber-500/30 rounded-lg p-2.5 space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] mono-font uppercase tracking-wider text-amber-300 font-semibold">✨ AI 3D Tactical & Fire Control Director</span>
+                    <span id="ai-director-badge" class="text-[10px] mono-font text-slate-400">Ready</span>
+                </div>
+                <div class="flex gap-1.5">
+                    <input id="ai-scenario-input" type="text" placeholder="e.g., Engage enemy fleet at 28km on port quarter..." class="flex-1 bg-slate-950/90 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400">
+                    <button id="btn-ai-director" class="btn-naval px-3 py-1.5 rounded-lg text-xs font-semibold text-amber-300 whitespace-nowrap">
+                        Execute
+                    </button>
+                </div>
+                <div class="flex flex-wrap gap-1">
+                    <button data-scen="Samar surface engagement: train 46cm battery 45 degrees starboard at 32km range and fire broadside" class="ai-quick-scen text-[10px] bg-slate-800/90 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded border border-slate-700">
+                        ⚡ Battle off Samar Salvo
+                    </button>
+                    <button data-scen="Operation Ten-Go air raid defense: heavy overcast weather, start 25mm AA barrage and focus on AA gun crews" class="ai-quick-scen text-[10px] bg-slate-800/90 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded border border-slate-700">
+                        🛩️ Ten-Go Air Defense
+                    </button>
+                    <button data-scen="Launch reconnaissance floatplane from stern catapult at golden hour" class="ai-quick-scen text-[10px] bg-slate-800/90 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded border border-slate-700">
+                        ✈️ Recon Catapult Prep
+                    </button>
+                </div>
+            </div>
+
+            <!-- Conversation & Historical Log Output -->
+            <div id="ai-chat-history" class="bg-slate-950/80 border border-slate-800 rounded-lg p-3 h-52 overflow-y-auto space-y-2.5 text-xs leading-relaxed">
+                <div class="bg-slate-900/90 border-l-2 border-amber-400 p-2.5 rounded-r-lg">
+                    <div class="flex items-center justify-between text-[10px] mono-font text-amber-400 mb-1">
+                        <span>CAPT. KOSAKU ARUGA • 1ST COMPASS BRIDGE</span>
+                        <span>+29.0m WL</span>
+                    </div>
+                    <p class="text-slate-200">
+                        Welcome aboard the flagship <em>Yamato</em>. From this compass bridge 29 meters above the waterline, we command 72,800 tons of Kure steel and nine 46cm Type 94 rifles. Ask me or my staff anything about our ship's architecture, gunnery, or history—or issue a tactical order above to see the ship respond in 3D.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Grounded Search Toggle & Voice Controls -->
+            <div class="flex items-center justify-between text-[11px] px-0.5">
+                <label class="flex items-center gap-1.5 cursor-pointer text-slate-300">
+                    <input id="chk-google-search" type="checkbox" class="rounded accent-amber-400">
+                    <span>🌐 Ground with Google Search</span>
+                </label>
+                <div class="flex items-center gap-2">
+                    <button id="btn- inspect-station-ai" class="text-amber-400 hover:text-amber-300 font-medium underline text-[11px]">
+                        Analyze Current 3D View
+                    </button>
+                    <button id="btn-tts-speak" class="btn-naval px-2 py-1 rounded text-[10px] text-sky-300 flex items-center gap-1" title="Read last response aloud with Gemini TTS">
+                        <span>🔊</span> Voice Order
+                    </button>
+                </div>
+            </div>
+
+            <!-- User Chat Prompt Input -->
+            <div class="flex gap-1.5">
+                <input id="ai-chat-input" type="text" placeholder="Ask Captain Aruga or Naval Architect..." class="flex-1 bg-slate-950/90 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400">
+                <button id="btn-ai-send" class="btn-naval px-3.5 py-2 rounded-lg text-xs font-bold text-amber-400 flex items-center gap-1">
+                    <span>Send</span>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <aside id="inspector-panel" class="fixed top-24 left-3 z-20 w-80 max-w-[calc(100vw-1.5rem)] hud-panel rounded-xl p-4 pointer-events-auto transition-transform duration-300">
+        <div class="flex items-center justify-between border-b border-slate-700/80 pb-2.5 mb-3">
+            <div>
+                <span id="inspect-category" class="text-[10px] mono-font uppercase tracking-widest text-amber-400 block">STATION TELEMETRY</span>
+                <h2 id="inspect-title" class="text-base font-bold text-white">Battleship Yamato (1945)</h2>
+            </div>
+            <button id="btn-collapse-inspector" class="text-slate-400 hover:text-white p-1 rounded-lg" title="Minimize Inspector">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+        </div>
+
+        <div id="inspector-body" class="space-y-3 text-xs leading-relaxed text-slate-300">
+            <p id="inspect-desc">
+                Built in extreme secrecy at Kure Naval Arsenal, <strong class="text-white">Yamato</strong> was the heaviest and most powerfully armed battleship ever constructed. In this 1:1 scale simulation (1 unit = 1 meter), you can zoom from the full 263-meter hull right down to individual 1.72-meter sailors and Captain Kosaku Aruga on the bridge.
+            </p>
+
+            <div class="bg-slate-900/80 border border-slate-700/70 rounded-lg p-2.5 mono-font text-[11px] space-y-1.5">
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Scale Reference:</span>
+                    <span id="inspect-stat-1" class="text-amber-300">1.0 Unit = 1.00 Meter</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Elevation Above WL:</span>
+                    <span id="inspect-stat-2" class="text-sky-300">+0.0m to +45.0m</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Armor Protection:</span>
+                    <span id="inspect-stat-3" class="text-emerald-300">650mm Turret / 410mm Belt</span>
+                </div>
+            </div>
+
+            <!-- Interactive Controls inside Sidebar -->
+            <div class="pt-1 space-y-2.5 border-t border-slate-700/80">
+                <div>
+                    <div class="flex justify-between text-[11px] mb-1">
+                        <span class="text-slate-300 font-medium">46cm & 15.5cm Turret Traverse</span>
+                        <span id="slider-turret-val" class="mono-font text-amber-400">0°</span>
+                    </div>
+                    <input id="slider-turret" type="range" min="-135" max="135" value="0" class="w-full">
+                </div>
+
+                <div>
+                    <div class="flex justify-between text-[11px] mb-1">
+                        <span class="text-slate-300 font-medium">Main Gun Barrel Elevation</span>
+                        <span id="slider-elev-val" class="mono-font text-amber-400">+12°</span>
+                    </div>
+                    <input id="slider-elev" type="range" min="-3" max="45" value="12" class="w-full">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 pt-1">
+                    <button id="btn-salvo" class="btn-fire col-span-2 py-2 px-3 rounded-lg font-bold text-white text-xs tracking-wider uppercase flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        Fire 46cm Type 94 Broadside
+                    </button>
+                    <button id="btn-aa-barrage" class="btn-naval py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-amber-300 flex items-center justify-center gap-1.5">
+                        <span>💥</span> 25mm AA Drill
+                    </button>
+                    <button id="btn-time-of-day" class="btn-naval py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-sky-300 flex items-center justify-center gap-1.5">
+                        <span>🌅</span> Lighting: Golden
+                    </button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <footer class="fixed bottom-3 left-3 right-3 z-20 flex flex-col items-center pointer-events-none gap-2">
+        <!-- Quick Camera Hint -->
+        <div class="hud-panel px-3 py-1 rounded-full text-[11px] text-slate-300 pointer-events-auto flex items-center gap-3">
+            <span>🖱️ <strong>Left Drag:</strong> Orbit</span>
+            <span>•</span>
+            <span><strong>Right Drag / Shift+Drag:</strong> Pan</span>
+            <span>•</span>
+            <span><strong>Scroll:</strong> Zoom (0.8m to 450m)</span>
+            <span>•</span>
+            <span><strong>WASD:</strong> Walk Deck</span>
+        </div>
+
+        <!-- Station Camera Presets -->
+        <div class="hud-panel p-2 rounded-2xl pointer-events-auto flex items-center gap-1.5 overflow-x-auto max-w-full">
+            <button data-preset="overview" class="cam-preset btn-naval active px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5">
+                <span>🚢</span> Full 263m Ship
+            </button>
+            <button data-preset="captain" class="cam-preset btn-naval px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5">
+                <span>🔭</span> Captain & Compass Bridge
+            </button>
+            <button data-preset="admiral" class="cam-preset btn-naval px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5">
+                <span>⚓</span> Admiral Ito & Flag Staff
+            </button>
+            <button data-preset="bow_division" class="cam-preset btn-naval px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5">
+                <span>👨‍✈️</span> Bow Sailors & Chrysanthemum
+            </button>
+            <button data-preset="turrets" class="cam-preset btn-naval px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5">
+                <span>🎯</span> 46cm Triple Turrets
+            </button>
+            <button data-preset="aa_citadel" class="cam-preset btn-naval px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5">
+                <span>🛡️</span> 25mm AA Gun Crews
+            </button>
+            <button data-preset="stern_air" class="cam-preset btn-naval px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5">
+                <span>✈️</span> Floatplanes & Flight Crew
+            </button>
+            <button data-preset="sailor_pov" class="cam-preset btn-naval px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5">
+                <span>👁️</span> 1.7m Sailor Eye-Level
+            </button>
+        </div>
+    </footer>
+
+    <script>
+        (function () {
+            // ============================================================================
+            // 1. HISTORICAL & METRIC SCALE CONSTANTS (1 Three.js Unit = 1.0 Meter)
+            // ============================================================================
+            // Coordinate system:
+            // X: Longitudinal (+131.5m = Bow tip, -131.5m = Stern tip)
+            // Y: Vertical elevation (0.0m = Waterline)
+            // Z: Athwartships (+Z = Starboard, -Z = Port)
+            const SCALE_METERS = 1.0;
+            const SHIP_LOA = 263.0;
+            const SHIP_BEAM = 38.9;
+
+            let scene, camera, renderer, clock;
+            let yamatoGroup, oceanMesh, skyLight, sunLight, hemiLight;
+            let mainTurrets = [];
+            let secTurrets = [];
+            let aaMounts = [];
+            let radarArrays = [];
+            let animatedCrew = [];
+            let flagMeshes = [];
+            let shellEffects = [];
+            let aaTracers = [];
+            let aaDrillActive = false;
+            let lightingMode = 0; // 0: Golden Hour, 1: High Noon Pacific, 2: Ten-Go Overcast
+
+            // Camera Orbit & Smooth Target State
+            const camState = {
+                target: new THREE.Vector3(10, 12, 0),
+                desiredTarget: new THREE.Vector3(10, 12, 0),
+                spherical: new THREE.Spherical(165, Math.PI / 2.55, 0.65),
+                desiredSpherical: new THREE.Spherical(165, Math.PI / 2.55, 0.65),
+                isDragging: false,
+                isPanning: false,
+                prevMouse: { x: 0, y: 0 },
+                keys: { w: false, a: false, s: false, d: false, q: false, e: false }
+            };
+
+            // 3D Interactive Station Definitions
+            const STATIONS = {
+                overview: {
+                    title: "IJN Battleship Yamato (1945 Ten-Go)",
+                    category: "FULL VESSEL OVERVIEW",
+                    desc: "Lead ship of her class. Displacing 72,800 metric tons at full load, Yamato was designed to engage multiple enemy battleships simultaneously. Notice the distinctive wavy sheer of the cypress-planked weather deck and the towering 45-meter pagoda mast.",
+                    stat1: "LOA: 263.0m / Beam: 38.9m",
+                    stat2: "150,000 SHP (27.0 Knots)",
+                    stat3: "410mm Vickers Hardened Belt",
+                    target: new THREE.Vector3(5, 11, 0),
+                    radius: 165,
+                    phi: 1.22,
+                    theta: 0.65,
+                    pinPos: null
+                },
+                captain: {
+                    title: "Captain Kosaku Aruga & Compass Bridge",
+                    category: "1ST BRIDGE COMMAND (+29.0m)",
+                    desc: "High atop the Pagoda Mast sits the First (Compass) Bridge. Captain Kosaku Aruga stands at the forward binnacle wearing his dark blue Imperial Japanese Navy command tunic, white cap, and binoculars, surrounded by his Navigator, Officer of the Deck, Helmsman, and Signalmen.",
+                    stat1: "Crew Scale: 1.72m Human Height",
+                    stat2: "Bridge Elevation: +29.0m WL",
+                    stat3: "15m Duplex Rangefinder Above",
+                    target: new THREE.Vector3(-0.3, 29.3, 0.0),
+                    radius: 4.8,
+                    phi: 1.28,
+                    theta: 0.55,
+                    pinPos: new THREE.Vector3(1.2, 30.8, 0)
+                },
+                admiral: {
+                    title: "Vice Admiral Seiichi Ito & 2nd Fleet Staff",
+                    category: "2ND ADMIRAL'S BRIDGE (+25.8m)",
+                    desc: "Directly beneath the Captain's bridge is the Admiral's Bridge, where Vice Admiral Seiichi Ito (Commander-in-Chief of the 2nd Fleet) and his Chief of Staff confer over the chart table and binocular pedestals overlooking the massive forward turrets.",
+                    stat1: "Staff Officers: 7 Rendered",
+                    stat2: "Bridge Elevation: +25.8m WL",
+                    stat3: "Conning Tower: 500mm Armor",
+                    target: new THREE.Vector3(1.2, 26.2, 0.0),
+                    radius: 5.2,
+                    phi: 1.32,
+                    theta: -0.55,
+                    pinPos: new THREE.Vector3(2.8, 26.8, 0)
+                },
+                bow_division: {
+                    title: "Forecastle Divisions & Imperial Chrysanthemum",
+                    category: "BOW WEATHER DECK (+10.0m)",
+                    desc: "At the extreme bow sits the 1.8-meter gilded 16-petal Imperial Chrysanthemum crest (Kikumon). On the hinoki cypress forecastle behind the twin 15-ton bower anchors and capstans, two divisions of enlisted sailors in white work uniforms stand at muster before their petty officers.",
+                    stat1: "Crest Diameter: 1.80 Meters",
+                    stat2: "Forecastle Sheer: +10.0m WL",
+                    stat3: "Anchor Chains: 150mm Stud-Link",
+                    target: new THREE.Vector3(96.0, 10.2, 0.0),
+                    radius: 18.0,
+                    phi: 1.22,
+                    theta: 0.45,
+                    pinPos: new THREE.Vector3(96.0, 12.2, 0)
+                },
+                turrets: {
+                    title: "46cm/45 Type 94 Triple Main Battery",
+                    category: "MAIN ARMAMENT (+11.5m to +14.5m)",
+                    desc: "Each of the three main turrets weighs 2,774 metric tons—more than a full WWII Fletcher-class destroyer. Their 21.13-meter barrels fire 1,460 kg Type 91 Armor-Piercing shells up to 42 kilometers. Notice the 13.5m stereoscopic rangefinder hood horns on the turret roofs.",
+                    stat1: "Caliber: 460mm (18.1-inch)",
+                    stat2: "Turret Weight: 2,774 Tons Each",
+                    stat3: "Faceplate Armor: 650mm Thick",
+                    target: new THREE.Vector3(46.0, 13.5, 0.0),
+                    radius: 34.0,
+                    phi: 1.18,
+                    theta: 0.72,
+                    pinPos: new THREE.Vector3(37.0, 17.8, 0)
+                },
+                aa_citadel: {
+                    title: "Central Anti-Aircraft Citadel & Gun Crews",
+                    category: "SECONDARY & AA BATTERY (+13.2m)",
+                    desc: "By April 1945, Yamato bristled with twenty-four 12.7cm Type 89 dual-purpose guns in six twin mounts and 152 barrels of 25mm Type 96 anti-aircraft cannons. Enlisted gunners and loaders in steel helmets man the sandbagged and shielded triple mounts around the raked funnel.",
+                    stat1: "Heavy AA: 12× 12.7cm DP Guns",
+                    stat2: "Light AA: 152× 25mm Type 96",
+                    stat3: "Funnel Rake: 26° Aft Tilt",
+                    target: new THREE.Vector3(-18.0, 13.8, 11.5),
+                    radius: 16.5,
+                    phi: 1.16,
+                    theta: 1.05,
+                    pinPos: new THREE.Vector3(-18.0, 16.5, 11.5)
+                },
+                stern_air: {
+                    title: "Stern Aviation Deck & E13A 'Jake' Floatplanes",
+                    category: "AVIATION FACILITIES (+6.4m)",
+                    desc: "Yamato's recessed quarterdeck houses two 19.5-meter gunpowder catapults, a lattice aircraft crane, and steel turntable rails leading to an underground hangar. Flight deck mechanics in green work overalls inspect the green Aichi E13A 'Jake' reconnaissance floatplanes.",
+                    stat1: "Aircraft: 2× E13A1 'Jake' Shown",
+                    stat2: "Catapults: 2× Kure Type No. 2",
+                    stat3: "Stern Turret: No. 3 46cm + 15.5cm",
+                    target: new THREE.Vector3(-96.0, 8.2, 0.0),
+                    radius: 26.0,
+                    phi: 1.18,
+                    theta: 2.35,
+                    pinPos: new THREE.Vector3(-102.0, 10.5, 0)
+                },
+                sailor_pov: {
+                    title: "Deck Sailor 1:1 Eye-Level Perspective",
+                    category: "HUMAN SCALE IMMERSION (+8.5m)",
+                    desc: "Standing on the starboard teak deck at exact human eye height (1.68 meters above the planking), look up at the colossal 46cm barrels of Turret No. 2 and the 45-meter Pagoda Mast towering overhead like a steel skyscraper.",
+                    stat1: "Eye Height: 1.68m Above Deck",
+                    stat2: "Mast Height: 38.2m Above Deck",
+                    stat3: "Use WASD Keys to Walk Around",
+                    target: new THREE.Vector3(24.0, 10.8, 4.5),
+                    radius: 6.5,
+                    phi: 1.48,
+                    theta: 1.15,
+                    pinPos: null
+                }
+            };
+
+            // ============================================================================
+            // 2. PROCEDURAL TEXTURES & SHARED MATERIALS
+            // ============================================================================
+            function createTeakTexture() {
+                const canvas = document.createElement('canvas');
+                canvas.width = 512;
+                canvas.height = 512;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#a38764';
+                ctx.fillRect(0, 0, 512, 512);
+
+                const plankCount = 32;
+                const plankH = 512 / plankCount;
+                for (let i = 0; i < plankCount; i++) {
+                    const shade = (Math.random() - 0.5) * 18;
+                    const r = Math.min(255, Math.max(0, 163 + shade));
+                    const g = Math.min(255, Math.max(0, 135 + shade));
+                    const b = Math.min(255, Math.max(0, 100 + shade));
+                    ctx.fillStyle = `rgb(${r|0},${g|0},${b|0})`;
+                    ctx.fillRect(0, i * plankH, 512, plankH - 1.5);
+                    // Caulking seam
+                    ctx.fillStyle = '#5c4932';
+                    ctx.fillRect(0, (i + 1) * plankH - 1.5, 512, 1.5);
+                    // Butt joints
+                    const jointX = ((i * 137) % 460) + 25;
+                    ctx.fillRect(jointX, i * plankH, 2, plankH);
+                }
+                const tex = new THREE.CanvasTexture(canvas);
+                tex.wrapS = THREE.RepeatWrapping;
+                tex.wrapT = THREE.RepeatWrapping;
+                tex.repeat.set(22, 5);
+                return tex;
+            }
+
+            function createKureGreyTexture() {
+                const canvas = document.createElement('canvas');
+                canvas.width = 256;
+                canvas.height = 256;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#475059';
+                ctx.fillRect(0, 0, 256, 256);
+
+                // Subtle armor plate seams & weathering
+                ctx.strokeStyle = 'rgba(25, 32, 38, 0.35)';
+                ctx.lineWidth = 2;
+                for (let y = 0; y < 256; y += 32) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(256, y);
+                    ctx.stroke();
+                    for (let x = (y % 64); x < 256; x += 64) {
+                        ctx.beginPath();
+                        ctx.moveTo(x, y);
+                        ctx.lineTo(x, y + 32);
+                        ctx.stroke();
+                    }
+                }
+                const tex = new THREE.CanvasTexture(canvas);
+                tex.wrapS = THREE.RepeatWrapping;
+                tex.wrapT = THREE.RepeatWrapping;
+                tex.repeat.set(16, 4);
+                return tex;
+            }
+
+            function createRisingSunEnsignTexture() {
+                const canvas = document.createElement('canvas');
+                canvas.width = 512;
+                canvas.height = 340;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(0, 0, 512, 340);
+
+                const cx = 210;
+                const cy = 170;
+                const sunR = 76;
+                ctx.fillStyle = '#b91c1c';
+                for (let i = 0; i < 16; i++) {
+                    const a1 = (i * Math.PI * 2) / 16 - 0.095;
+                    const a2 = (i * Math.PI * 2) / 16 + 0.095;
+                    ctx.beginPath();
+                    ctx.moveTo(cx, cy);
+                    ctx.lineTo(cx + Math.cos(a1) * 600, cy + Math.sin(a1) * 600);
+                    ctx.lineTo(cx + Math.cos(a2) * 600, cy + Math.sin(a2) * 600);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+                ctx.beginPath();
+                ctx.arc(cx, cy, sunR, 0, Math.PI * 2);
+                ctx.fill();
+
+                return new THREE.CanvasTexture(canvas);
+            }
+
+            let MAT = {};
+            function initMaterials() {
+                const teakTex = createTeakTexture();
+                const hullTex = createKureGreyTexture();
+                const flagTex = createRisingSunEnsignTexture();
+
+                MAT = {
+                    kureGrey: new THREE.MeshStandardMaterial({
+                        color: 0x4e5761,
+                        map: hullTex,
+                        roughness: 0.62,
+                        metalness: 0.38
+                    }),
+                    darkSteel: new THREE.MeshStandardMaterial({
+                        color: 0x333b44,
+                        roughness: 0.55,
+                        metalness: 0.48
+                    }),
+                    hullRed: new THREE.MeshStandardMaterial({
+                        color: 0x6b2420,
+                        roughness: 0.7,
+                        metalness: 0.2
+                    }),
+                    bootBlack: new THREE.MeshStandardMaterial({
+                        color: 0x16191d,
+                        roughness: 0.5,
+                        metalness: 0.3
+                    }),
+                    teakDeck: new THREE.MeshStandardMaterial({
+                        map: teakTex,
+                        roughness: 0.82,
+                        metalness: 0.05
+                    }),
+                    linoleum: new THREE.MeshStandardMaterial({
+                        color: 0x5c3327,
+                        roughness: 0.72,
+                        metalness: 0.1
+                    }),
+                    nonSlipGrey: new THREE.MeshStandardMaterial({
+                        color: 0x3d444c,
+                        roughness: 0.85,
+                        metalness: 0.2
+                    }),
+                    canvasWhite: new THREE.MeshStandardMaterial({
+                        color: 0xe2dfd7,
+                        roughness: 0.88,
+                        metalness: 0.02
+                    }),
+                    gold: new THREE.MeshStandardMaterial({
+                        color: 0xfbbf24,
+                        roughness: 0.25,
+                        metalness: 0.88
+                    }),
+                    brass: new THREE.MeshStandardMaterial({
+                        color: 0xd97706,
+                        roughness: 0.3,
+                        metalness: 0.8
+                    }),
+                    bridgeGlass: new THREE.MeshStandardMaterial({
+                        color: 0x38bdf8,
+                        roughness: 0.1,
+                        metalness: 0.9,
+                        emissive: 0x075985,
+                        emissiveIntensity: 0.35
+                    }),
+                    searchlightGlass: new THREE.MeshStandardMaterial({
+                        color: 0xe0f2fe,
+                        roughness: 0.1,
+                        metalness: 0.5,
+                        emissive: 0xbae6fd,
+                        emissiveIntensity: 0.6
+                    }),
+                    aircraftGreen: new THREE.MeshStandardMaterial({
+                        color: 0x23422b,
+                        roughness: 0.55,
+                        metalness: 0.25
+                    }),
+                    hinomaruRed: new THREE.MeshStandardMaterial({
+                        color: 0xdc2626,
+                        roughness: 0.5,
+                        metalness: 0.1
+                    }),
+                    ensignFlag: new THREE.MeshStandardMaterial({
+                        map: flagTex,
+                        side: THREE.DoubleSide,
+                        roughness: 0.7
+                    }),
+                    // Crew Materials
+                    skin: new THREE.MeshStandardMaterial({ color: 0xe0b594, roughness: 0.65 }),
+                    captainBlue: new THREE.MeshStandardMaterial({ color: 0x17253b, roughness: 0.75 }),
+                    sailorWhite: new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.8 }),
+                    officerKhaki: new THREE.MeshStandardMaterial({ color: 0x5c5b3e, roughness: 0.8 }),
+                    flightGreen: new THREE.MeshStandardMaterial({ color: 0x2e4c38, roughness: 0.8 }),
+                    helmetGrey: new THREE.MeshStandardMaterial({ color: 0x3b4248, roughness: 0.45, metalness: 0.5 })
+                };
+            }
+
+            // ============================================================================
+            // 3. ACCURATE 1:1 HULL GEOMETRY WITH YAMATO WAVY DECK SHEER & BULBOUS BOW
+            // ============================================================================
+            function getHalfBeamAtStation(t) {
+                // t in [-1, 1], where -1 = stern (-131.5m), +1 = bow (+131.5m)
+                const maxHalfBeam = 19.45; // 38.9m full beam
+                if (t > 0.25) {
+                    // Long sleek bow taper from x = +33m to +131.5m
+                    const u = (t - 0.25) / 0.75;
+                    return maxHalfBeam * Math.max(0.015, Math.cos(u * Math.PI * 0.495) * (1 - 0.22 * u));
+                } else if (t < -0.35) {
+                    // Broad cruiser stern taper
+                    const u = (-0.35 - t) / 0.65;
+                    return maxHalfBeam * Math.max(0.05, 1 - 0.88 * Math.pow(u, 1.55));
+                }
+                return maxHalfBeam;
+            }
+
+            function getDeckHeightAtX(x) {
+                // Yamato's iconic undulating "wavy" weather deck profile:
+                // +10.0m at extreme bow, dipping to +6.8m midships, rising to +8.6m amidships, +6.4m at stern
+                if (x > 55) {
+                    const u = Math.min(1, (x - 55) / 76.5);
+                    return 6.8 + 3.2 * Math.pow(u, 1.25);
+                } else if (x > 25) {
+                    const u = (x - 25) / 30;
+                    return 8.6 - 1.8 * u;
+                } else if (x > -55) {
+                    return 8.6;
+                } else if (x > -82) {
+                    const u = (-55 - x) / 27;
+                    return 8.6 - 2.2 * u;
+                } else {
+                    return 6.4;
+                }
+            }
+
+            function buildHull(parent) {
+                const hullGroup = new THREE.Group();
+                const lengthSegs = 110;
+                const vertSegs = 16;
+
+                const positions = [];
+                const uvs = [];
+                const indices = [];
+
+                // Generate both Starboard (side = +1) and Port (side = -1) hull surfaces
+                for (let side of [1, -1]) {
+                    const baseVertexOffset = positions.length / 3;
+
+                    for (let i = 0; i <= lengthSegs; i++) {
+                        const t = -1 + (2 * i) / lengthSegs; // -1 (stern) to +1 (bow)
+                        const x = t * (SHIP_LOA * 0.5);
+                        const halfB = getHalfBeamAtX(x);
+                        const deckY = getDeckHeightAtX(x);
+                        const keelY = -10.4; // 10.4m draft
+
+                        for (let j = 0; j <= vertSegs; j++) {
+                            const v = j / vertSegs; // 0 = keel, 1 = weather deck edge
+                            let y = keelY + v * (deckY - keelY);
+                            let zFactor = 1.0;
+
+                            // Cross-sectional hull shaping (flat bottom + torpedo bulge + flared bow)
+                            if (v < 0.22) {
+                                zFactor = Math.sin((v / 0.22) * (Math.PI * 0.5));
+                            } else if (v < 0.55 && Math.abs(t) < 0.45) {
+                                // 410mm armor belt + torpedo blister bulge
+                                zFactor = 1.0 + 0.04 * Math.sin(((v - 0.22) / 0.33) * Math.PI);
+                            } else if (t > 0.55) {
+                                // Dramatic Yamato bow flare above waterline
+                                const flare = (t - 0.55) / 0.45;
+                                zFactor = Math.pow(v, 0.55 - 0.3 * flare) * (1 + 0.22 * flare * Math.max(0, v - 0.4));
+                            } else if (t < -0.55 && v < 0.5) {
+                                // Stern cutaway for propellers and rudders
+                                const sternCut = (-0.55 - t) / 0.45;
+                                zFactor *= (1 - 0.55 * sternCut * (1 - v * 2));
+                            }
+
+                            // Famous bulbous bow (protruding underwater from x = +126m to +134.5m)
+                            let xMod = x;
+                            if (t > 0.94) {
+                                const bowTipU = (t - 0.94) / 0.06;
+                                if (v > 0.06 && v < 0.44) {
+                                    const bulbProfile = Math.sin(((v - 0.06) / 0.38) * Math.PI);
+                                    xMod += bowTipU * 3.2 * bulbProfile;
+                                    zFactor = Math.max(zFactor, 0.35 * bulbProfile);
+                                }
+                            }
+
+                            const z = side * halfB * zFactor;
+                            positions.push(xMod, y, z);
+                            uvs.push((t + 1) * 0.5, v);
+                        }
+                    }
+
+                    for (let i = 0; i < lengthSegs; i++) {
+                        for (let j = 0; j < vertSegs; j++) {
+                            const a = baseVertexOffset + i * (vertSegs + 1) + j;
+                            const b = baseVertexOffset + (i + 1) * (vertSegs + 1) + j;
+                            const c = baseVertexOffset + (i + 1) * (vertSegs + 1) + (j + 1);
+                            const d = baseVertexOffset + i * (vertSegs + 1) + (j + 1);
+
+                            if (side === 1) {
+                                indices.push(a, b, c, a, c, d);
+                            } else {
+                                indices.push(a, c, b, a, d, c);
+                            }
+                        }
+                    }
+                }
+
+                const hullGeom = new THREE.BufferGeometry();
+                hullGeom.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+                hullGeom.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+                hullGeom.setIndex(indices);
+                hullGeom.computeVertexNormals();
+
+                const hullMesh = new THREE.Mesh(hullGeom, MAT.kureGrey);
+                hullMesh.castShadow = true;
+                hullMesh.receiveShadow = true;
+                hullGroup.add(hullMesh);
+
+                // Weather Deck Surface (Teak/Cypress planking from Stern to Bow, with recessed steel quarterdeck)
+                const deckPositions = [];
+                const deckUVs = [];
+                const deckIndices = [];
+
+                for (let i = 0; i <= lengthSegs; i++) {
+                    const t = -1 + (2 * i) / lengthSegs;
+                    const x = t * (SHIP_LOA * 0.5);
+                    const halfB = getHalfBeamAtX(x);
+                    const deckY = getDeckHeightAtX(x);
+
+                    let bowFlareFactor = 1.0;
+                    if (t > 0.55) {
+                        const flare = (t - 0.55) / 0.45;
+                        bowFlareFactor = 1 + 0.22 * flare * 0.6;
+                    }
+
+                    const zEdge = halfB * bowFlareFactor;
+                    deckPositions.push(x, deckY, -zEdge);
+                    deckPositions.push(x, deckY, zEdge);
+                    deckUVs.push((t + 1) * 0.5, 0);
+                    deckUVs.push((t + 1) * 0.5, 1);
+                }
+
+                for (let i = 0; i < lengthSegs; i++) {
+                    const a = i * 2;
+                    const b = a + 1;
+                    const c = a + 2;
+                    const d = a + 3;
+                    deckIndices.push(a, c, b, b, c, d);
+                }
+
+                const deckGeom = new THREE.BufferGeometry();
+                deckGeom.setAttribute('position', new THREE.Float32BufferAttribute(deckPositions, 3));
+                deckGeom.setAttribute('uv', new THREE.Float32BufferAttribute(deckUVs, 2));
+                deckGeom.setIndex(deckIndices);
+                deckGeom.computeVertexNormals();
+
+                const deckMesh = new THREE.Mesh(deckGeom, MAT.teakDeck);
+                deckMesh.receiveShadow = true;
+                hullGroup.add(deckMesh);
+
+                // Overlay non-slip dark steel deck on the recessed stern aviation quarterdeck (-80m to -131.5m)
+                const sternDeckPositions = [];
+                const sternDeckIndices = [];
+                let sternSteps = 0;
+                for (let i = 0; i <= 26; i++) {
+                    const x = -131.5 + (i / 26) * 51.5;
+                    const halfB = getHalfBeamAtX(x) * 0.96;
+                    const y = getDeckHeightAtX(x) + 0.04;
+                    sternDeckPositions.push(x, y, -halfB, x, y, halfB);
+                    sternSteps++;
+                }
+                for (let i = 0; i < sternSteps - 1; i++) {
+                    const a = i * 2, b = a + 1, c = a + 2, d = a + 3;
+                    sternDeckIndices.push(a, c, b, b, c, d);
+                }
+                const sternDeckGeom = new THREE.BufferGeometry();
+                sternDeckGeom.setAttribute('position', new THREE.Float32BufferAttribute(sternDeckPositions, 3));
+                sternDeckGeom.setIndex(sternDeckIndices);
+                sternDeckGeom.computeVertexNormals();
+                const sternDeckMesh = new THREE.Mesh(sternDeckGeom, MAT.nonSlipGrey);
+                sternDeckMesh.receiveShadow = true;
+                hullGroup.add(sternDeckMesh);
+
+                // Boot-topping black waterline stripe around hull
+                const bootPositions = [];
+                const bootIndices = [];
+                for (let side of [1, -1]) {
+                    const base = bootPositions.length / 3;
+                    for (let i = 0; i <= lengthSegs; i++) {
+                        const t = -1 + (2 * i) / lengthSegs;
+                        const x = t * (SHIP_LOA * 0.5);
+                        const halfB = getHalfBeamAtX(x) * 1.015;
+                        bootPositions.push(x, -0.6, side * halfB);
+                        bootPositions.push(x, 0.85, side * halfB);
+                    }
+                    for (let i = 0; i < lengthSegs; i++) {
+                        const a = base + i * 2, b = a + 1, c = a + 2, d = a + 3;
+                        if (side === 1) bootIndices.push(a, c, b, b, c, d);
+                        else bootIndices.push(a, b, c, b, d, c);
+                    }
+                }
+                const bootGeom = new THREE.BufferGeometry();
+                bootGeom.setAttribute('position', new THREE.Float32BufferAttribute(bootPositions, 3));
+                bootGeom.setIndex(bootIndices);
+                bootGeom.computeVertexNormals();
+                hullGroup.add(new THREE.Mesh(bootGeom, MAT.bootBlack));
+
+                // Perimeter White Guardrail Stanchions along forecastle & midships
+                const stanchionGeo = new THREE.CylinderGeometry(0.03, 0.03, 1.1, 6);
+                for (let i = 4; i < lengthSegs - 2; i += 3) {
+                    const t = -1 + (2 * i) / lengthSegs;
+                    const x = t * (SHIP_LOA * 0.5);
+                    const y = getDeckHeightAtX(x) + 0.55;
+                    let halfB = getHalfBeamAtX(x) * 0.98;
+                    if (t > 0.55) {
+                        const flare = (t - 0.55) / 0.45;
+                        halfB *= (1 + 0.22 * flare * 0.6);
+                    }
+                    for (let side of [-1, 1]) {
+                        const post = new THREE.Mesh(stanchionGeo, MAT.darkSteel);
+                        post.position.set(x, y, side * halfB);
+                        hullGroup.add(post);
+                    }
+                }
+
+                parent.add(hullGroup);
+            }
+
+            function getHalfBeamAtX(x) {
+                return getHalfBeamAtStation(x / (SHIP_LOA * 0.5));
+            }
+
+            // ============================================================================
+            // 4. BOW FORECASTLE DETAILS (CHRYSANTHEMUM CREST, ANCHORS, CHAINS, CAPSTANS)
+            // ============================================================================
+            function buildBowDetails(parent) {
+                const bowGroup = new THREE.Group();
+
+                // 1.8m Gilded 16-Petal Imperial Chrysanthemum (Kikumon) at bow stem (+131.4m, +9.6m)
+                const crestGroup = new THREE.Group();
+                crestGroup.position.set(131.35, 9.55, 0);
+                crestGroup.rotation.y = Math.PI * 0.5;
+
+                const centerCore = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.14, 16), MAT.gold);
+                centerCore.rotation.x = Math.PI * 0.5;
+                crestGroup.add(centerCore);
+
+                const petalGeo = new THREE.CylinderGeometry(0.11, 0.06, 0.85, 8);
+                for (let i = 0; i < 16; i++) {
+                    const angle = (i * Math.PI * 2) / 16;
+                    const petal = new THREE.Mesh(petalGeo, MAT.gold);
+                    petal.position.set(Math.cos(angle) * 0.42, Math.sin(angle) * 0.42, 0);
+                    petal.rotation.z = angle - Math.PI * 0.5;
+                    crestGroup.add(petal);
+                }
+                bowGroup.add(crestGroup);
+
+                // Forward Jackstaff at extreme bow tip (+131.1m)
+                const jackstaff = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.07, 5.2, 8), MAT.darkSteel);
+                jackstaff.position.set(131.0, 12.6, 0);
+                bowGroup.add(jackstaff);
+
+                // Hawsepipes & Bower Anchors on Port & Starboard Bow (+118m)
+                for (let side of [-1, 1]) {
+                    const hawse = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.14, 8, 16), MAT.darkSteel);
+                    hawse.position.set(118.5, 7.6, side * 4.25);
+                    hawse.rotation.y = side * 0.35;
+                    bowGroup.add(hawse);
+
+                    // 15-ton Bower Anchor shank & flukes
+                    const fluke = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.9, 0.35), MAT.bootBlack);
+                    fluke.position.set(118.2, 6.8, side * 4.4);
+                    fluke.rotation.y = side * 0.35;
+                    bowGroup.add(fluke);
+                }
+
+                // Twin Anchor Chains running from hawsepipes (+116m) back to massive capstans (+95m)
+                const linkGeo = new THREE.TorusGeometry(0.22, 0.07, 6, 10);
+                linkGeo.rotateX(Math.PI * 0.5);
+                for (let side of [-1, 1]) {
+                    for (let i = 0; i < 36; i++) {
+                        const u = i / 35;
+                        const cx = 115.5 - u * 20.5;
+                        const cz = side * (1.8 + (1 - u) * 0.9);
+                        const cy = getDeckHeightAtX(cx) + 0.12;
+                        const link = new THREE.Mesh(linkGeo, MAT.bootBlack);
+                        link.position.set(cx, cy, cz);
+                        link.rotation.y = (i % 2) * 0.6;
+                        bowGroup.add(link);
+                    }
+
+                    // Massive Anchor Capstan (+95m)
+                    const capstan = new THREE.Mesh(new THREE.CylinderGeometry(0.95, 1.15, 1.1, 16), MAT.darkSteel);
+                    capstan.position.set(95.0, getDeckHeightAtX(95.0) + 0.55, side * 2.7);
+                    bowGroup.add(capstan);
+
+                    // Forecastle Bollards / Bitts
+                    for (let bx of [122, 108, 86, 70]) {
+                        const bittBase = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.25, 0.6), MAT.darkSteel);
+                        const bz = side * (getHalfBeamAtX(bx) * 0.85);
+                        const by = getDeckHeightAtX(bx);
+                        bittBase.position.set(bx, by + 0.12, bz);
+                        bowGroup.add(bittBase);
+                    }
+                }
+
+                // Breakwater V-shield ahead of Turret No. 1 (+78m)
+                for (let side of [-1, 1]) {
+                    const bw = new THREE.Mesh(new THREE.BoxGeometry(8.5, 1.15, 0.25), MAT.kureGrey);
+                    bw.position.set(78.5, getDeckHeightAtX(78.5) + 0.55, side * 5.2);
+                    bw.rotation.y = side * 0.52;
+                    bowGroup.add(bw);
+                }
+
+                parent.add(bowGroup);
+            }
+
+            // ============================================================================
+            // 5. 46cm/45 TYPE 94 TRIPLE MAIN TURRETS (3x) & 15.5cm TRIPLE TURRETS (2x)
+            // ============================================================================
+            function create46cmTurret(x, barbetteTopY, facingAft) {
+                const stationGroup = new THREE.Group();
+                stationGroup.position.set(x, 0, 0);
+
+                // Armored Barbette (12.27m internal diameter -> ~6.3m outer radius)
+                const deckY = getDeckHeightAtX(x);
+                const barbetteH = Math.max(1.5, barbetteTopY - deckY + 1.0);
+                const barbette = new THREE.Mesh(
+                    new THREE.CylinderGeometry(6.35, 6.55, barbetteH, 32),
+                    MAT.kureGrey
+                );
+                barbette.position.y = barbetteTopY - barbetteH * 0.5;
+                barbette.castShadow = true;
+                barbette.receiveShadow = true;
+                stationGroup.add(barbette);
+
+                // Rotating Turret House Group
+                const turretPivot = new THREE.Group();
+                turretPivot.position.y = barbetteTopY;
+                if (facingAft) turretPivot.rotation.y = Math.PI;
+
+                // faceted 2,774-ton armored gunhouse
+                const gunhouseShape = new THREE.Shape();
+                gunhouseShape.moveTo(-7.2, -5.8);
+                gunhouseShape.lineTo(4.2, -6.5);
+                gunhouseShape.lineTo(7.4, -4.6);
+                gunhouseShape.lineTo(7.4, 4.6);
+                gunhouseShape.lineTo(4.2, 6.5);
+                gunhouseShape.lineTo(-7.2, 5.8);
+                gunhouseShape.closePath();
+
+                const extrudeSettings = {
+                    steps: 1,
+                    depth: 3.65,
+                    bevelEnabled: true,
+                    bevelThickness: 0.55,
+                    bevelSize: 0.65,
+                    bevelSegments: 2
+                };
+                const gunhouseGeo = new THREE.ExtrudeGeometry(gunhouseShape, extrudeSettings);
+                gunhouseGeo.rotateX(-Math.PI * 0.5);
+                const gunhouse = new THREE.Mesh(gunhouseGeo, MAT.kureGrey);
+                gunhouse.castShadow = true;
+                gunhouse.receiveShadow = true;
+                turretPivot.add(gunhouse);
+
+                // 13.5m Stereoscopic Rangefinder Hood extending from rear roof of turret
+                const rfCenter = new THREE.Mesh(new THREE.BoxGeometry(3.2, 1.35, 5.5), MAT.kureGrey);
+                rfCenter.position.set(-3.8, 4.35, 0);
+                turretPivot.add(rfCenter);
+
+                const rfTube = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.48, 13.8, 16), MAT.kureGrey);
+                rfTube.rotation.x = Math.PI * 0.5;
+                rfTube.position.set(-3.8, 4.45, 0);
+                turretPivot.add(rfTube);
+
+                for (let side of [-1, 1]) {
+                    const rfHood = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.1, 1.4), MAT.darkSteel);
+                    rfHood.position.set(-3.8, 4.45, side * 6.9);
+                    turretPivot.add(rfHood);
+                }
+
+                // Rooftop 25mm Triple AA Emplacement rings (added on Turrets 2 & 3 in 1945)
+                for (let side of [-1, 1]) {
+                    const aaRing = new THREE.Mesh(new THREE.CylinderGeometry(1.35, 1.35, 0.65, 16), MAT.kureGrey);
+                    aaRing.position.set(0.2, 4.45, side * 2.5);
+                    turretPivot.add(aaRing);
+                }
+
+                // Elevating Barrel Assembly (3x 46cm/45 Type 94 Barrels, 21.13m total length, ~15.8m exposed)
+                const elevationPivot = new THREE.Group();
+                elevationPivot.position.set(6.8, 2.15, 0);
+
+                const muzzleOffsets = [];
+                for (let zOff of [-3.15, 0, 3.15]) {
+                    const barrelGroup = new THREE.Group();
+                    barrelGroup.position.set(0, 0, zOff);
+
+                    // White canvas blast bag (bloomer)
+                    const bloomer = new THREE.Mesh(new THREE.SphereGeometry(0.92, 12, 10), MAT.canvasWhite);
+                    bloomer.scale.set(1.5, 0.9, 0.95);
+                    bloomer.position.set(0.7, 0, 0);
+                    barrelGroup.add(bloomer);
+
+                    // Heavy breech sleeve
+                    const sleeve = new THREE.Mesh(new THREE.CylinderGeometry(0.46, 0.52, 6.5, 16), MAT.kureGrey);
+                    sleeve.rotation.z = -Math.PI * 0.5;
+                    sleeve.position.set(3.8, 0, 0);
+                    sleeve.castShadow = true;
+                    barrelGroup.add(sleeve);
+
+                    // Tapered forward barrel tube
+                    const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.44, 9.6, 16), MAT.kureGrey);
+                    barrel.rotation.z = -Math.PI * 0.5;
+                    barrel.position.set(11.6, 0, 0);
+                    barrel.castShadow = true;
+                    barrelGroup.add(barrel);
+
+                    // Dark bore hole at muzzle tip
+                    const bore = new THREE.Mesh(new THREE.CylinderGeometry(0.23, 0.23, 0.2, 12), MAT.bootBlack);
+                    bore.rotation.z = -Math.PI * 0.5;
+                    bore.position.set(16.4, 0, 0);
+                    barrelGroup.add(bore);
+
+                    elevationPivot.add(barrelGroup);
+                    muzzleOffsets.push(new THREE.Vector3(16.5, 0, zOff));
+                }
+
+                elevationPivot.rotation.z = THREE.MathUtils.degToRad(12);
+                turretPivot.add(elevationPivot);
+                stationGroup.add(turretPivot);
+                return {
+                    group: stationGroup,
+                    turretPivot,
+                    elevationPivot,
+                    baseYaw: facingAft ? Math.PI : 0,
+                    muzzleOffsets
+                };
+            }
+
+            function create155cmTurret(x, barbetteTopY, facingAft) {
+                const stationGroup = new THREE.Group();
+                stationGroup.position.set(x, 0, 0);
+
+                const deckY = getDeckHeightAtX(x);
+                const barbetteH = Math.max(2.0, barbetteTopY - deckY);
+                const barbette = new THREE.Mesh(
+                    new THREE.CylinderGeometry(3.8, 4.0, barbetteH, 24),
+                    MAT.kureGrey
+                );
+                barbette.position.y = barbetteTopY - barbetteH * 0.5;
+                barbette.castShadow = true;
+                stationGroup.add(barbette);
+
+                const turretPivot = new THREE.Group();
+                turretPivot.position.y = barbetteTopY;
+                if (facingAft) turretPivot.rotation.y = Math.PI;
+
+                const house = new THREE.Mesh(new THREE.BoxGeometry(8.2, 2.5, 6.8), MAT.kureGrey);
+                house.position.y = 1.25;
+                house.castShadow = true;
+                turretPivot.add(house);
+
+                // Rangefinder ears on 15.5cm turret
+                const rf = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 8.6, 12), MAT.kureGrey);
+                rf.rotation.x = Math.PI * 0.5;
+                rf.position.set(-2.2, 2.7, 0);
+                turretPivot.add(rf);
+
+                const elevationPivot = new THREE.Group();
+                elevationPivot.position.set(3.8, 1.35, 0);
+
+                for (let zOff of [-1.75, 0, 1.75]) {
+                    const bloomer = new THREE.Mesh(new THREE.SphereGeometry(0.45, 10, 8), MAT.canvasWhite);
+                    bloomer.position.set(0.3, 0, zOff);
+                    elevationPivot.add(bloomer);
+
+                    const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.21, 7.8, 12), MAT.kureGrey);
+                    barrel.rotation.z = -Math.PI * 0.5;
+                    barrel.position.set(4.1, 0, zOff);
+                    barrel.castShadow = true;
+                    elevationPivot.add(barrel);
+                }
+
+                elevationPivot.rotation.z = THREE.MathUtils.degToRad(14);
+                turretPivot.add(elevationPivot);
+                stationGroup.add(turretPivot);
+
+                return {
+                    group: stationGroup,
+                    turretPivot,
+                    elevationPivot,
+                    baseYaw: facingAft ? Math.PI : 0
+                };
+            }
+
+            // ============================================================================
+            // 6. CENTRAL CITADEL, ICONIC 45m PAGODA MAST, 26° RAKED FUNNEL & RADARS
+            // ============================================================================
+            function buildSuperstructure(parent) {
+                const superGroup = new THREE.Group();
+
+                // Lower Armored Citadel Casemate Deckhouse (x = -46m to +22m)
+                const lowerCitadel = new THREE.Mesh(new THREE.BoxGeometry(66.0, 4.6, 25.0), MAT.kureGrey);
+                lowerCitadel.position.set(-12.0, 10.9, 0);
+                lowerCitadel.castShadow = true;
+                lowerCitadel.receiveShadow = true;
+                superGroup.add(lowerCitadel);
+
+                // Upper AA Battery Platform Deck (Linoleum surfaced)
+                const upperCitadel = new THREE.Mesh(new THREE.BoxGeometry(52.0, 2.8, 19.5), MAT.kureGrey);
+                upperCitadel.position.set(-10.0, 14.5, 0);
+                upperCitadel.castShadow = true;
+                upperCitadel.receiveShadow = true;
+                superGroup.add(upperCitadel);
+
+                const linoleumTop = new THREE.Mesh(new THREE.BoxGeometry(51.8, 0.12, 19.3), MAT.linoleum);
+                linoleumTop.position.set(-10.0, 15.92, 0);
+                linoleumTop.receiveShadow = true;
+                superGroup.add(linoleumTop);
+
+                // Forward Armored Conning Tower (500mm thick cylindrical citadel at x = +8.2m)
+                const conningTower = new THREE.Mesh(new THREE.CylinderGeometry(2.85, 3.1, 7.5, 20), MAT.kureGrey);
+                conningTower.position.set(8.2, 16.8, 0);
+                conningTower.castShadow = true;
+                superGroup.add(conningTower);
+
+                const conningSlits = new THREE.Mesh(new THREE.CylinderGeometry(2.9, 2.9, 0.35, 20), MAT.bridgeGlass);
+                conningSlits.position.set(8.2, 19.6, 0);
+                superGroup.add(conningSlits);
+
+                // ---------------- THE PAGODA MAST (x = 0.0m, +13m to +45m) ----------------
+                const pagodaGroup = new THREE.Group();
+                pagodaGroup.position.set(0.0, 0, 0);
+
+                // Central armored elevator & structural trunk
+                const coreTrunk = new THREE.Mesh(new THREE.CylinderGeometry(2.6, 4.2, 22.0, 16), MAT.kureGrey);
+                coreTrunk.position.set(-0.5, 23.0, 0);
+                coreTrunk.castShadow = true;
+                pagodaGroup.add(coreTrunk);
+
+                // Angled tripod support struts
+                for (let side of [-1, 1]) {
+                    const strut = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.75, 20.0, 10), MAT.kureGrey);
+                    strut.position.set(-2.5, 22.0, side * 3.2);
+                    strut.rotation.x = -side * 0.14;
+                    strut.rotation.z = -0.1;
+                    pagodaGroup.add(strut);
+                }
+
+                // Tier 1: Signal & Searchlight Deck (+19.5m)
+                const tier1 = new THREE.Mesh(new THREE.BoxGeometry(10.5, 2.6, 11.2), MAT.kureGrey);
+                tier1.position.set(0.0, 19.5, 0);
+                tier1.castShadow = true;
+                pagodaGroup.add(tier1);
+
+                // Tier 2: Operations & Radar Room (+22.8m)
+                const tier2 = new THREE.Mesh(new THREE.BoxGeometry(9.2, 2.8, 9.6), MAT.kureGrey);
+                tier2.position.set(0.2, 22.6, 0);
+                tier2.castShadow = true;
+                pagodaGroup.add(tier2);
+
+                // Tier 3: Second (Admiral's) Bridge (+25.8m) with wrap-around windows & open flag wings
+                const admiralDeck = new THREE.Mesh(new THREE.BoxGeometry(9.6, 0.45, 11.8), MAT.kureGrey);
+                admiralDeck.position.set(0.5, 25.5, 0);
+                pagodaGroup.add(admiralDeck);
+
+                const admiralLinoleum = new THREE.Mesh(new THREE.BoxGeometry(9.4, 0.1, 11.6), MAT.linoleum);
+                admiralLinoleum.position.set(0.5, 25.75, 0);
+                pagodaGroup.add(admiralLinoleum);
+
+                // Admiral Bridge Bulwark & Glazed Cabin
+                const admiralCabin = new THREE.Mesh(new THREE.BoxGeometry(6.2, 2.4, 6.8), MAT.kureGrey);
+                admiralCabin.position.set(-0.6, 26.9, 0);
+                pagodaGroup.add(admiralCabin);
+
+                const admiralWindows = new THREE.Mesh(new THREE.BoxGeometry(6.35, 0.75, 6.95), MAT.bridgeGlass);
+                admiralWindows.position.set(-0.6, 27.35, 0);
+                pagodaGroup.add(admiralWindows);
+
+                // Admiral Bridge Forward Wind Deflector Bulwark (where Admiral Ito & Staff stand)
+                const admiralBulwark = new THREE.Mesh(new THREE.BoxGeometry(3.2, 1.15, 9.2), MAT.kureGrey);
+                admiralBulwark.position.set(3.2, 26.35, 0);
+                pagodaGroup.add(admiralBulwark);
+
+                // Tier 4: First (Captain's Compass) Bridge (+29.0m) - Detailed open-top/semi-enclosed bridge so Captain Aruga & Crew are clearly visible
+                const compassDeck = new THREE.Mesh(new THREE.BoxGeometry(8.8, 0.45, 9.8), MAT.kureGrey);
+                compassDeck.position.set(0.2, 28.8, 0);
+                pagodaGroup.add(compassDeck);
+
+                const compassLinoleum = new THREE.Mesh(new THREE.BoxGeometry(8.5, 0.1, 9.5), MAT.linoleum);
+                compassLinoleum.position.set(0.2, 29.05, 0);
+                pagodaGroup.add(compassLinoleum);
+
+                // Compass Bridge Armored Windscreen & Bulwark Walls (1.15m tall waist wall + glass wind deflector)
+                const frontBulwark = new THREE.Mesh(new THREE.BoxGeometry(0.35, 1.15, 7.6), MAT.kureGrey);
+                frontBulwark.position.set(4.1, 29.65, 0);
+                pagodaGroup.add(frontBulwark);
+
+                const frontGlass = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.65, 7.4), MAT.bridgeGlass);
+                frontGlass.position.set(4.1, 30.55, 0);
+                pagodaGroup.add(frontGlass);
+
+                for (let side of [-1, 1]) {
+                    const sideBulwark = new THREE.Mesh(new THREE.BoxGeometry(7.8, 1.15, 0.35), MAT.kureGrey);
+                    sideBulwark.position.set(0.3, 29.65, side * 4.5);
+                    pagodaGroup.add(sideBulwark);
+
+                    // Bridge Wing Lookout Binocular Pedestals
+                    const ped = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.12, 1.35, 8), MAT.brass);
+                    ped.position.set(1.8, 29.75, side * 3.85);
+                    pagodaGroup.add(ped);
+                    const bino = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.2, 0.3), MAT.darkSteel);
+                    bino.position.set(1.85, 30.48, side * 3.85);
+                    pagodaGroup.add(bino);
+                }
+
+                // Bridge Interior Instruments: Magnetic Compass Binnacle, Ship's Wheel, Engine Order Telegraphs, Chart Table
+                const binnacle = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.26, 1.25, 12), MAT.brass);
+                binnacle.position.set(2.2, 29.7, 0);
+                pagodaGroup.add(binnacle);
+
+                const helmWheel = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.05, 8, 16), MAT.brass);
+                helmWheel.rotation.y = Math.PI * 0.5;
+                helmWheel.position.set(0.8, 30.15, 0);
+                pagodaGroup.add(helmWheel);
+
+                for (let side of [-1, 1]) {
+                    const chadburn = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.18, 1.2, 10), MAT.brass);
+                    chadburn.position.set(2.1, 29.65, side * 1.35);
+                    pagodaGroup.add(chadburn);
+                }
+
+                const chartTable = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.95, 2.2), MAT.darkSteel);
+                chartTable.position.set(-1.5, 29.55, 0);
+                pagodaGroup.add(chartTable);
+                const chartMap = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.04, 1.9), MAT.canvasWhite);
+                chartMap.position.set(-1.5, 30.05, 0);
+                pagodaGroup.add(chartMap);
+
+                // Rear Bridge Support Column carrying the Top Director (+32.2m to +36.5m)
+                const rearDirectorColumn = new THREE.Mesh(new THREE.CylinderGeometry(2.1, 2.4, 7.2, 16), MAT.kureGrey);
+                rearDirectorColumn.position.set(-2.2, 32.6, 0);
+                pagodaGroup.add(rearDirectorColumn);
+
+                // Tier 5: Air Defense Command Station (Surrounding the upper column at +32.8m, open to the sky above Captain's bridge)
+                const aaCommandRing = new THREE.Mesh(new THREE.CylinderGeometry(3.8, 3.6, 1.2, 16), MAT.kureGrey);
+                aaCommandRing.position.set(-2.2, 33.4, 0);
+                pagodaGroup.add(aaCommandRing);
+
+                // Tier 6: Revolving 15-Meter Duplex Main Battery Rangefinder & Type 94 Director (+36.8m to +41.0m)
+                const mainDirectorGroup = new THREE.Group();
+                mainDirectorGroup.position.set(-2.2, 36.8, 0);
+
+                const directorTurret = new THREE.Mesh(new THREE.CylinderGeometry(2.6, 2.6, 2.8, 16), MAT.kureGrey);
+                directorTurret.position.y = 1.4;
+                mainDirectorGroup.add(directorTurret);
+
+                // 15.5-Meter Stereoscopic Rangefinder Arms
+                const rfMainTube = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 15.6, 16), MAT.kureGrey);
+                rfMainTube.rotation.x = Math.PI * 0.5;
+                rfMainTube.position.set(0, 1.8, 0);
+                mainDirectorGroup.add(rfMainTube);
+
+                // Type 22 Surface Search Radar Horns on sides of main director
+                for (let side of [-1, 1]) {
+                    const horn = new THREE.Mesh(new THREE.ConeGeometry(0.45, 1.2, 12), MAT.darkSteel);
+                    horn.rotation.z = -Math.PI * 0.5;
+                    horn.position.set(1.2, 1.2, side * 3.2);
+                    mainDirectorGroup.add(horn);
+
+                    // Type 21 Mattress Air Search Radar Panels at ends of 15m Rangefinder
+                    const radar21 = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.6, 3.2), MAT.darkSteel);
+                    radar21.position.set(0.8, 2.8, side * 6.2);
+                    mainDirectorGroup.add(radar21);
+                }
+
+                // Yardarm & Signal Flag Halyards (+41.5m to +45.0m)
+                const topMast = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.25, 6.5, 8), MAT.darkSteel);
+                topMast.position.set(-0.8, 4.5, 0);
+                mainDirectorGroup.add(topMast);
+
+                const yardarm = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 14.5, 8), MAT.darkSteel);
+                yardarm.rotation.x = Math.PI * 0.5;
+                yardarm.position.set(-0.8, 5.2, 0);
+                mainDirectorGroup.add(yardarm);
+
+                pagodaGroup.add(mainDirectorGroup);
+                radarArrays.push(mainDirectorGroup);
+                superGroup.add(pagodaGroup);
+
+                // ---------------- MASSIVE 26-DEGREE RAKED FUNNEL (x = -19.5m) ----------------
+                const funnelGroup = new THREE.Group();
+                funnelGroup.position.set(-19.5, 15.5, 0);
+                funnelGroup.rotation.z = THREE.MathUtils.degToRad(26); // Iconic 26-degree aft rake
+
+                const funnelBody = new THREE.Mesh(new THREE.CylinderGeometry(3.8, 4.5, 16.5, 24), MAT.kureGrey);
+                funnelBody.scale.set(1.35, 1.0, 0.88);
+                funnelBody.position.y = 7.5;
+                funnelBody.castShadow = true;
+                funnelGroup.add(funnelBody);
+
+                // Black soot cap
+                const funnelCap = new THREE.Mesh(new THREE.CylinderGeometry(3.82, 3.95, 3.2, 24), MAT.bootBlack);
+                funnelCap.scale.set(1.35, 1.0, 0.88);
+                funnelCap.position.y = 14.5;
+                funnelGroup.add(funnelCap);
+
+                // Steam pipes along funnel sides
+                for (let side of [-1, 1]) {
+                    const steamPipe = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 14.5, 10), MAT.darkSteel);
+                    steamPipe.position.set(-2.5, 7.2, side * 3.4);
+                    funnelGroup.add(steamPipe);
+                }
+                superGroup.add(funnelGroup);
+
+                // Searchlight Towers flanking the Funnel (4x 150cm Type 96 Searchlights per side)
+                for (let side of [-1, 1]) {
+                    for (let sx of [-15.5, -24.5]) {
+                        const slPedestal = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.6, 3.8, 12), MAT.kureGrey);
+                        slPedestal.position.set(sx, 17.5, side * 7.8);
+                        superGroup.add(slPedestal);
+
+                        const slDrum = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.85, 1.4, 16), MAT.darkSteel);
+                        slDrum.rotation.z = Math.PI * 0.5;
+                        slDrum.rotation.y = side * Math.PI * 0.5;
+                        slDrum.position.set(sx, 20.1, side * 7.8);
+                        superGroup.add(slDrum);
+
+                        const slLens = new THREE.Mesh(new THREE.CircleGeometry(0.78, 16), MAT.searchlightGlass);
+                        slLens.position.set(sx, 20.1, side * 8.51);
+                        if (side === -1) slLens.rotation.y = Math.PI;
+                        superGroup.add(slLens);
+                    }
+                }
+
+                // Aft Main Fire Control Tower & Tripod Mainmast (x = -33.5m)
+                const aftTower = new THREE.Mesh(new THREE.CylinderGeometry(2.4, 2.9, 9.5, 16), MAT.kureGrey);
+                aftTower.position.set(-33.5, 19.5, 0);
+                aftTower.castShadow = true;
+                superGroup.add(aftTower);
+
+                const aftRf = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.38, 10.2, 12), MAT.kureGrey);
+                aftRf.rotation.x = Math.PI * 0.5;
+                aftRf.position.set(-33.5, 25.2, 0);
+                superGroup.add(aftRf);
+
+                // Tripod Mainmast with Type 13 Air Search Radar
+                const mainMast = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.48, 22.0, 10), MAT.darkSteel);
+                mainMast.position.set(-38.0, 26.0, 0);
+                mainMast.rotation.z = THREE.MathUtils.degToRad(14);
+                superGroup.add(mainMast);
+
+                // Imperial Japanese Navy Rising Sun Ensign flying from Mainmast Gaff
+                const ensignGeo = new THREE.PlaneGeometry(5.4, 3.6, 12, 8);
+                const ensignMesh = new THREE.Mesh(ensignGeo, MAT.ensignFlag);
+                ensignMesh.position.set(-43.2, 31.5, 0);
+                superGroup.add(ensignMesh);
+                flagMeshes.push(ensignMesh);
+
+                parent.add(superGroup);
+            }
+
+            // ============================================================================
+            // 7. SECONDARY 12.7cm DP MOUNTS (6x) & 25mm TYPE 96 TRIPLE AA MOUNTS
+            // ============================================================================
+            function buildAABatteries(parent) {
+                const aaGroup = new THREE.Group();
+
+                // 6x Twin 12.7cm/40 Type 89 Dual-Purpose High-Angle Gun Mounts (3 per side on Upper Citadel)
+                const dpPositions = [-3.0, -16.5, -30.0];
+                for (let side of [-1, 1]) {
+                    for (let xPos of dpPositions) {
+                        const dpMount = new THREE.Group();
+                        dpMount.position.set(xPos, 15.9, side * 8.6);
+                        dpMount.rotation.y = side === 1 ? -Math.PI * 0.5 : Math.PI * 0.5;
+
+                        const shield = new THREE.Mesh(new THREE.BoxGeometry(3.8, 2.2, 3.6), MAT.kureGrey);
+                        shield.position.y = 1.1;
+                        shield.castShadow = true;
+                        dpMount.add(shield);
+
+                        for (let bOff of [-0.65, 0.65]) {
+                            const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.16, 4.8, 10), MAT.darkSteel);
+                            barrel.rotation.z = -Math.PI * 0.32;
+                            barrel.position.set(2.4, 1.8, bOff);
+                            dpMount.add(barrel);
+                        }
+                        aaGroup.add(dpMount);
+                    }
+                }
+
+                // 25mm Type 96 Triple AA Mounts (Enclosed shielded & open sandbagged tubs along citadel & decks)
+                const aaCoords = [
+                    // Starboard & Port Citadel Tubs
+                    { x: 14, y: 13.2, z: 10.8 }, { x: 6, y: 13.2, z: 11.4 },
+                    { x: -2, y: 13.2, z: 11.8 }, { x: -10, y: 13.2, z: 11.8 },
+                    { x: -18, y: 13.2, z: 11.8 }, { x: -26, y: 13.2, z: 11.8 },
+                    { x: -34, y: 13.2, z: 11.4 }, { x: -42, y: 13.2, z: 10.6 },
+                    // Weather Deck & Superstructure Tubs
+                    { x: 22, y: 8.6, z: 13.5 }, { x: -48, y: 8.6, z: 13.2 },
+                    { x: 6, y: 15.9, z: 6.2 }, { x: -23, y: 15.9, z: 6.2 }
+                ];
+
+                for (let side of [-1, 1]) {
+                    for (let c of aaCoords) {
+                        const tubGroup = new THREE.Group();
+                        tubGroup.position.set(c.x, c.y, side * c.z);
+
+                        // Splinter shield tub
+                        const tub = new THREE.Mesh(new THREE.CylinderGeometry(1.75, 1.75, 1.05, 16), MAT.kureGrey);
+                        tub.position.y = 0.52;
+                        tubGroup.add(tub);
+
+                        const mountPivot = new THREE.Group();
+                        mountPivot.position.y = 0.75;
+                        mountPivot.rotation.y = side === 1 ? -Math.PI * 0.45 : Math.PI * 0.45;
+
+                        const carriage = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.85, 1.2), MAT.darkSteel);
+                        mountPivot.add(carriage);
+
+                        const barrelGroup = new THREE.Group();
+                        barrelGroup.position.set(0.4, 0.3, 0);
+                        barrelGroup.rotation.z = 0.55;
+
+                        for (let bz of [-0.28, 0, 0.28]) {
+                            const gun = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.05, 2.1, 6), MAT.bootBlack);
+                            gun.rotation.z = -Math.PI * 0.5;
+                            gun.position.set(1.0, 0, bz);
+                            barrelGroup.add(gun);
+                        }
+                        mountPivot.add(barrelGroup);
+                        tubGroup.add(mountPivot);
+                        aaGroup.add(tubGroup);
+
+                        aaMounts.push({
+                            pivot: mountPivot,
+                            barrels: barrelGroup,
+                            worldPos: new THREE.Vector3(c.x, c.y + 1.4, side * c.z),
+                            side
+                        });
+                    }
+                }
+
+                parent.add(aaGroup);
+            }
+
+            // ============================================================================
+            // 8. STERN AVIATION FACILITIES (CATAPULTS, CRANE, RAILS & E13A FLOATPLANES)
+            // ============================================================================
+            function createE13AFloatplane() {
+                const plane = new THREE.Group();
+
+                // Fuselage
+                const fuselage = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.65, 11.3, 12), MAT.aircraftGreen);
+                fuselage.rotation.z = Math.PI * 0.5;
+                fuselage.position.set(0, 1.9, 0);
+                plane.add(fuselage);
+
+                // Greenhouse canopy
+                const canopy = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.55, 0.75), MAT.bridgeGlass);
+                canopy.position.set(0.5, 2.45, 0);
+                plane.add(canopy);
+
+                // 14.5m Wingspan + Hinomaru Red Roundels
+                const wing = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.16, 14.5), MAT.aircraftGreen);
+                wing.position.set(0.8, 1.65, 0);
+                wing.castShadow = true;
+                plane.add(wing);
+
+                for (let side of [-1, 1]) {
+                    const roundel = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, 0.18, 16), MAT.hinomaruRed);
+                    roundel.position.set(0.8, 1.66, side * 4.8);
+                    plane.add(roundel);
+
+                    // Twin Edo floats & struts
+                    const floatPontoon = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.28, 6.8, 10), MAT.aircraftGreen);
+                    floatPontoon.rotation.z = Math.PI * 0.5;
+                    floatPontoon.position.set(0.6, 0.45, side * 1.65);
+                    plane.add(floatPontoon);
+
+                    const strut = new THREE.Mesh(new THREE.BoxGeometry(0.15, 1.2, 0.15), MAT.darkSteel);
+                    strut.position.set(0.8, 1.05, side * 1.65);
+                    plane.add(strut);
+                }
+
+                // Vertical tail fin & horizontal stabilizer
+                const tailFin = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.8, 0.14), MAT.aircraftGreen);
+                tailFin.position.set(-4.8, 2.7, 0);
+                plane.add(tailFin);
+
+                const tailPlane = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.12, 4.4), MAT.aircraftGreen);
+                tailPlane.position.set(-4.8, 2.0, 0);
+                plane.add(tailPlane);
+
+                // 3-blade propeller
+                const prop = new THREE.Mesh(new THREE.BoxGeometry(0.1, 2.8, 0.22), MAT.darkSteel);
+                prop.position.set(5.75, 1.9, 0);
+                plane.add(prop);
+
+                return plane;
+            }
+
+            function buildSternAviation(parent) {
+                const sternGroup = new THREE.Group();
+                const deckY = 6.45;
+
+                // Steel aircraft handling rails & turntables on quarterdeck (-84m to -118m)
+                for (let side of [-1, 1]) {
+                    const rail = new THREE.Mesh(new THREE.BoxGeometry(32.0, 0.12, 0.35), MAT.darkSteel);
+                    rail.position.set(-100.0, deckY + 0.08, side * 5.2);
+                    sternGroup.add(rail);
+
+                    // Turntable disc
+                    const turntable = new THREE.Mesh(new THREE.CylinderGeometry(2.6, 2.6, 0.18, 20), MAT.kureGrey);
+                    turntable.position.set(-108.0, deckY + 0.1, side * 6.8);
+                    sternGroup.add(turntable);
+
+                    // 19.5m Kure Type No. 2 Model 5 Catapult angled outward at 30 degrees
+                    const catGroup = new THREE.Group();
+                    catGroup.position.set(-108.0, deckY + 1.35, side * 6.8);
+                    catGroup.rotation.y = Math.PI + side * 0.42;
+
+                    const catPedestal = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.5, 1.3, 12), MAT.kureGrey);
+                    catPedestal.position.y = -0.65;
+                    catGroup.add(catPedestal);
+
+                    const catBeam = new THREE.Mesh(new THREE.BoxGeometry(19.5, 1.05, 1.25), MAT.kureGrey);
+                    catBeam.castShadow = true;
+                    catGroup.add(catBeam);
+
+                    // Mount an Aichi E13A "Jake" Floatplane on the Starboard Catapult and Port Trolley
+                    const jake = createE13AFloatplane();
+                    jake.position.set(1.5, 0.55, 0);
+                    catGroup.add(jake);
+
+                    sternGroup.add(catGroup);
+                }
+
+                // Tall Stern Lattice Aircraft Recovery Crane (-126.5m)
+                const craneBase = new THREE.Mesh(new THREE.CylinderGeometry(1.3, 1.6, 3.2, 12), MAT.kureGrey);
+                craneBase.position.set(-126.5, deckY + 1.6, 0);
+                sternGroup.add(craneBase);
+
+                const craneBoom = new THREE.Mesh(new THREE.BoxGeometry(20.5, 1.1, 1.2), MAT.kureGrey);
+                craneBoom.position.set(-118.5, deckY + 8.5, 0);
+                craneBoom.rotation.z = -0.42;
+                craneBoom.castShadow = true;
+                sternGroup.add(craneBoom);
+
+                // Stern Ensign Flagstaff (-130.8m)
+                const sternPole = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.09, 6.2, 8), MAT.darkSteel);
+                sternPole.position.set(-130.8, deckY + 3.1, 0);
+                sternPole.rotation.z = 0.22;
+                sternGroup.add(sternPole);
+
+                parent.add(sternGroup);
+            }
+
+            // ============================================================================
+            // 9. EXACT 1:1 HUMAN CREW: CAPTAIN ARUGA, ADMIRAL ITO, OFFICERS & SAILORS
+            // ============================================================================
+            function createHumanFigure(role, pose) {
+                // Realistic 1.72m metric human scale (1 unit = 1 meter)
+                const figure = new THREE.Group();
+
+                let uniformMat = MAT.sailorWhite;
+                let trousersMat = MAT.sailorWhite;
+                let capMat = MAT.sailorWhite;
+                let hasBinoculars = false;
+                let hasSword = false;
+                let isHelmet = false;
+
+                if (role === 'captain' || role === 'admiral') {
+                    uniformMat = MAT.captainBlue;
+                    trousersMat = MAT.captainBlue;
+                    capMat = MAT.sailorWhite;
+                    hasBinoculars = true;
+                    hasSword = true;
+                } else if (role === 'officer') {
+                    uniformMat = MAT.officerKhaki;
+                    trousersMat = MAT.officerKhaki;
+                    capMat = MAT.officerKhaki;
+                    hasBinoculars = (pose === 'binoculars');
+                    hasSword = true;
+                } else if (role === 'aa_gunner') {
+                    uniformMat = MAT.sailorWhite;
+                    trousersMat = MAT.captainBlue;
+                    capMat = MAT.helmetGrey;
+                    isHelmet = true;
+                } else if (role === 'flight_crew') {
+                    uniformMat = MAT.flightGreen;
+                    trousersMat = MAT.flightGreen;
+                    capMat = MAT.flightGreen;
+                }
+
+                // Boots (0.0m to 0.14m)
+                const bootGeo = new THREE.BoxGeometry(0.18, 0.14, 0.11);
+                for (let side of [-1, 1]) {
+                    const boot = new THREE.Mesh(bootGeo, MAT.bootBlack);
+                    boot.position.set(0.03, 0.07, side * 0.11);
+                    figure.add(boot);
+                }
+
+                // Legs (0.14m to 0.86m)
+                const legGeo = new THREE.CylinderGeometry(0.085, 0.07, 0.74, 8);
+                const leftLeg = new THREE.Mesh(legGeo, trousersMat);
+                leftLeg.position.set(0, 0.50, -0.11);
+                const rightLeg = new THREE.Mesh(legGeo, trousersMat);
+                rightLeg.position.set(0, 0.50, 0.11);
+                figure.add(leftLeg, rightLeg);
+
+                // Torso / Tunic (0.86m to 1.44m)
+                const torso = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.58, 0.42), uniformMat);
+                torso.position.set(0, 1.15, 0);
+                torso.castShadow = true;
+                figure.add(torso);
+
+                // Traditional IJN Sailor Blue Middie Collar with white border (for enlisted sailors)
+                if (role === 'sailor' || role === 'aa_gunner') {
+                    const collar = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.16, 0.44), MAT.captainBlue);
+                    collar.position.set(-0.01, 1.37, 0);
+                    figure.add(collar);
+                }
+
+                // Gold Epaulettes & White Gloves for Captain / Admiral
+                if (role === 'captain' || role === 'admiral') {
+                    for (let side of [-1, 1]) {
+                        const epaulette = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.03, 0.12), MAT.gold);
+                        epaulette.position.set(0, 1.45, side * 0.18);
+                        figure.add(epaulette);
+                    }
+                }
+
+                // Naval Gunto Sword at left hip for Officers & Captain
+                if (hasSword) {
+                    const sword = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.015, 0.85, 6), MAT.brass);
+                    sword.position.set(-0.08, 0.72, -0.25);
+                    sword.rotation.z = -0.45;
+                    figure.add(sword);
+                }
+
+                // Head & Neck (1.44m to 1.68m)
+                const head = new THREE.Mesh(new THREE.SphereGeometry(0.115, 10, 10), MAT.skin);
+                head.position.set(0, 1.56, 0);
+                figure.add(head);
+
+                // Headgear (1.64m to 1.73m)
+                if (isHelmet) {
+                    const helmet = new THREE.Mesh(new THREE.SphereGeometry(0.135, 10, 8, 0, Math.PI * 2, 0, Math.PI * 0.58), MAT.helmetGrey);
+                    helmet.position.set(0, 1.58, 0);
+                    figure.add(helmet);
+                } else {
+                    const capCrown = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.115, 0.08, 10), capMat);
+                    capCrown.position.set(0, 1.66, 0);
+                    figure.add(capCrown);
+
+                    const visor = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.02, 0.18), MAT.bootBlack);
+                    visor.position.set(0.09, 1.63, 0);
+                    figure.add(visor);
+                }
+
+                // Arms & Pose Variations
+                const armGeo = new THREE.CylinderGeometry(0.055, 0.045, 0.56, 8);
+                const leftArm = new THREE.Mesh(armGeo, uniformMat);
+                const rightArm = new THREE.Mesh(armGeo, uniformMat);
+
+                if (pose === 'binoculars') {
+                    leftArm.position.set(0.16, 1.38, -0.18);
+                    leftArm.rotation.z = -1.15;
+                    leftArm.rotation.y = -0.35;
+
+                    rightArm.position.set(0.16, 1.38, 0.18);
+                    rightArm.rotation.z = -1.15;
+                    rightArm.rotation.y = 0.35;
+
+                    const bino = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.08, 0.16), MAT.bootBlack);
+                    bino.position.set(0.22, 1.56, 0);
+                    figure.add(bino);
+                } else if (pose === 'salute') {
+                    leftArm.position.set(0, 1.14, -0.25);
+                    rightArm.position.set(0.14, 1.42, 0.22);
+                    rightArm.rotation.z = -1.35;
+                    rightArm.rotation.x = -0.45;
+                } else if (pose === 'point') {
+                    leftArm.position.set(0, 1.14, -0.25);
+                    rightArm.position.set(0.24, 1.38, 0.24);
+                    rightArm.rotation.z = -1.48;
+                } else {
+                    leftArm.position.set(0, 1.14, -0.25);
+                    rightArm.position.set(0, 1.14, 0.25);
+                }
+
+                figure.add(leftArm, rightArm);
+
+                return {
+                    group: figure,
+                    leftLeg,
+                    rightLeg,
+                    leftArm,
+                    rightArm
+                };
+            }
+
+            function populateCrew(parent) {
+                const crewGroup = new THREE.Group();
+                let totalCrewCount = 0;
+
+                function addCrewMember(role, pose, x, y, z, yawDeg, patrolDist) {
+                    const c = createHumanFigure(role, pose);
+                    c.group.position.set(x, y, z);
+                    c.group.rotation.y = THREE.MathUtils.degToRad(yawDeg);
+                    crewGroup.add(c.group);
+                    totalCrewCount++;
+
+                    if (patrolDist > 0) {
+                        animatedCrew.push({
+                            ...c,
+                            baseX: x,
+                            baseZ: z,
+                            baseYaw: THREE.MathUtils.degToRad(yawDeg),
+                            patrolDist,
+                            speed: 0.9 + Math.random() * 0.4,
+                            phase: Math.random() * Math.PI * 2
+                        });
+                    }
+                }
+
+                // 1. FIRST (COMPASS) BRIDGE (+29.1m): Captain Kosaku Aruga & Bridge Watch (10 Personnel)
+                // Captain Aruga at forward center binnacle looking over bow with binoculars
+                addCrewMember('captain', 'binoculars', 3.15, 29.1, 0.0, 0, 0);
+                // Executive Officer (XO) & Navigator flanking Captain Aruga
+                addCrewMember('officer', 'point', 3.0, 29.1, 1.05, -12, 0);
+                addCrewMember('officer', 'binoculars', 3.0, 29.1, -1.05, 12, 0);
+                // Helmsman at the Brass Wheel & Lee Helmsman at Engine Telegraphs
+                addCrewMember('sailor', 'attention', 0.35, 29.1, 0.0, 0, 0);
+                addCrewMember('sailor', 'attention', 1.65, 29.1, 1.35, 0, 0);
+                addCrewMember('sailor', 'attention', 1.65, 29.1, -1.35, 0, 0);
+                // Chart Table Navigating Officers
+                addCrewMember('officer', 'attention', -2.35, 29.1, 0.35, 0, 0);
+                addCrewMember('officer', 'point', -2.35, 29.1, -0.45, 15, 0);
+                // Port & Starboard Wing Binocular Lookouts
+                addCrewMember('sailor', 'binoculars', 1.35, 29.1, 3.85, -35, 0);
+                addCrewMember('sailor', 'binoculars', 1.35, 29.1, -3.85, 35, 0);
+
+                // 2. SECOND (ADMIRAL'S) BRIDGE (+25.8m): Vice Admiral Seiichi Ito & 2nd Fleet Staff (8 Personnel)
+                addCrewMember('admiral', 'binoculars', 2.45, 25.8, 0.0, 0, 0);
+                addCrewMember('captain', 'point', 2.35, 25.8, 0.95, -20, 0); // Chief of Staff Rear Adm. Morishita
+                addCrewMember('officer', 'salute', 1.6, 25.8, -0.85, 25, 0);
+                addCrewMember('officer', 'binoculars', 2.2, 25.8, 2.8, -45, 0);
+                addCrewMember('officer', 'binoculars', 2.2, 25.8, -2.8, 45, 0);
+                addCrewMember('sailor', 'attention', 0.8, 25.8, 3.6, -90, 0);
+                addCrewMember('sailor', 'attention', 0.8, 25.8, -3.6, 90, 0);
+                addCrewMember('officer', 'attention', 1.2, 25.8, 0.2, 0, 0);
+
+                // 3. TOP AIR DEFENSE COMMAND STATION (+33.4m): 6 Spotters in Helmets
+                for (let i = 0; i < 6; i++) {
+                    const a = (i * Math.PI * 2) / 6;
+                    addCrewMember(
+                        'aa_gunner',
+                        'binoculars',
+                        -2.2 + Math.cos(a) * 3.1,
+                        33.9,
+                        Math.sin(a) * 3.1,
+                        THREE.MathUtils.radToDeg(-a),
+                        0
+                    );
+                }
+
+                // 4. BOW FORECASTLE MUSTER DIVISIONS (+88m to +106m): 38 Sailors & Petty Officers
+                // Port & Starboard 3x5 Sailors in White Uniforms standing at attention facing inboard, plus Division Officers
+                for (let side of [-1, 1]) {
+                    const divOfficerYaw = side === 1 ? 90 : -90;
+                    addCrewMember('officer', 'salute', 97.0, getDeckHeightAtX(97.0), side * 3.2, divOfficerYaw, 0);
+                    for (let row = 0; row < 3; row++) {
+                        for (let col = 0; col < 5; col++) {
+                            const sx = 92.5 + col * 2.1;
+                            const sz = side * (5.2 + row * 1.45);
+                            const sy = getDeckHeightAtX(sx);
+                            addCrewMember('sailor', 'attention', sx, sy, sz, side === 1 ? -90 : 90, 0);
+                        }
+                    }
+                }
+                // Anchor Detail Sailors at Bow Capstans (+112m)
+                for (let side of [-1, 1]) {
+                    addCrewMember('sailor', 'point', 112.0, getDeckHeightAtX(112.0), side * 2.8, 0, 0);
+                    addCrewMember('sailor', 'attention', 110.5, getDeckHeightAtX(110.5), side * 3.6, 15, 0);
+                    addCrewMember('officer', 'binoculars', 124.0, getDeckHeightAtX(124.0), side * 1.6, 0, 0);
+                }
+
+                // 5. TURRET ROOFTOP & DECK PATROL CREWS: 16 Sailors & Officers
+                // Officers & Spotters atop 46cm Turret No. 1 (+63m) & Turret No. 2 (+37m)
+                addCrewMember('officer', 'binoculars', 65.5, 15.15, 0.0, 0, 0);
+                addCrewMember('sailor', 'attention', 64.2, 15.15, 1.8, -15, 0);
+                addCrewMember('sailor', 'attention', 64.2, 15.15, -1.8, 15, 0);
+                addCrewMember('officer', 'binoculars', 39.5, 18.15, 0.0, 0, 0);
+
+                // Animated Patrolling Sailors walking along Starboard & Port Weather Decks
+                for (let side of [-1, 1]) {
+                    addCrewMember('sailor', 'attention', 52.0, getDeckHeightAtX(52.0), side * 13.5, 0, 10.0);
+                    addCrewMember('sailor', 'attention', 26.0, getDeckHeightAtX(26.0), side * 16.2, 180, 12.0);
+                    addCrewMember('officer', 'attention', -4.0, getDeckHeightAtX(-4.0), side * 17.0, 0, 14.0);
+                    addCrewMember('sailor', 'attention', -32.0, getDeckHeightAtX(-32.0), side * 16.8, 180, 12.0);
+                    addCrewMember('sailor', 'attention', -62.0, getDeckHeightAtX(-62.0), side * 15.0, 0, 10.0);
+                }
+
+                // 6. 25mm ANTI-AIRCRAFT GUN CREWS (56 Helmeted Gunners & Range Spotters)
+                for (let side of [-1, 1]) {
+                    for (let cx of [14, 6, -2, -10, -18, -26, -34]) {
+                        const baseZ = side * 11.6;
+                        const outYaw = side === 1 ? -90 : 90;
+                        addCrewMember('aa_gunner', 'point', cx + 0.6, 13.25, baseZ - side * 0.6, outYaw, 0);
+                        addCrewMember('aa_gunner', 'attention', cx - 0.6, 13.25, baseZ - side * 0.6, outYaw, 0);
+                        addCrewMember('aa_gunner', 'binoculars', cx, 13.25, baseZ + side * 0.75, outYaw, 0);
+                    }
+                    // Upper Citadel 12.7cm DP Deck Crew
+                    for (let ux of [-6, -20, -32]) {
+                        addCrewMember('aa_gunner', 'attention', ux, 15.95, side * 5.8, side === 1 ? -90 : 90, 0);
+                        addCrewMember('officer', 'binoculars', ux + 1.4, 15.95, side * 5.8, side === 1 ? -90 : 90, 0);
+                    }
+                }
+
+                // 7. STERN AVIATION QUARTERDECK CREW (24 Flight Mechanics, Pilots & Quarterdeck Watch)
+                for (let side of [-1, 1]) {
+                    addCrewMember('flight_crew', 'point', -103.5, 6.5, side * 4.5, side === 1 ? -45 : 45, 0);
+                    addCrewMember('flight_crew', 'attention', -105.5, 6.5, side * 5.2, side === 1 ? -60 : 60, 0);
+                    addCrewMember('flight_crew', 'attention', -111.0, 6.5, side * 8.2, side === 1 ? -120 : 120, 0);
+                    addCrewMember('officer', 'binoculars', -96.0, 6.5, side * 3.5, 180, 0);
+                    addCrewMember('flight_crew', 'attention', -92.0, 6.5, side * 5.2, 0, 7.0);
+                }
+                // Stern Ensign Guard
+                addCrewMember('sailor', 'salute', -128.5, 6.5, 0.8, 180, 0);
+                addCrewMember('sailor', 'attention', -128.5, 6.5, -0.8, 180, 0);
+
+                document.getElementById('hud-crew-count').textContent = `${totalCrewCount} Officers & Sailors`;
+                parent.add(crewGroup);
+            }
+
+            // ============================================================================
+            // 10. OCEAN WATER SURFACE, BOW WAVE & WAKE FOAM
+            // ============================================================================
+            function buildEnvironment() {
+                // Deep ocean plane
+                const oceanGeo = new THREE.PlaneGeometry(2400, 2400, 96, 96);
+                oceanGeo.rotateX(-Math.PI * 0.5);
+                const oceanMat = new THREE.MeshStandardMaterial({
+                    color: 0x0c2d48,
+                    roughness: 0.22,
+                    metalness: 0.68
+                });
+                oceanMesh = new THREE.Mesh(oceanGeo, oceanMat);
+                oceanMesh.receiveShadow = true;
+                scene.add(oceanMesh);
+
+                // White Foam Wake Outline around Hull Waterline
+                const wakeShape = new THREE.Shape();
+                wakeShape.moveTo(134.0, 0);
+                wakeShape.quadraticCurveTo(60, 22.5, -40, 22.0);
+                wakeShape.quadraticCurveTo(-115, 18.0, -185, 28.0);
+                wakeShape.lineTo(-185, -28.0);
+                wakeShape.quadraticCurveTo(-115, -18.0, -40, -22.0);
+                wakeShape.quadraticCurveTo(60, -22.5, 134.0, 0);
+
+                const wakeGeo = new THREE.ShapeGeometry(wakeShape, 24);
+                wakeGeo.rotateX(-Math.PI * 0.5);
+                const wakeMat = new THREE.MeshBasicMaterial({
+                    color: 0xdbeafe,
+                    transparent: true,
+                    opacity: 0.22
+                });
+                const wakeMesh = new THREE.Mesh(wakeGeo, wakeMat);
+                wakeMesh.position.y = 0.08;
+                scene.add(wakeMesh);
+            }
+
+            // ============================================================================
+            // 11. 46cm BROADSIDE SALVO BLAST & 25mm AA TRACER EFFECTS
+            // ============================================================================
+            function triggerMainSalvo() {
+                mainTurrets.forEach((turret, tIdx) => {
+                    setTimeout(() => {
+                        turret.muzzleOffsets.forEach((offset, bIdx) => {
+                            const worldPos = offset.clone();
+                            turret.elevationPivot.localToWorld(worldPos);
+
+                            // Muzzle direction vector
+                            const dir = new THREE.Vector3(1, 0, 0);
+                            const worldQuat = new THREE.Quaternion();
+                            turret.elevationPivot.getWorldQuaternion(worldQuat);
+                            dir.applyQuaternion(worldQuat).normalize();
+
+                            // Bright core flash sphere
+                            const flashMat = new THREE.MeshBasicMaterial({
+                                color: 0xfef08a,
+                                transparent: true,
+                                opacity: 1.0
+                            });
+                            const flash = new THREE.Mesh(new THREE.SphereGeometry(2.2, 12, 12), flashMat);
+                            flash.position.copy(worldPos);
+                            scene.add(flash);
+
+                            // Expanding orange-grey smoke ring
+                            const smokeMat = new THREE.MeshLambertMaterial({
+                                color: 0xf97316,
+                                transparent: true,
+                                opacity: 0.9
+                            });
+                            const smoke = new THREE.Mesh(new THREE.DodecahedronGeometry(3.2, 1), smokeMat);
+                            smoke.position.copy(worldPos).addScaledVector(dir, 2.5);
+                            scene.add(smoke);
+
+                            // High-velocity 1,460kg AP Shell streak
+                            const shellMat = new THREE.MeshBasicMaterial({ color: 0xfef9c3 });
+                            const shell = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.23, 3.2, 8), shellMat);
+                            shell.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+                            shell.position.copy(worldPos);
+                            scene.add(shell);
+
+                            shellEffects.push({
+                                flash,
+                                smoke,
+                                shell,
+                                dir,
+                                age: 0
+                            });
+                        });
+                    }, tIdx * 160);
+                });
+            }
+
+            function spawnAATracers() {
+                if (!aaDrillActive) return;
+                for (let i = 0; i < 4; i++) {
+                    const m = aaMounts[Math.floor(Math.random() * aaMounts.length)];
+                    if (!m) continue;
+
+                    const dir = new THREE.Vector3(
+                        (Math.random() - 0.5) * 0.5,
+                        0.45 + Math.random() * 0.45,
+                        m.side * (0.6 + Math.random() * 0.4)
+                    ).normalize();
+
+                    const tracerMat = new THREE.MeshBasicMaterial({ color: 0xfef08a });
+                    const tracer = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 4.5, 6), tracerMat);
+                    tracer.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+                    tracer.position.copy(m.worldPos);
+                    scene.add(tracer);
+
+                    aaTracers.push({ mesh: tracer, dir, age: 0 });
+                }
+            }
+
+            // ============================================================================
+            // 12. 3D FLOATING CALLOUT PINS & UI CONTROLS
+            // ============================================================================
+            let pinsVisible = true;
+            const pinElements = [];
+
+            function createFloatingPins() {
+                const container = document.getElementById('labels-container');
+                container.innerHTML = '';
+
+                Object.keys(STATIONS).forEach((key) => {
+                    const st = STATIONS[key];
+                    if (!st.pinPos) return;
+
+                    const el = document.createElement('div');
+                    el.className = 'label-3d hud-panel px-2.5 py-1 rounded-full text-[11px] font-semibold text-amber-300 flex items-center gap-1.5 border border-amber-400/50 shadow-lg';
+                    el.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400"></span><span>${st.title.split('&')[0].trim()}</span>`;
+                    el.addEventListener('click', () => selectCameraPreset(key));
+                    container.appendChild(el);
+
+                    pinElements.push({
+                        key,
+                        el,
+                        pos: st.pinPos.clone()
+                    });
+                });
+            }
+
+            function updateFloatingPins() {
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+
+                pinElements.forEach((p) => {
+                    if (!pinsVisible) {
+                        p.el.style.display = 'none';
+                        return;
+                    }
+                    const proj = p.pos.clone().project(camera);
+                    if (proj.z > 1.0) {
+                        p.el.style.display = 'none';
+                    } else {
+                        const x = (proj.x * 0.5 + 0.5) * width;
+                        const y = (-(proj.y * 0.5) + 0.5) * height;
+                        p.el.style.display = 'flex';
+                        p.el.style.left = `${x}px`;
+                        p.el.style.top = `${y}px`;
+                    }
+                });
+            }
+
+            function selectCameraPreset(key) {
+                const st = STATIONS[key];
+                if (!st) return;
+
+                camState.desiredTarget.copy(st.target);
+                camState.desiredSpherical.radius = st.radius;
+                camState.desiredSpherical.phi = st.phi;
+                camState.desiredSpherical.theta = st.theta;
+
+                // Update Inspector UI
+                document.getElementById('inspect-category').textContent = st.category;
+                document.getElementById('inspect-title').textContent = st.title;
+                document.getElementById('inspect-desc').textContent = st.desc;
+                document.getElementById('inspect-stat-1').textContent = st.stat1;
+                document.getElementById('inspect-stat-2').textContent = st.stat2;
+                document.getElementById('inspect-stat-3').textContent = st.stat3;
+                document.getElementById('hud-focus-name').textContent = st.title;
+
+                document.querySelectorAll('.cam-preset').forEach((btn) => {
+                    btn.classList.toggle('active', btn.dataset.preset === key);
+                });
+            }
+
+            function setupEventListeners() {
+                const dom = renderer.domElement;
+
+                dom.addEventListener('contextmenu', (e) => e.preventDefault());
+
+                dom.addEventListener('mousedown', (e) => {
+                    if (e.button === 0 && !e.shiftKey) {
+                        camState.isDragging = true;
+                    } else {
+                        camState.isPanning = true;
+                    }
+                    camState.prevMouse.x = e.clientX;
+                    camState.prevMouse.y = e.clientY;
+                });
+
+                window.addEventListener('mouseup', () => {
+                    camState.isDragging = false;
+                    camState.isPanning = false;
+                });
+
+                window.addEventListener('mousemove', (e) => {
+                    if (!camState.isDragging && !camState.isPanning) return;
+                    const dx = e.clientX - camState.prevMouse.x;
+                    const dy = e.clientY - camState.prevMouse.y;
+                    camState.prevMouse.x = e.clientX;
+                    camState.prevMouse.y = e.clientY;
+
+                    if (camState.isDragging) {
+                        camState.desiredSpherical.theta -= dx * 0.0055;
+                        camState.desiredSpherical.phi = THREE.MathUtils.clamp(
+                            camState.desiredSpherical.phi - dy * 0.0055,
+                            0.08,
+                            Math.PI * 0.495
+                        );
+                    } else if (camState.isPanning) {
+                        const panScale = Math.max(0.015, camState.spherical.radius * 0.0014);
+                        const forward = new THREE.Vector3();
+                        camera.getWorldDirection(forward);
+                        forward.y = 0;
+                        forward.normalize();
+                        const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
+
+                        camState.desiredTarget.addScaledVector(right, -dx * panScale);
+                        camState.desiredTarget.y = THREE.MathUtils.clamp(camState.desiredTarget.y + dy * panScale, 0.5, 48.0);
+                    }
+                });
+
+                dom.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    const zoomFactor = e.deltaY > 0 ? 1.12 : 0.89;
+                    camState.desiredSpherical.radius = THREE.MathUtils.clamp(
+                        camState.desiredSpherical.radius * zoomFactor,
+                        0.75,
+                        440.0
+                    );
+                }, { passive: false });
+
+                // Touch Support
+                let touchPrevDist = 0;
+                dom.addEventListener('touchstart', (e) => {
+                    if (e.touches.length === 1) {
+                        camState.isDragging = true;
+                        camState.prevMouse.x = e.touches[0].clientX;
+                        camState.prevMouse.y = e.touches[0].clientY;
+                    } else if (e.touches.length === 2) {
+                        camState.isDragging = false;
+                        const dx = e.touches[0].clientX - e.touches[1].clientX;
+                        const dy = e.touches[0].clientY - e.touches[1].clientY;
+                        touchPrevDist = Math.hypot(dx, dy);
+                    }
+                });
+
+                dom.addEventListener('touchmove', (e) => {
+                    if (e.touches.length === 1 && camState.isDragging) {
+                        const dx = e.touches[0].clientX - camState.prevMouse.x;
+                        const dy = e.touches[0].clientY - camState.prevMouse.y;
+                        camState.prevMouse.x = e.touches[0].clientX;
+                        camState.prevMouse.y = e.touches[0].clientY;
+                        camState.desiredSpherical.theta -= dx * 0.006;
+                        camState.desiredSpherical.phi = THREE.MathUtils.clamp(
+                            camState.desiredSpherical.phi - dy * 0.006,
+                            0.1,
+                            Math.PI * 0.49
+                        );
+                    } else if (e.touches.length === 2) {
+                        const dx = e.touches[0].clientX - e.touches[1].clientX;
+                        const dy = e.touches[0].clientY - e.touches[1].clientY;
+                        const dist = Math.hypot(dx, dy);
+                        if (touchPrevDist > 0) {
+                            const ratio = touchPrevDist / dist;
+                            camState.desiredSpherical.radius = THREE.MathUtils.clamp(
+                                camState.desiredSpherical.radius * ratio,
+                                0.8,
+                                440.0
+                            );
+                        }
+                        touchPrevDist = dist;
+                    }
+                });
+
+                dom.addEventListener('touchend', () => {
+                    camState.isDragging = false;
+                });
+
+                // Keyboard WASD Deck Walk
+                window.addEventListener('keydown', (e) => {
+                    const k = e.key.toLowerCase();
+                    if (camState.keys.hasOwnProperty(k)) camState.keys[k] = true;
+                });
+                window.addEventListener('keyup', (e) => {
+                    const k = e.key.toLowerCase();
+                    if (camState.keys.hasOwnProperty(k)) camState.keys[k] = false;
+                });
+
+                // Preset Buttons
+                document.querySelectorAll('.cam-preset').forEach((btn) => {
+                    btn.addEventListener('click', () => selectCameraPreset(btn.dataset.preset));
+                });
+
+                // Turret Traverse & Elevation Sliders
+                const sliderTurret = document.getElementById('slider-turret');
+                const sliderElev = document.getElementById('slider-elev');
+
+                sliderTurret.addEventListener('input', (e) => {
+                    const deg = parseFloat(e.target.value);
+                    document.getElementById('slider-turret-val').textContent = `${deg > 0 ? '+' : ''}${deg}°`;
+                    const relBearing = ((deg % 360) + 360) % 360;
+                    document.getElementById('hud-turret-angle').textContent =
+                        `${String(Math.round(relBearing)).padStart(3, '0')}° REL (${deg === 0 ? 'Bow' : deg > 0 ? 'Stbd' : 'Port'})`;
+
+                    const rad = THREE.MathUtils.degToRad(-deg);
+                    mainTurrets.forEach((t) => {
+                        t.turretPivot.rotation.y = t.baseYaw + rad;
+                    });
+                    secTurrets.forEach((t) => {
+                        t.turretPivot.rotation.y = t.baseYaw + rad * 0.8;
+                    });
+                });
+
+                sliderElev.addEventListener('input', (e) => {
+                    const deg = parseFloat(e.target.value);
+                    document.getElementById('slider-elev-val').textContent = `${deg > 0 ? '+' : ''}${deg}°`;
+                    const rad = THREE.MathUtils.degToRad(deg);
+                    mainTurrets.forEach((t) => {
+                        t.elevationPivot.rotation.z = rad;
+                    });
+                    secTurrets.forEach((t) => {
+                        t.elevationPivot.rotation.z = rad;
+                    });
+                });
+
+                // Fire 46cm Salvo
+                document.getElementById('btn-salvo').addEventListener('click', triggerMainSalvo);
+
+                // Toggle 25mm AA Drill
+                const btnAA = document.getElementById('btn-aa-barrage');
+                btnAA.addEventListener('click', () => {
+                    aaDrillActive = !aaDrillActive;
+                    btnAA.classList.toggle('active', aaDrillActive);
+                });
+
+                // Toggle 3D Markers
+                const btnPins = document.getElementById('btn-toggle-pins');
+                btnPins.addEventListener('click', () => {
+                    pinsVisible = !pinsVisible;
+                    btnPins.classList.toggle('active', pinsVisible);
+                    btnPins.innerHTML = `<span class="w-2 h-2 rounded-full ${pinsVisible ? 'bg-amber-400 animate-pulse' : 'bg-slate-500'}"></span> 3D Markers: ${pinsVisible ? 'ON' : 'OFF'}`;
+                });
+
+                // Toggle Lighting Mode
+                const btnTime = document.getElementById('btn-time-of-day');
+                btnTime.addEventListener('click', () => {
+                    lightingMode = (lightingMode + 1) % 3;
+                    if (lightingMode === 0) {
+                        scene.background.setHex(0x16293d);
+                        scene.fog.color.setHex(0x16293d);
+                        sunLight.color.setHex(0xffedd5);
+                        sunLight.intensity = 1.45;
+                        sunLight.position.set(140, 95, 120);
+                        btnTime.innerHTML = '<span>🌅</span> Lighting: Golden';
+                    } else if (lightingMode === 1) {
+                        scene.background.setHex(0x38bdf8);
+                        scene.fog.color.setHex(0x7dd3fc);
+                        sunLight.color.setHex(0xffffff);
+                        sunLight.intensity = 1.65;
+                        sunLight.position.set(60, 180, 90);
+                        btnTime.innerHTML = '<span>☀️</span> Lighting: Noon';
+                    } else {
+                        scene.background.setHex(0x1e293b);
+                        scene.fog.color.setHex(0x1e293b);
+                        sunLight.color.setHex(0x94a3b8);
+                        sunLight.intensity = 1.05;
+                        sunLight.position.set(-80, 120, -60);
+                        btnTime.innerHTML = '<span>🌩️</span> Lighting: Ten-Go';
+                    }
+                });
+
+                // Collapse Inspector
+                const btnCollapse = document.getElementById('btn-collapse-inspector');
+                const inspectorBody = document.getElementById('inspector-body');
+                btnCollapse.addEventListener('click', () => {
+                    inspectorBody.classList.toggle('hidden');
+                });
+
+                // Toggle AI Bridge Comms Panel
+                const aiPanel = document.getElementById('ai-command-panel');
+                const aiPanelBody = document.getElementById('ai-panel-body');
+                document.getElementById('btn-toggle-ai-panel').addEventListener('click', () => {
+                    aiPanel.classList.toggle('hidden');
+                });
+                document.getElementById('btn-collapse-ai').addEventListener('click', () => {
+                    aiPanelBody.classList.toggle('hidden');
+                });
+
+                window.addEventListener('resize', () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+            }
+
+            // ============================================================================
+            // 13. GEMINI API INTEGRATION (TEXT, SEARCH GROUNDING, STRUCTURED JSON & TTS)
+            // ============================================================================
+            const apiKey = "";
+            let currentPersona = "aruga";
+            let lastAIResponseText = "All stations report ready aboard Battleship Yamato. Main battery 46-centimeter Type 94 turrets standing by.";
+            let currentStationKey = "overview";
+            let currentAudio = null;
+
+            const PERSONA_CONFIGS = {
+                aruga: {
+                    name: "CAPT. KOSAKU ARUGA • 1ST COMPASS BRIDGE",
+                    voice: "Kore",
+                    voiceStyle: "Say with calm, dignified naval authority:",
+                    preset: "captain",
+                    systemPrompt: "You are Captain Kosaku Aruga, Commanding Officer of the Imperial Japanese Navy Battleship Yamato in April 1945, speaking from the First Compass Bridge (+29.0m above the waterline). Provide historically accurate, vivid, and concise answers (2-4 sentences) about Yamato's operations, bridge instrumentation, crew life of the 2,750 sailors aboard, and command perspective. Reference real technical details from the 1:1 3D model when relevant."
+                },
+                ito: {
+                    name: "VICE ADM. SEIICHI ITO • 2ND FLEET FLAG BRIDGE",
+                    voice: "Charon",
+                    voiceStyle: "Say in a reflective, measured Admiral's tone:",
+                    preset: "admiral",
+                    systemPrompt: "You are Vice Admiral Seiichi Ito, Commander-in-Chief of the IJN Second Fleet aboard the flagship Yamato on the Admiral's Bridge (+25.8m above waterline). Speak with strategic depth, historical accuracy, and solemn reflection on naval strategy, the Pacific War, Operation Ten-Go, and fleet command. Keep responses concise (2-4 sentences)."
+                },
+                gunner: {
+                    name: "CHIEF GUNNERY OFFICER • 46cm FIRE CONTROL",
+                    voice: "Fenrir",
+                    voiceStyle: "Say with brisk, energetic gunnery precision:",
+                    preset: "turrets",
+                    systemPrompt: "You are the Chief Gunnery Officer aboard Battleship Yamato atop the 15-meter Type 94 Duplex Rangefinder (+39m). Explain Yamato's weapons with technical precision: the 2,774-ton triple 46cm/45 Type 94 turrets, 1,460kg Type 91 AP and Type 3 Sanshikidan shells, 15.5cm triple turrets, 12.7cm Type 89 DP guns, and 152 barrels of 25mm Type 96 AA cannons. Keep answers crisp and technically detailed (2-4 sentences)."
+                },
+                architect: {
+                    name: "KURE NAVAL ARSENAL CHIEF ARCHITECT",
+                    voice: "Sadaltager",
+                    voiceStyle: "Say in a clear, knowledgeable engineering voice:",
+                    preset: "overview",
+                    systemPrompt: "You are a senior Naval Architect from Kure Naval Arsenal who designed Battleship Yamato (design A-140-F6). Explain the ship's 1:1 engineering marvels: the 263.0m LOA, 38.9m beam, undulating wavy Hinoki cypress deck sheer, 3.2m underwater bulbous bow that reduced wave-making resistance, 410mm Vickers Hardened inclined belt armor, 650mm turret faceplates, and 150,000 SHP Kampon turbines. Keep responses concise (2-4 sentences)."
+                }
+            };
+
+            async function fetchWithBackoff(url, options, maxRetries = 4) {
+                let delay = 1000;
+                for (let attempt = 0; attempt <= maxRetries; attempt++) {
+                    try {
+                        const response = await fetch(url, options);
+                        if (response.ok) {
+                            return await response.json();
+                        }
+                        if (response.status !== 429 && response.status < 500) {
+                            const errBody = await response.text();
+                            throw new Error(`API HTTP ${response.status}: ${errBody}`);
+                        }
+                    } catch (err) {
+                        if (attempt === maxRetries) throw err;
+                    }
+                    await new Promise((r) => setTimeout(r, delay));
+                    delay *= 2;
+                }
+            }
+
+            function appendChatMessage(header, text, isUser = false, sources = []) {
+                const container = document.getElementById('ai-chat-history');
+                const div = document.createElement('div');
+                if (isUser) {
+                    div.className = "bg-slate-800/80 border-r-2 border-sky-400 p-2 rounded-l-lg ml-6 text-right";
+                    div.innerHTML = `<div class="text-[10px] mono-font text-sky-400 mb-0.5">BRIDGE QUERY</div><p class="text-slate-100">${escapeHtml(text)}</p>`;
+                } else {
+                    div.className = "bg-slate-900/90 border-l-2 border-amber-400 p-2.5 rounded-r-lg mr-2";
+                    let sourcesHtml = "";
+                    if (sources && sources.length > 0) {
+                        const links = sources.slice(0, 3).map(s => `<a href="${escapeHtml(s.uri)}" target="_blank" rel="noopener noreferrer" class="underline text-sky-400 hover:text-sky-300 mr-2">${escapeHtml(s.title)}</a>`).join("");
+                        sourcesHtml = `<div class="mt-1.5 pt-1 border-t border-slate-800 text-[10px] text-slate-400">🌐 Sources: ${links}</div>`;
+                    }
+                    div.innerHTML = `
+                        <div class="flex items-center justify-between text-[10px] mono-font text-amber-400 mb-1">
+                            <span>${escapeHtml(header)}</span>
+                        </div>
+                        <p class="text-slate-200 whitespace-pre-line">${escapeHtml(text)}</p>
+                        ${sourcesHtml}
+                    `;
+                }
+                container.appendChild(div);
+                container.scrollTop = container.scrollHeight;
+                return div;
+            }
+
+            function escapeHtml(str) {
+                return String(str || '')
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;");
+            }
+
+            function getShipTelemetryContext() {
+                const turretDeg = document.getElementById('slider-turret').value;
+                const elevDeg = document.getElementById('slider-elev').value;
+                const focusTitle = document.getElementById('hud-focus-name').textContent;
+                const lightLabel = lightingMode === 0 ? "Golden Hour" : lightingMode === 1 ? "High Noon" : "Operation Ten-Go Overcast";
+                return `[Current 3D Simulation Telemetry: Camera Station="${focusTitle}", Main 46cm Turret Traverse=${turretDeg}°, Gun Barrel Elevation=+${elevDeg}°, 25mm AA Drill=${aaDrillActive ? "ACTIVE" : "STANDBY"}, Weather/Lighting="${lightLabel}"]`;
+            }
+
+            async function sendPersonaChat(userPromptText) {
+                const inputEl = document.getElementById('ai-chat-input');
+                const sendBtn = document.getElementById('btn-ai-send');
+                const useSearch = document.getElementById('chk-google-search').checked;
+                const query = (userPromptText !== undefined ? userPromptText : inputEl.value).trim();
+                if (!query) return;
+
+                if (userPromptText === undefined) inputEl.value = "";
+                const persona = PERSONA_CONFIGS[currentPersona];
+
+                appendChatMessage("USER", query, true);
+                const loadingDiv = appendChatMessage(persona.name, "Transmitting over bridge voice tube...", false);
+                sendBtn.disabled = true;
+
+                try {
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+                    const payload = {
+                        contents: [{
+                            parts: [{ text: `${getShipTelemetryContext()}\n\nUser Question: ${query}` }]
+                        }],
+                        systemInstruction: {
+                            parts: [{ text: persona.systemPrompt }]
+                        }
+                    };
+
+                    if (useSearch) {
+                        payload.tools = [{ "google_search": {} }];
+                    }
+
+                    const result = await fetchWithBackoff(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const candidate = result?.candidates?.[0];
+                    const text = candidate?.content?.parts?.[0]?.text || "Communications static on the bridge circuit. Please repeat.";
+                    lastAIResponseText = text;
+
+                    let sources = [];
+                    const groundingMetadata = candidate?.groundingMetadata;
+                    if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                        sources = groundingMetadata.groundingAttributions
+                            .map(attr => ({
+                                uri: attr.web?.uri,
+                                title: attr.web?.title
+                            }))
+                            .filter(s => s.uri && s.title);
+                    }
+
+                    loadingDiv.remove();
+                    appendChatMessage(persona.name, text, false, sources);
+                } catch (err) {
+                    loadingDiv.remove();
+                    appendChatMessage("COMMS ERROR", "Unable to reach Gemini AI Bridge Link. Please try again shortly.", false);
+                } finally {
+                    sendBtn.disabled = false;
+                }
+            }
+
+            // Structured JSON Output: AI 3D Tactical & Fire Control Director
+            async function executeAITacticalScenario(scenarioPrompt) {
+                const inputEl = document.getElementById('ai-scenario-input');
+                const btnDirector = document.getElementById('btn-ai-director');
+                const badge = document.getElementById('ai-director-badge');
+                const promptText = (scenarioPrompt || inputEl.value).trim();
+                if (!promptText) return;
+
+                btnDirector.disabled = true;
+                badge.textContent = "Computing Fire Solution...";
+                badge.className = "text-[10px] mono-font text-amber-400 animate-pulse";
+
+                try {
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+                    const payload = {
+                        contents: [{
+                            parts: [{
+                                text: `Convert this naval command or historical scenario for Battleship Yamato into a 3D simulation state and bridge order: "${promptText}"`
+                            }]
+                        }],
+                        systemInstruction: {
+                            parts: [{
+                                text: "You are the Fire Control & Tactical Simulation Director for the 1:1 3D Battleship Yamato simulation. Choose the most appropriate camera station from ['overview','captain','admiral','bow_division','turrets','aa_citadel','stern_air','sailor_pov'], set realistic 46cm turret traverse degrees (-135 to 135, where positive is starboard and negative is port), gun barrel elevation degrees (-3 to 45), whether to fire a 46cm broadside salvo, whether 25mm AA barrage tracers should be active, and the lighting mode (0=Golden Hour, 1=High Noon, 2=Ten-Go Overcast). Provide a dramatic, historically authentic bridge order announcement."
+                            }]
+                        },
+                        generationConfig: {
+                            responseMimeType: "application/json",
+                            responseSchema: {
+                                type: "OBJECT",
+                                properties: {
+                                    scenarioTitle: { type: "STRING" },
+                                    bridgeOrderAnnouncement: { type: "STRING" },
+                                    cameraPreset: {
+                                        type: "STRING",
+                                        enum: ["overview", "captain", "admiral", "bow_division", "turrets", "aa_citadel", "stern_air", "sailor_pov"]
+                                    },
+                                    turretTraverseDeg: { type: "NUMBER" },
+                                    gunElevationDeg: { type: "NUMBER" },
+                                    fireMainSalvo: { type: "BOOLEAN" },
+                                    activateAABarrage: { type: "BOOLEAN" },
+                                    lightingModeIndex: { type: "INTEGER" },
+                                    estimatedRangeKm: { type: "STRING" }
+                                },
+                                propertyOrdering: [
+                                    "scenarioTitle",
+                                    "bridgeOrderAnnouncement",
+                                    "cameraPreset",
+                                    "turretTraverseDeg",
+                                    "gunElevationDeg",
+                                    "fireMainSalvo",
+                                    "activateAABarrage",
+                                    "lightingModeIndex",
+                                    "estimatedRangeKm"
+                                ]
+                            }
+                        }
+                    };
+
+                    const result = await fetchWithBackoff(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const rawJson = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (rawJson) {
+                        const cmd = JSON.parse(rawJson);
+                        applyTacticalCommandTo3DShip(cmd);
+                    }
+                } catch (err) {
+                    appendChatMessage("FIRE CONTROL DIRECTOR", "Failed to compute structured tactical solution. Please try again.", false);
+                } finally {
+                    btnDirector.disabled = false;
+                    badge.textContent = "Solution Applied";
+                    badge.className = "text-[10px] mono-font text-emerald-400";
+                }
+            }
+
+            function applyTacticalCommandTo3DShip(cmd) {
+                // 1. Camera Preset
+                if (cmd.cameraPreset && STATIONS[cmd.cameraPreset]) {
+                    selectCameraPreset(cmd.cameraPreset);
+                }
+
+                // 2. Turret Traverse (-135 to +135)
+                const traverse = THREE.MathUtils.clamp(Math.round(cmd.turretTraverseDeg || 0), -135, 135);
+                const sliderTurret = document.getElementById('slider-turret');
+                sliderTurret.value = traverse;
+                sliderTurret.dispatchEvent(new Event('input'));
+
+                // 3. Gun Elevation (-3 to +45)
+                const elev = THREE.MathUtils.clamp(Math.round(cmd.gunElevationDeg || 12), -3, 45);
+                const sliderElev = document.getElementById('slider-elev');
+                sliderElev.value = elev;
+                sliderElev.dispatchEvent(new Event('input'));
+
+                // 4. Lighting Mode
+                if (typeof cmd.lightingModeIndex === 'number') {
+                    const targetMode = ((cmd.lightingModeIndex % 3) + 3) % 3;
+                    while (lightingMode !== targetMode) {
+                        document.getElementById('btn-time-of-day').click();
+                    }
+                }
+
+                // 5. 25mm AA Barrage State
+                if (typeof cmd.activateAABarrage === 'boolean' && aaDrillActive !== cmd.activateAABarrage) {
+                    document.getElementById('btn-aa-barrage').click();
+                }
+
+                // 6. Fire 46cm Main Battery Broadside after camera & turrets align
+                if (cmd.fireMainSalvo) {
+                    setTimeout(() => {
+                        triggerMainSalvo();
+                    }, 650);
+                }
+
+                // 7. Log to Bridge Comms & update last text for TTS
+                const summary = `${cmd.bridgeOrderAnnouncement}\n[Traverse: ${traverse}° | Elevation: +${elev}° | Target Range: ${cmd.estimatedRangeKm || '26.5 km'}]`;
+                lastAIResponseText = cmd.bridgeOrderAnnouncement;
+                appendChatMessage(`🎯 TACTICAL ORDER: ${cmd.scenarioTitle}`, summary, false);
+            }
+
+            // Gemini TTS (`gemini-2.5-flash-preview-tts`) PCM16 -> WAV Audio Conversion & Playback
+            function base64ToArrayBuffer(base64) {
+                const binaryString = window.atob(base64);
+                const len = binaryString.length;
+                const bytes = new Uint8Array(len);
+                for (let i = 0; i < len; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                return bytes.buffer;
+            }
+
+            function pcmToWav(pcm16, sampleRate) {
+                const numChannels = 1;
+                const bitsPerSample = 16;
+                const byteRate = (sampleRate * numChannels * bitsPerSample) / 8;
+                const blockAlign = (numChannels * bitsPerSample) / 8;
+                const dataSize = pcm16.byteLength;
+                const buffer = new ArrayBuffer(44 + dataSize);
+                const view = new DataView(buffer);
+
+                function writeString(offset, str) {
+                    for (let i = 0; i < str.length; i++) {
+                        view.setUint8(offset + i, str.charCodeAt(i));
+                    }
+                }
+
+                writeString(0, 'RIFF');
+                view.setUint32(4, 36 + dataSize, true);
+                writeString(8, 'WAVE');
+                writeString(12, 'fmt ');
+                view.setUint32(16, 16, true);
+                view.setUint16(20, 1, true); // PCM format
+                view.setUint16(22, numChannels, true);
+                view.setUint32(24, sampleRate, true);
+                view.setUint32(28, byteRate, true);
+                view.setUint16(32, blockAlign, true);
+                view.setUint16(34, bitsPerSample, true);
+                writeString(36, 'data');
+                view.setUint32(40, dataSize, true);
+
+                const pcmBytes = new Uint8Array(pcm16.buffer);
+                const targetBytes = new Uint8Array(buffer, 44);
+                targetBytes.set(pcmBytes);
+
+                return new Blob([buffer], { type: 'audio/wav' });
+            }
+
+            async function speakLastResponseWithTTS() {
+                const btnTTS = document.getElementById('btn-tts-speak');
+                if (!lastAIResponseText) return;
+
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio = null;
+                }
+
+                const persona = PERSONA_CONFIGS[currentPersona];
+                const originalLabel = btnTTS.innerHTML;
+                btnTTS.disabled = true;
+                btnTTS.innerHTML = `<span>⏳</span> Speaking...`;
+
+                try {
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+                    const payload = {
+                        contents: [{
+                            parts: [{ text: `${persona.voiceStyle} ${lastAIResponseText}` }]
+                        }],
+                        generationConfig: {
+                            responseModalities: ["AUDIO"],
+                            speechConfig: {
+                                voiceConfig: {
+                                    prebuiltVoiceConfig: { voiceName: persona.voice }
+                                }
+                            }
+                        },
+                        model: "gemini-2.5-flash-preview-tts"
+                    };
+
+                    const result = await fetchWithBackoff(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const part = result?.candidates?.[0]?.content?.parts?.[0];
+                    const audioData = part?.inlineData?.data;
+                    const mimeType = part?.inlineData?.mimeType || "audio/L16;rate=24000";
+
+                    if (audioData) {
+                        const rateMatch = mimeType.match(/rate=(\d+)/);
+                        const sampleRate = rateMatch ? parseInt(rateMatch[1], 10) : 24000;
+                        const pcmBuffer = base64ToArrayBuffer(audioData);
+                        const pcm16 = new Int16Array(pcmBuffer);
+                        const wavBlob = pcmToWav(pcm16, sampleRate);
+                        const audioUrl = URL.createObjectURL(wavBlob);
+
+                        currentAudio = new Audio(audioUrl);
+                        currentAudio.onended = () => {
+                            btnTTS.innerHTML = originalLabel;
+                            btnTTS.disabled = false;
+                        };
+                        await currentAudio.play();
+                        return;
+                    }
+                } catch (err) {
+                    appendChatMessage("VOICE CIRCUIT", "TTS audio synthesis unavailable at this moment.", false);
+                }
+
+                btnTTS.innerHTML = originalLabel;
+                btnTTS.disabled = false;
+            }
+
+            function setupAIControls() {
+                // Persona switching buttons
+                document.querySelectorAll('.ai-persona-btn').forEach((btn) => {
+                    btn.addEventListener('click', () => {
+                        currentPersona = btn.dataset.persona;
+                        document.querySelectorAll('.ai-persona-btn').forEach(b => b.classList.toggle('active', b === btn));
+                        const p = PERSONA_CONFIGS[currentPersona];
+                        if (p && p.preset) {
+                            selectCameraPreset(p.preset);
+                        }
+                    });
+                });
+
+                // Send chat message
+                document.getElementById('btn-ai-send').addEventListener('click', () => sendPersonaChat());
+                document.getElementById('ai-chat-input').addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') sendPersonaChat();
+                });
+
+                // Analyze Current 3D Station View
+                document.getElementById('btn- inspect-station-ai').addEventListener('click', () => {
+                    const stationTitle = document.getElementById('inspect-title').textContent;
+                    sendPersonaChat(`Give me an in-depth historical and technical briefing on the station we are currently inspecting in 3D: "${stationTitle}".`);
+                });
+
+                // Execute AI Tactical Scenario
+                document.getElementById('btn-ai-director').addEventListener('click', () => executeAITacticalScenario());
+                document.getElementById('ai-scenario-input').addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') executeAITacticalScenario();
+                });
+
+                // Quick Tactical Scenario Pills
+                document.querySelectorAll('.ai-quick-scen').forEach((btn) => {
+                    btn.addEventListener('click', () => {
+                        const scen = btn.dataset.scen;
+                        document.getElementById('ai-scenario-input').value = scen;
+                        executeAITacticalScenario(scen);
+                    });
+                });
+
+                // Gemini TTS Voice Playback
+                document.getElementById('btn-tts-speak').addEventListener('click', speakLastResponseWithTTS);
+            }
+
+            // ============================================================================
+            // 14. INITIALIZATION & ANIMATION LOOP
+            // ============================================================================
+            function init() {
+                clock = new THREE.Clock();
+                scene = new THREE.Scene();
+                scene.background = new THREE.Color(0x16293d);
+                scene.fog = new THREE.FogExp2(0x16293d, 0.00095);
+
+                camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.25, 2200);
+
+                renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                renderer.shadowMap.enabled = true;
+                renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+                document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+                // Lighting
+                hemiLight = new THREE.HemisphereLight(0xe0f2fe, 0x1e293b, 0.85);
+                scene.add(hemiLight);
+
+                sunLight = new THREE.DirectionalLight(0xffedd5, 1.45);
+                sunLight.position.set(140, 95, 120);
+                sunLight.castShadow = true;
+                sunLight.shadow.mapSize.width = 2048;
+                sunLight.shadow.mapSize.height = 2048;
+                sunLight.shadow.camera.near = 10;
+                sunLight.shadow.camera.far = 500;
+                const d = 155;
+                sunLight.shadow.camera.left = -d;
+                sunLight.shadow.camera.right = d;
+                sunLight.shadow.camera.top = d;
+                sunLight.shadow.camera.bottom = -d;
+                scene.add(sunLight);
+
+                initMaterials();
+                buildEnvironment();
+
+                // Master Battleship Group
+                yamatoGroup = new THREE.Group();
+                buildHull(yamatoGroup);
+                buildBowDetails(yamatoGroup);
+
+                // 3x 46cm/45 Type 94 Triple Turrets
+                // Turret No. 1 (+63.0m, +10.8m), Turret No. 2 (+37.0m, +13.8m), Turret No. 3 (-64.0m, +10.6m)
+                const t1 = create46cmTurret(63.0, 10.8, false);
+                const t2 = create46cmTurret(37.0, 13.8, false);
+                const t3 = create46cmTurret(-64.0, 10.6, true);
+                mainTurrets.push(t1, t2, t3);
+                yamatoGroup.add(t1.group, t2.group, t3.group);
+
+                // 2x 15.5cm/60 3rd Year Type Triple Secondary Turrets (Superfiring fore +18.5m and aft -47.5m)
+                const s1 = create155cmTurret(18.5, 16.5, false);
+                const s2 = create155cmTurret(-47.5, 14.5, true);
+                secTurrets.push(s1, s2);
+                yamatoGroup.add(s1.group, s2.group);
+
+                buildSuperstructure(yamatoGroup);
+                buildAABatteries(yamatoGroup);
+                buildSternAviation(yamatoGroup);
+                populateCrew(yamatoGroup);
+
+                scene.add(yamatoGroup);
+
+                createFloatingPins();
+                setupEventListeners();
+                setupAIControls();
+                selectCameraPreset('overview');
+            }
+
+            function animate() {
+                requestAnimationFrame(animate);
+                const dt = Math.min(clock.getDelta(), 0.1);
+                const elapsed = clock.getElapsedTime();
+
+                // Gentle heavy battleship ocean swell
+                if (yamatoGroup) {
+                    yamatoGroup.rotation.x = Math.sin(elapsed * 0.55) * 0.0035;
+                    yamatoGroup.rotation.z = Math.cos(elapsed * 0.42) * 0.0022;
+                }
+
+                // Keyboard WASD movement for walking the deck
+                const moveSpeed = Math.max(4.0, camState.spherical.radius * 0.45) * dt;
+                if (camState.keys.w || camState.keys.s || camState.keys.a || camState.keys.d) {
+                    const forward = new THREE.Vector3();
+                    camera.getWorldDirection(forward);
+                    forward.y = 0;
+                    forward.normalize();
+                    const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
+
+                    if (camState.keys.w) camState.desiredTarget.addScaledVector(forward, moveSpeed);
+                    if (camState.keys.s) camState.desiredTarget.addScaledVector(forward, -moveSpeed);
+                    if (camState.keys.d) camState.desiredTarget.addScaledVector(right, moveSpeed);
+                    if (camState.keys.a) camState.desiredTarget.addScaledVector(right, -moveSpeed);
+                }
+
+                // Smoothly interpolate camera target & spherical coordinates
+                camState.target.lerp(camState.desiredTarget, 0.1);
+                camState.spherical.radius += (camState.desiredSpherical.radius - camState.spherical.radius) * 0.1;
+                camState.spherical.phi += (camState.desiredSpherical.phi - camState.spherical.phi) * 0.1;
+                camState.spherical.theta += (camState.desiredSpherical.theta - camState.spherical.theta) * 0.1;
+
+                const offset = new THREE.Vector3().setFromSpherical(camState.spherical);
+                camera.position.copy(camState.target).add(offset);
+                camera.lookAt(camState.target);
+
+                // Animate Patrolling Sailors on Deck
+                animatedCrew.forEach((c) => {
+                    const walkCycle = elapsed * c.speed + c.phase;
+                    const posOffset = Math.sin(walkCycle * 0.35) * c.patrolDist;
+                    const dirSign = Math.cos(walkCycle * 0.35) >= 0 ? 1 : -1;
+
+                    const curX = c.baseX + posOffset;
+                    c.group.position.x = curX;
+                    c.group.position.y = getDeckHeightAtX(curX);
+                    c.group.rotation.y = dirSign > 0 ? 0 : Math.PI;
+
+                    // Stride leg & arm swing
+                    const limbAngle = Math.sin(walkCycle * 3.8) * 0.45;
+                    c.leftLeg.rotation.z = limbAngle;
+                    c.rightLeg.rotation.z = -limbAngle;
+                    c.leftArm.rotation.z = -limbAngle * 0.6;
+                    c.rightArm.rotation.z = limbAngle * 0.6;
+                });
+
+                // Subtle Top Director & Radar sweep
+                radarArrays.forEach((r) => {
+                    r.rotation.y = Math.sin(elapsed * 0.35) * 0.28;
+                });
+
+                // Animate Imperial Naval Ensign flag flutter
+                flagMeshes.forEach((flag) => {
+                    const pos = flag.geometry.attributes.position;
+                    for (let i = 0; i < pos.count; i++) {
+                        const u = pos.getX(i);
+                        pos.setZ(i, Math.sin(u * 1.8 + elapsed * 5.0) * 0.22);
+                    }
+                    pos.needsUpdate = true;
+                });
+
+                // Update 46cm Salvo Fireballs & Shells
+                for (let i = shellEffects.length - 1; i >= 0; i--) {
+                    const eff = shellEffects[i];
+                    eff.age += dt;
+                    eff.flash.scale.addScalar(dt * 18.0);
+                    eff.flash.material.opacity = Math.max(0, 1.0 - eff.age * 4.5);
+
+                    eff.smoke.scale.addScalar(dt * 9.0);
+                    eff.smoke.position.addScaledVector(eff.dir, dt * 8.0);
+                    eff.smoke.material.opacity = Math.max(0, 0.9 - eff.age * 0.65);
+
+                    eff.shell.position.addScaledVector(eff.dir, dt * 260.0);
+
+                    if (eff.age > 1.5) {
+                        scene.remove(eff.flash, eff.smoke, eff.shell);
+                        shellEffects.splice(i, 1);
+                    }
+                }
+
+                // Update 25mm AA Drill Tracers
+                if (aaDrillActive) {
+                    aaMounts.forEach((m, idx) => {
+                        m.pivot.rotation.y = (m.side === 1 ? -Math.PI * 0.45 : Math.PI * 0.45) + Math.sin(elapsed * 2.5 + idx) * 0.45;
+                        m.barrels.rotation.z = 0.55 + Math.cos(elapsed * 3.2 + idx) * 0.25;
+                    });
+                    if (Math.random() < 0.45) spawnAATracers();
+                }
+
+                for (let i = aaTracers.length - 1; i >= 0; i--) {
+                    const tr = aaTracers[i];
+                    tr.age += dt;
+                    tr.mesh.position.addScaledVector(tr.dir, dt * 165.0);
+                    if (tr.age > 1.4) {
+                        scene.remove(tr.mesh);
+                        aaTracers.splice(i, 1);
+                    }
+                }
+
+                updateFloatingPins();
+                renderer.render(scene, camera);
+            }
+
+            window.onload = function () {
+                init();
+                animate();
+            };
+        })();
+    </script>
+</body>
+</html>

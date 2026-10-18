@@ -1,0 +1,31 @@
+TAP version 13
+# Subtest: focus transfer to editable controls immediately clears held movement and pan
+not ok 1 - focus transfer to editable controls immediately clears held movement and pan
+  ---
+  duration_ms: 6.314587
+  type: 'test'
+  location: '/workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:67:1'
+  failureType: 'testCodeFailure'
+  error: 'all movement keys released'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    idle (file:///workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:9:10)
+    TestContext.<anonymous> (file:///workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:68:78)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.start (node:internal/test_runner/test:1242:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 93.433641

@@ -1,0 +1,15 @@
+{
+  "dependency_execution_in_this_task": "None: no remote script execution, dependency installation, browser or GPU use.",
+  "test_dependencies": { "node": "built-in node:test, node:vm, node:assert, node:fs, node:crypto", "python": "standard library only" },
+  "runtime": [
+    { "name": "Three.js", "version": "r128", "url": "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js", "status": "Inherited version-pinned URL, not vendored; remote response bytes and SRI not captured." },
+    { "name": "Tailwind CDN", "version": null, "url": "https://cdn.tailwindcss.com", "status": "Inherited unversioned script, not vendored." },
+    { "name": "Google Fonts CSS", "version": null, "url": "https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap", "status": "Inherited external CSS; font URLs resolved by that CSS were not captured." }
+  ],
+  "optional_network_features": [
+    { "provider": "Google Gemini", "model": "gemini-3-flash-preview", "status": "Inherited API requests; empty key unchanged; not invoked." },
+    { "provider": "Google Gemini TTS", "model": "gemini-2.5-flash-preview-tts", "status": "Inherited API requests; empty key unchanged; not invoked." }
+  ],
+  "offline_runtime_complete": false,
+  "external_models_added": false
+}

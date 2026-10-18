@@ -1,0 +1,35 @@
+TAP version 13
+# Subtest: new mouse presses replace stale pan/drag and no-button move cancels missed mouseup
+not ok 1 - new mouse presses replace stale pan/drag and no-button move cancels missed mouseup
+  ---
+  duration_ms: 8.721783
+  type: 'test'
+  location: '/workspace/scratch/7de9d41380ed/yamato-camera-cadence-candidate-20261016/tests/input.test.mjs:133:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    drag released
+
+    true !== false
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    idle (file:///workspace/scratch/7de9d41380ed/yamato-camera-cadence-candidate-20261016/tests/input.test.mjs:10:10)
+    TestContext.<anonymous> (file:///workspace/scratch/7de9d41380ed/yamato-camera-cadence-candidate-20261016/tests/input.test.mjs:137:3)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.start (node:internal/test_runner/test:1242:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 111.835217

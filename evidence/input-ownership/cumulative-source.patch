@@ -1,0 +1,199 @@
+diff --git a/baseline/recovered-original.html b/src/ijn_battleship_yamato_1_1_scale_3d_simulation.html
+index 08037e5..7e736e5 100644
+--- a/baseline/recovered-original.html
++++ b/src/ijn_battleship_yamato_1_1_scale_3d_simulation.html
+@@ -865,7 +865,7 @@
+                     const b = a + 1;
+                     const c = a + 2;
+                     const d = a + 3;
+-                    deckIndices.push(a, c, b, b, c, d);
++                    deckIndices.push(a, b, c, b, d, c);
+                 }
+ 
+                 const deckGeom = new THREE.BufferGeometry();
+@@ -891,7 +891,7 @@
+                 }
+                 for (let i = 0; i < sternSteps - 1; i++) {
+                     const a = i * 2, b = a + 1, c = a + 2, d = a + 3;
+-                    sternDeckIndices.push(a, c, b, b, c, d);
++                    sternDeckIndices.push(a, b, c, b, d, c);
+                 }
+                 const sternDeckGeom = new THREE.BufferGeometry();
+                 sternDeckGeom.setAttribute('position', new THREE.Float32BufferAttribute(sternDeckPositions, 3));
+@@ -1996,6 +1996,14 @@
+             // ============================================================================
+             // 11. 46cm BROADSIDE SALVO BLAST & 25mm AA TRACER EFFECTS
+             // ============================================================================
++            // Only for transient effect meshes that own their geometry and material.
++            // Ship geometry and shared MAT resources must never use this cleanup path.
++            function removeOwnedEffectMesh(mesh) {
++                scene.remove(mesh);
++                mesh.geometry.dispose();
++                mesh.material.dispose();
++            }
++
+             function triggerMainSalvo() {
+                 mainTurrets.forEach((turret, tIdx) => {
+                     setTimeout(() => {
+@@ -2145,10 +2153,60 @@
+ 
+             function setupEventListeners() {
+                 const dom = renderer.domElement;
++                let touchPrevDist = 0;
++                let touchActive = false;
++                let inputComposing = false;
++
++                function clearPointerInput() {
++                    camState.isDragging = false;
++                    camState.isPanning = false;
++                    camState.prevMouse.x = 0;
++                    camState.prevMouse.y = 0;
++                    touchPrevDist = 0;
++                    touchActive = false;
++                }
++
++                function clearCameraInput() {
++                    Object.keys(camState.keys).forEach((key) => { camState.keys[key] = false; });
++                    clearPointerInput();
++                }
++
++                function isEditableTarget(target) {
++                    return target && (target.isContentEditable || (typeof target.closest === 'function' &&
++                        target.closest('input, textarea, select, [role="textbox"]')));
++                }
++
++                function cameraInputUnavailable() {
++                    return document.hidden || !document.hasFocus() || inputComposing;
++                }
++
++                function cancelCameraInput() {
++                    inputComposing = false;
++                    clearCameraInput();
++                }
++
++                window.addEventListener('blur', cancelCameraInput);
++                window.addEventListener('pagehide', cancelCameraInput);
++                document.addEventListener('visibilitychange', () => {
++                    if (document.hidden) cancelCameraInput();
++                });
++                document.addEventListener('focusin', (e) => {
++                    if (isEditableTarget(e.target)) clearCameraInput();
++                });
++                document.addEventListener('compositionstart', () => {
++                    clearCameraInput();
++                    inputComposing = true;
++                });
++                document.addEventListener('compositionend', () => {
++                    inputComposing = false;
++                    clearCameraInput();
++                });
+ 
+                 dom.addEventListener('contextmenu', (e) => e.preventDefault());
+ 
+                 dom.addEventListener('mousedown', (e) => {
++                    if (cameraInputUnavailable()) { clearCameraInput(); return; }
++                    clearPointerInput();
+                     if (e.button === 0 && !e.shiftKey) {
+                         camState.isDragging = true;
+                     } else {
+@@ -2158,13 +2216,12 @@
+                     camState.prevMouse.y = e.clientY;
+                 });
+ 
+-                window.addEventListener('mouseup', () => {
+-                    camState.isDragging = false;
+-                    camState.isPanning = false;
+-                });
++                window.addEventListener('mouseup', clearPointerInput);
+ 
+                 window.addEventListener('mousemove', (e) => {
+                     if (!camState.isDragging && !camState.isPanning) return;
++                    if (cameraInputUnavailable()) { clearCameraInput(); return; }
++                    if (e.buttons === 0) { clearPointerInput(); return; }
+                     const dx = e.clientX - camState.prevMouse.x;
+                     const dy = e.clientY - camState.prevMouse.y;
+                     camState.prevMouse.x = e.clientX;
+@@ -2191,6 +2248,7 @@
+                 });
+ 
+                 dom.addEventListener('wheel', (e) => {
++                    if (cameraInputUnavailable()) { clearCameraInput(); return; }
+                     e.preventDefault();
+                     const zoomFactor = e.deltaY > 0 ? 1.12 : 0.89;
+                     camState.desiredSpherical.radius = THREE.MathUtils.clamp(
+@@ -2201,8 +2259,10 @@
+                 }, { passive: false });
+ 
+                 // Touch Support
+-                let touchPrevDist = 0;
+                 dom.addEventListener('touchstart', (e) => {
++                    if (cameraInputUnavailable()) { clearCameraInput(); return; }
++                    clearPointerInput();
++                    touchActive = e.touches.length === 1 || e.touches.length === 2;
+                     if (e.touches.length === 1) {
+                         camState.isDragging = true;
+                         camState.prevMouse.x = e.touches[0].clientX;
+@@ -2216,6 +2276,8 @@
+                 });
+ 
+                 dom.addEventListener('touchmove', (e) => {
++                    if (cameraInputUnavailable()) { clearCameraInput(); return; }
++                    if (!touchActive) return;
+                     if (e.touches.length === 1 && camState.isDragging) {
+                         const dx = e.touches[0].clientX - camState.prevMouse.x;
+                         const dy = e.touches[0].clientY - camState.prevMouse.y;
+@@ -2231,7 +2293,7 @@
+                         const dx = e.touches[0].clientX - e.touches[1].clientX;
+                         const dy = e.touches[0].clientY - e.touches[1].clientY;
+                         const dist = Math.hypot(dx, dy);
+-                        if (touchPrevDist > 0) {
++                        if (touchPrevDist > 0 && dist > 0) {
+                             const ratio = touchPrevDist / dist;
+                             camState.desiredSpherical.radius = THREE.MathUtils.clamp(
+                                 camState.desiredSpherical.radius * ratio,
+@@ -2243,14 +2305,21 @@
+                     }
+                 });
+ 
+-                dom.addEventListener('touchend', () => {
+-                    camState.isDragging = false;
+-                });
++                dom.addEventListener('touchend', clearPointerInput);
++                dom.addEventListener('touchcancel', clearCameraInput);
+ 
+                 // Keyboard WASD Deck Walk
+                 window.addEventListener('keydown', (e) => {
++                    if (cameraInputUnavailable() || e.defaultPrevented || e.isComposing || e.keyCode === 229 ||
++                        e.ctrlKey || e.altKey || e.metaKey || document.designMode === 'on' ||
++                        isEditableTarget(e.target) || isEditableTarget(document.activeElement)) {
++                        clearCameraInput();
++                        return;
++                    }
+                     const k = e.key.toLowerCase();
+-                    if (camState.keys.hasOwnProperty(k)) camState.keys[k] = true;
++                    if (Object.prototype.hasOwnProperty.call(camState.keys, k) && (!e.repeat || camState.keys[k])) {
++                        camState.keys[k] = true;
++                    }
+                 });
+                 window.addEventListener('keyup', (e) => {
+                     const k = e.key.toLowerCase();
+@@ -2959,7 +3028,9 @@
+                     eff.shell.position.addScaledVector(eff.dir, dt * 260.0);
+ 
+                     if (eff.age > 1.5) {
+-                        scene.remove(eff.flash, eff.smoke, eff.shell);
++                        removeOwnedEffectMesh(eff.flash);
++                        removeOwnedEffectMesh(eff.smoke);
++                        removeOwnedEffectMesh(eff.shell);
+                         shellEffects.splice(i, 1);
+                     }
+                 }
+@@ -2978,7 +3049,7 @@
+                     tr.age += dt;
+                     tr.mesh.position.addScaledVector(tr.dir, dt * 165.0);
+                     if (tr.age > 1.4) {
+-                        scene.remove(tr.mesh);
++                        removeOwnedEffectMesh(tr.mesh);
+                         aaTracers.splice(i, 1);
+                     }
+                 }

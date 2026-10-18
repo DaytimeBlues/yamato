@@ -1,0 +1,346 @@
+TAP version 13
+# Subtest: ordinary case-insensitive WASD moves through actual animate and keyup stops movement
+ok 1 - ordinary case-insensitive WASD moves through actual animate and keyup stops movement
+  ---
+  duration_ms: 14.446258
+  type: 'test'
+  ...
+# Subtest: editable event targets and active controls cannot claim camera keyboard input
+not ok 2 - editable event targets and active controls cannot claim camera keyboard input
+  ---
+  duration_ms: 2.711155
+  type: 'test'
+  location: '/workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:27:1'
+  failureType: 'testCodeFailure'
+  error: 'all movement keys released'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    idle (file:///workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:8:10)
+    TestContext.<anonymous> (file:///workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:34:7)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: modifier shortcuts and IME key events cannot latch movement
+not ok 3 - modifier shortcuts and IME key events cannot latch movement
+  ---
+  duration_ms: 1.738923
+  type: 'test'
+  location: '/workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:48:1'
+  failureType: 'testCodeFailure'
+  error: 'all movement keys released'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    idle (file:///workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:8:10)
+    TestContext.<anonymous> (file:///workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:51:75)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: keyup always releases even when focus composition or modifiers changed
+ok 4 - keyup always releases even when focus composition or modifiers changed
+  ---
+  duration_ms: 1.810039
+  type: 'test'
+  ...
+# Subtest: focus transfer to editable controls immediately clears held movement and pan
+not ok 5 - focus transfer to editable controls immediately clears held movement and pan
+  ---
+  duration_ms: 2.085317
+  type: 'test'
+  location: '/workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:62:1'
+  failureType: 'testCodeFailure'
+  error: 'all movement keys released'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    idle (file:///workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:8:10)
+    TestContext.<anonymous> (file:///workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:63:78)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: window blur cancels held movement and pointer ownership without resuming on focus
+not ok 6 - window blur cancels held movement and pointer ownership without resuming on focus
+  ---
+  duration_ms: 2.694068
+  type: 'test'
+  location: '/workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:68:1'
+  failureType: 'testCodeFailure'
+  error: 'all movement keys released'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    idle (file:///workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:8:10)
+    TestContext.<anonymous> (file:///workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:69:76)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: hidden documents cancel input while visible visibility changes preserve a live key
+not ok 7 - hidden documents cancel input while visible visibility changes preserve a live key
+  ---
+  duration_ms: 1.669898
+  type: 'test'
+  location: '/workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:75:1'
+  failureType: 'testCodeFailure'
+  error: 'all movement keys released'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    idle (file:///workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:8:10)
+    TestContext.<anonymous> (file:///workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:78:70)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: pagehide cancels input and pageshow does not synthesize a new hold
+not ok 8 - pagehide cancels input and pageshow does not synthesize a new hold
+  ---
+  duration_ms: 1.89582
+  type: 'test'
+  location: '/workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:83:1'
+  failureType: 'testCodeFailure'
+  error: 'all movement keys released'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    idle (file:///workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:8:10)
+    TestContext.<anonymous> (file:///workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:84:101)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: unfocused documents reject new keyboard mouse touch and wheel input
+not ok 9 - unfocused documents reject new keyboard mouse touch and wheel input
+  ---
+  duration_ms: 1.872164
+  type: 'test'
+  location: '/workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:88:1'
+  failureType: 'testCodeFailure'
+  error: 'all movement keys released'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    idle (file:///workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:8:10)
+    TestContext.<anonymous> (file:///workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:95:43)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: composition lifecycle clears held input and requires a fresh post-composition keydown
+not ok 10 - composition lifecycle clears held input and requires a fresh post-composition keydown
+  ---
+  duration_ms: 1.714806
+  type: 'test'
+  location: '/workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:98:1'
+  failureType: 'testCodeFailure'
+  error: 'all movement keys released'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    idle (file:///workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:8:10)
+    TestContext.<anonymous> (file:///workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:99:90)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: ordinary mouse orbit shift/right pan wheel and mouseup retain original control math
+ok 11 - ordinary mouse orbit shift/right pan wheel and mouseup retain original control math
+  ---
+  duration_ms: 1.733243
+  type: 'test'
+  ...
+# Subtest: new mouse presses replace stale pan/drag and no-button move cancels missed mouseup
+not ok 12 - new mouse presses replace stale pan/drag and no-button move cancels missed mouseup
+  ---
+  duration_ms: 1.874608
+  type: 'test'
+  location: '/workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:126:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    true !== false
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:128:54)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: ordinary one-touch orbit and two-touch pinch preserve original control math
+ok 13 - ordinary one-touch orbit and two-touch pinch preserve original control math
+  ---
+  duration_ms: 1.491628
+  type: 'test'
+  ...
+# Subtest: touchcancel and focus loss reject stale pinch moves until a fresh touchstart
+not ok 14 - touchcancel and focus loss reject stale pinch moves until a fresh touchstart
+  ---
+  duration_ms: 2.469969
+  type: 'test'
+  location: '/workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:145:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      {
+        orbit: [
+    +     16.5,
+    -     165,
+          1,
+          0.65
+        ],
+        target: [
+          0,
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    target:
+      0: 0
+      1: 0
+      2: 0
+    orbit:
+      0: 165
+      1: 1
+      2: 0.65
+  actual:
+    target:
+      0: 0
+      1: 0
+      2: 0
+    orbit:
+      0: 16.5
+      1: 1
+      2: 0.65
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:151:84)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: touchend discards pinch ownership and zero-distance gestures cannot jump zoom
+not ok 15 - touchend discards pinch ownership and zero-distance gestures cannot jump zoom
+  ---
+  duration_ms: 1.758782
+  type: 'test'
+  location: '/workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:158:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      {
+        orbit: [
+    +     16.5,
+    -     165,
+          1,
+          0.65
+        ],
+        target: [
+          0,
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    target:
+      0: 0
+      1: 0
+      2: 0
+    orbit:
+      0: 165
+      1: 1
+      2: 0.65
+  actual:
+    target:
+      0: 0
+      1: 0
+      2: 0
+    orbit:
+      0: 16.5
+      1: 1
+      2: 0.65
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/7de9d41380ed/yamato-input-ownership-candidate-20261016/tests/input.test.mjs:162:82)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+1..15
+# tests 15
+# suites 0
+# pass 4
+# fail 11
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 157.419089

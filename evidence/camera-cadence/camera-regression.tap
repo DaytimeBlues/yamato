@@ -1,0 +1,52 @@
+TAP version 13
+# Subtest: separate camera-only inverse restores exact f206799 full-source pin
+ok 1 - separate camera-only inverse restores exact f206799 full-source pin
+  ---
+  duration_ms: 3.856625
+  type: 'test'
+  ...
+# Subtest: exact f206799 reproduces baseline red at 30/60/120Hz and all durations
+ok 2 - exact f206799 reproduces baseline red at 30/60/120Hz and all durations
+  ---
+  duration_ms: 24.366859
+  type: 'test'
+  ...
+# Subtest: actual candidate converges to the exponential oracle across cadences signs and settled poses
+ok 3 - actual candidate converges to the exponential oracle across cadences signs and settled poses
+  ---
+  duration_ms: 39.385804
+  type: 'test'
+  ...
+# Subtest: actual candidate preserves every component of 180 baseline 60Hz frames
+ok 4 - actual candidate preserves every component of 180 baseline 60Hz frames
+  ---
+  duration_ms: 6.684945
+  type: 'test'
+  ...
+# Subtest: actual candidate agrees across jitter zero callbacks and matched target-change boundaries
+ok 5 - actual candidate agrees across jitter zero callbacks and matched target-change boundaries
+  ---
+  duration_ms: 3.124137
+  type: 'test'
+  ...
+# Subtest: actual delta boundary behavior uses existing cap with monotonic non-overshooting convergence
+ok 6 - actual delta boundary behavior uses existing cap with monotonic non-overshooting convergence
+  ---
+  duration_ms: 12.080248
+  type: 'test'
+  ...
+# Subtest: registered lifecycle cancellation fixes desired pose while easing continues and fresh input rearms
+ok 7 - registered lifecycle cancellation fixes desired pose while easing continues and fresh input rearms
+  ---
+  duration_ms: 13.326424
+  type: 'test'
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 212.575873

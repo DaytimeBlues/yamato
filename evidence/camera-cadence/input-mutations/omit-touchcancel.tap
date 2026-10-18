@@ -1,0 +1,59 @@
+TAP version 13
+# Subtest: touchcancel and focus loss reject stale pinch moves until a fresh touchstart
+not ok 1 - touchcancel and focus loss reject stale pinch moves until a fresh touchstart
+  ---
+  duration_ms: 9.577577
+  type: 'test'
+  location: '/workspace/scratch/7de9d41380ed/yamato-camera-cadence-candidate-20261016/tests/input.test.mjs:152:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+
+      {
+        orbit: [
+    +     8.25,
+    -     165,
+          1,
+          0.65
+        ],
+        target: [
+          0,
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    target:
+      0: 0
+      1: 0
+      2: 0
+    orbit:
+      0: 165
+      1: 1
+      2: 0.65
+  actual:
+    target:
+      0: 0
+      1: 0
+      2: 0
+    orbit:
+      0: 8.25
+      1: 1
+      2: 0.65
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/7de9d41380ed/yamato-camera-cadence-candidate-20261016/tests/input.test.mjs:159:84)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.start (node:internal/test_runner/test:1242:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 116.9841

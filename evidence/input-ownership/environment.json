@@ -1,0 +1,20 @@
+{
+  "date_utc": "2026-10-16",
+  "environment": "assigned cloud workspace; isolated owned Git worktree",
+  "project_directory": "yamato-input-ownership-candidate-20261016",
+  "git_branch": "local/yamato-input-ownership",
+  "base_commit": "3aec7086416b991240d45dd4ddd8cdadea83b67d",
+  "base_source_sha256": "3ef3661c981e2464869dc57de326a09651b14ad698034df5a574b81e84bff4f7",
+  "candidate_source_bytes": 160546,
+  "candidate_source_sha256": "418f1d2ce3481a9d53e2c225889d4528fee57615c4beeb4fb1d545b17f8bdae1",
+  "node_version": "v24.19.0",
+  "python_version": "3.12.14",
+  "git_remote": null,
+  "source_writer": "input-ownership repair task only",
+  "browser_or_gpu_used": false,
+  "remote_dependencies_executed": false,
+  "uploads_or_publishing": false,
+  "disk_free_bytes": "2796826624",
+  "reserved_disk_minimum_bytes": 2000000000,
+  "remaining_gate": "Real rendered ordinary and interrupted controls; inherited cloud CDN reachability is blocked per parent."
+}

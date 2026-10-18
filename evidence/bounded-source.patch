@@ -1,0 +1,57 @@
+diff --git a/src/ijn_battleship_yamato_1_1_scale_3d_simulation.html b/src/ijn_battleship_yamato_1_1_scale_3d_simulation.html
+index 08037e5..211a1ec 100644
+--- a/src/ijn_battleship_yamato_1_1_scale_3d_simulation.html
++++ b/src/ijn_battleship_yamato_1_1_scale_3d_simulation.html
+@@ -865,7 +865,7 @@
+                     const b = a + 1;
+                     const c = a + 2;
+                     const d = a + 3;
+-                    deckIndices.push(a, c, b, b, c, d);
++                    deckIndices.push(a, b, c, b, d, c);
+                 }
+ 
+                 const deckGeom = new THREE.BufferGeometry();
+@@ -891,7 +891,7 @@
+                 }
+                 for (let i = 0; i < sternSteps - 1; i++) {
+                     const a = i * 2, b = a + 1, c = a + 2, d = a + 3;
+-                    sternDeckIndices.push(a, c, b, b, c, d);
++                    sternDeckIndices.push(a, b, c, b, d, c);
+                 }
+                 const sternDeckGeom = new THREE.BufferGeometry();
+                 sternDeckGeom.setAttribute('position', new THREE.Float32BufferAttribute(sternDeckPositions, 3));
+@@ -1996,6 +1996,14 @@
+             // ============================================================================
+             // 11. 46cm BROADSIDE SALVO BLAST & 25mm AA TRACER EFFECTS
+             // ============================================================================
++            // Only for transient effect meshes that own their geometry and material.
++            // Ship geometry and shared MAT resources must never use this cleanup path.
++            function removeOwnedEffectMesh(mesh) {
++                scene.remove(mesh);
++                mesh.geometry.dispose();
++                mesh.material.dispose();
++            }
++
+             function triggerMainSalvo() {
+                 mainTurrets.forEach((turret, tIdx) => {
+                     setTimeout(() => {
+@@ -2959,7 +2967,9 @@
+                     eff.shell.position.addScaledVector(eff.dir, dt * 260.0);
+ 
+                     if (eff.age > 1.5) {
+-                        scene.remove(eff.flash, eff.smoke, eff.shell);
++                        removeOwnedEffectMesh(eff.flash);
++                        removeOwnedEffectMesh(eff.smoke);
++                        removeOwnedEffectMesh(eff.shell);
+                         shellEffects.splice(i, 1);
+                     }
+                 }
+@@ -2978,7 +2988,7 @@
+                     tr.age += dt;
+                     tr.mesh.position.addScaledVector(tr.dir, dt * 165.0);
+                     if (tr.age > 1.4) {
+-                        scene.remove(tr.mesh);
++                        removeOwnedEffectMesh(tr.mesh);
+                         aaTracers.splice(i, 1);
+                     }
+                 }

@@ -1,0 +1,65 @@
+{
+  "stage": "writer checks before independent frozen review",
+  "source_sha256": "14a976b94d621050d28efbab9090f3a72a59cc81cfe82fd812ce7a560fe324fd",
+  "source_bytes": 160644,
+  "baseline_commit": "f206799b4f05251e3e4e9fd4a6cb9704efce9988",
+  "baseline_source_sha256": "418f1d2ce3481a9d53e2c225889d4528fee57615c4beeb4fb1d545b17f8bdae1",
+  "original_worktrees_clean": true,
+  "historical_approval_fixture_and_actual_harnesses_unchanged": true,
+  "results": {
+    "camera_groups": {
+      "pass": 7,
+      "fail": 0
+    },
+    "camera_behavioral_mutations": {
+      "detected": 4
+    },
+    "retained_geometry_disposal": {
+      "pass": 10,
+      "fail": 0
+    },
+    "retained_input": {
+      "pass": 16,
+      "fail": 0
+    },
+    "original_geometry_negative_controls": {
+      "expected_failures": 6,
+      "unexpected_failures": 0
+    },
+    "geometry_baseline_input_negative_controls": {
+      "expected_failures": 11,
+      "unexpected_failures": 0
+    },
+    "original_input_negative_controls": {
+      "expected_failures": 11,
+      "unexpected_failures": 0
+    },
+    "input_mutations": {
+      "detected": 12
+    },
+    "complete_inline_script": "PASS in retained regression suite",
+    "whitespace": "PASS",
+    "checkpoint_script_syntax": "PASS"
+  },
+  "not_run": [
+    "independent frozen-byte review at receipt time",
+    "dependent external delta preservation/readback/reconstruction",
+    "browser/GPU/device/scheduling acceptance"
+  ],
+  "source_scope": "Exact camera-block inverse restores f206799; retained input/geometry whole-file inverse gates pass. All other production bytes unchanged.",
+  "environment": {
+    "host": "87a4973038ca",
+    "cwd": "/workspace/scratch/7de9d41380ed/yamato-camera-cadence-candidate-20261016",
+    "node": "v24.19.0",
+    "python": "Python 3.12.14",
+    "browser": "none used"
+  },
+  "storage": {
+    "floor_bytes": 2147483648,
+    "lane_limit_bytes": 4194304,
+    "initial_free_bytes": 2168090624,
+    "initial_shared_git_allocation": 999424,
+    "current_free_bytes": 2167197696
+  },
+  "limit": "Counts describe separate overlapping test suites. Actual extracted production with doubles; no Three.js/WebGL/real-clock execution."
+}

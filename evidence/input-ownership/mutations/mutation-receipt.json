@@ -1,0 +1,78 @@
+{
+  "mutations": [
+    {
+      "mutation": "omit-blur",
+      "target_test_pattern": "window blur cancels",
+      "returncode": 1,
+      "expected_defect_detected": true
+    },
+    {
+      "mutation": "omit-pagehide",
+      "target_test_pattern": "pagehide cancels",
+      "returncode": 1,
+      "expected_defect_detected": true
+    },
+    {
+      "mutation": "omit-visibility",
+      "target_test_pattern": "hidden documents cancel",
+      "returncode": 1,
+      "expected_defect_detected": true
+    },
+    {
+      "mutation": "omit-focus-clear",
+      "target_test_pattern": "focus transfer to editable",
+      "returncode": 1,
+      "expected_defect_detected": true
+    },
+    {
+      "mutation": "disable-editable-guard",
+      "target_test_pattern": "editable event targets",
+      "returncode": 1,
+      "expected_defect_detected": true
+    },
+    {
+      "mutation": "omit-ctrl-guard",
+      "target_test_pattern": "modifier shortcuts",
+      "returncode": 1,
+      "expected_defect_detected": true
+    },
+    {
+      "mutation": "omit-composition-state",
+      "target_test_pattern": "composition lifecycle",
+      "returncode": 1,
+      "expected_defect_detected": true
+    },
+    {
+      "mutation": "omit-touchcancel",
+      "target_test_pattern": "touchcancel and focus loss",
+      "returncode": 1,
+      "expected_defect_detected": true
+    },
+    {
+      "mutation": "omit-touch-ownership",
+      "target_test_pattern": "touchcancel and focus loss",
+      "returncode": 1,
+      "expected_defect_detected": true
+    },
+    {
+      "mutation": "omit-no-button-clear",
+      "target_test_pattern": "new mouse presses",
+      "returncode": 1,
+      "expected_defect_detected": true
+    },
+    {
+      "mutation": "allow-repeat-rearm",
+      "target_test_pattern": "window blur cancels",
+      "returncode": 1,
+      "expected_defect_detected": true
+    },
+    {
+      "mutation": "allow-zero-distance",
+      "target_test_pattern": "touchend discards pinch",
+      "returncode": 1,
+      "expected_defect_detected": true
+    }
+  ],
+  "status": "PASS: all 12 targeted source mutations were detected",
+  "limit": "Source-listener doubles only; no rendered input or browser/GPU acceptance."
+}

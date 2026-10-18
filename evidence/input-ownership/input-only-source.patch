@@ -1,0 +1,146 @@
+diff --git a/src/ijn_battleship_yamato_1_1_scale_3d_simulation.html b/src/ijn_battleship_yamato_1_1_scale_3d_simulation.html
+index 211a1ec..7e736e5 100644
+--- a/src/ijn_battleship_yamato_1_1_scale_3d_simulation.html
++++ b/src/ijn_battleship_yamato_1_1_scale_3d_simulation.html
+@@ -2153,10 +2153,60 @@
+ 
+             function setupEventListeners() {
+                 const dom = renderer.domElement;
++                let touchPrevDist = 0;
++                let touchActive = false;
++                let inputComposing = false;
++
++                function clearPointerInput() {
++                    camState.isDragging = false;
++                    camState.isPanning = false;
++                    camState.prevMouse.x = 0;
++                    camState.prevMouse.y = 0;
++                    touchPrevDist = 0;
++                    touchActive = false;
++                }
++
++                function clearCameraInput() {
++                    Object.keys(camState.keys).forEach((key) => { camState.keys[key] = false; });
++                    clearPointerInput();
++                }
++
++                function isEditableTarget(target) {
++                    return target && (target.isContentEditable || (typeof target.closest === 'function' &&
++                        target.closest('input, textarea, select, [role="textbox"]')));
++                }
++
++                function cameraInputUnavailable() {
++                    return document.hidden || !document.hasFocus() || inputComposing;
++                }
++
++                function cancelCameraInput() {
++                    inputComposing = false;
++                    clearCameraInput();
++                }
++
++                window.addEventListener('blur', cancelCameraInput);
++                window.addEventListener('pagehide', cancelCameraInput);
++                document.addEventListener('visibilitychange', () => {
++                    if (document.hidden) cancelCameraInput();
++                });
++                document.addEventListener('focusin', (e) => {
++                    if (isEditableTarget(e.target)) clearCameraInput();
++                });
++                document.addEventListener('compositionstart', () => {
++                    clearCameraInput();
++                    inputComposing = true;
++                });
++                document.addEventListener('compositionend', () => {
++                    inputComposing = false;
++                    clearCameraInput();
++                });
+ 
+                 dom.addEventListener('contextmenu', (e) => e.preventDefault());
+ 
+                 dom.addEventListener('mousedown', (e) => {
++                    if (cameraInputUnavailable()) { clearCameraInput(); return; }
++                    clearPointerInput();
+                     if (e.button === 0 && !e.shiftKey) {
+                         camState.isDragging = true;
+                     } else {
+@@ -2166,13 +2216,12 @@
+                     camState.prevMouse.y = e.clientY;
+                 });
+ 
+-                window.addEventListener('mouseup', () => {
+-                    camState.isDragging = false;
+-                    camState.isPanning = false;
+-                });
++                window.addEventListener('mouseup', clearPointerInput);
+ 
+                 window.addEventListener('mousemove', (e) => {
+                     if (!camState.isDragging && !camState.isPanning) return;
++                    if (cameraInputUnavailable()) { clearCameraInput(); return; }
++                    if (e.buttons === 0) { clearPointerInput(); return; }
+                     const dx = e.clientX - camState.prevMouse.x;
+                     const dy = e.clientY - camState.prevMouse.y;
+                     camState.prevMouse.x = e.clientX;
+@@ -2199,6 +2248,7 @@
+                 });
+ 
+                 dom.addEventListener('wheel', (e) => {
++                    if (cameraInputUnavailable()) { clearCameraInput(); return; }
+                     e.preventDefault();
+                     const zoomFactor = e.deltaY > 0 ? 1.12 : 0.89;
+                     camState.desiredSpherical.radius = THREE.MathUtils.clamp(
+@@ -2209,8 +2259,10 @@
+                 }, { passive: false });
+ 
+                 // Touch Support
+-                let touchPrevDist = 0;
+                 dom.addEventListener('touchstart', (e) => {
++                    if (cameraInputUnavailable()) { clearCameraInput(); return; }
++                    clearPointerInput();
++                    touchActive = e.touches.length === 1 || e.touches.length === 2;
+                     if (e.touches.length === 1) {
+                         camState.isDragging = true;
+                         camState.prevMouse.x = e.touches[0].clientX;
+@@ -2224,6 +2276,8 @@
+                 });
+ 
+                 dom.addEventListener('touchmove', (e) => {
++                    if (cameraInputUnavailable()) { clearCameraInput(); return; }
++                    if (!touchActive) return;
+                     if (e.touches.length === 1 && camState.isDragging) {
+                         const dx = e.touches[0].clientX - camState.prevMouse.x;
+                         const dy = e.touches[0].clientY - camState.prevMouse.y;
+@@ -2239,7 +2293,7 @@
+                         const dx = e.touches[0].clientX - e.touches[1].clientX;
+                         const dy = e.touches[0].clientY - e.touches[1].clientY;
+                         const dist = Math.hypot(dx, dy);
+-                        if (touchPrevDist > 0) {
++                        if (touchPrevDist > 0 && dist > 0) {
+                             const ratio = touchPrevDist / dist;
+                             camState.desiredSpherical.radius = THREE.MathUtils.clamp(
+                                 camState.desiredSpherical.radius * ratio,
+@@ -2251,14 +2305,21 @@
+                     }
+                 });
+ 
+-                dom.addEventListener('touchend', () => {
+-                    camState.isDragging = false;
+-                });
++                dom.addEventListener('touchend', clearPointerInput);
++                dom.addEventListener('touchcancel', clearCameraInput);
+ 
+                 // Keyboard WASD Deck Walk
+                 window.addEventListener('keydown', (e) => {
++                    if (cameraInputUnavailable() || e.defaultPrevented || e.isComposing || e.keyCode === 229 ||
++                        e.ctrlKey || e.altKey || e.metaKey || document.designMode === 'on' ||
++                        isEditableTarget(e.target) || isEditableTarget(document.activeElement)) {
++                        clearCameraInput();
++                        return;
++                    }
+                     const k = e.key.toLowerCase();
+-                    if (camState.keys.hasOwnProperty(k)) camState.keys[k] = true;
++                    if (Object.prototype.hasOwnProperty.call(camState.keys, k) && (!e.repeat || camState.keys[k])) {
++                        camState.keys[k] = true;
++                    }
+                 });
+                 window.addEventListener('keyup', (e) => {
+                     const k = e.key.toLowerCase();

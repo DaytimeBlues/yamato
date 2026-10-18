@@ -1,0 +1,8 @@
+{
+  "base_commit": "3aec7086416b991240d45dd4ddd8cdadea83b67d",
+  "base_source_sha256": "3ef3661c981e2464869dc57de326a09651b14ad698034df5a574b81e84bff4f7",
+  "scope": "Exact setupEventListeners replacement only: input ownership/cancellation; no other source change",
+  "setup_function_sha256": "029e9f3367be0c6ef3fb89037f002272dc16c242065a2e067df0141e8f511339",
+  "candidate_source_sha256": "418f1d2ce3481a9d53e2c225889d4528fee57615c4beeb4fb1d545b17f8bdae1",
+  "acceptance": "Local source-listener evidence only. Independent review and rendered controls gate remain required."
+}

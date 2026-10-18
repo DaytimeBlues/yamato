@@ -1,0 +1,70 @@
+TAP version 13
+# Subtest: preserved supplied baseline has exact original byte identity
+ok 1 - preserved supplied baseline has exact original byte identity
+  ---
+  duration_ms: 2.223625
+  type: 'test'
+  ...
+# Subtest: complete inline script compiles without executing remote dependencies
+ok 2 - complete inline script compiles without executing remote dependencies
+  ---
+  duration_ms: 3.076506
+  type: 'test'
+  ...
+# Subtest: teakDeck actual procedural triangles all face upward and remain single-sided
+ok 3 - teakDeck actual procedural triangles all face upward and remain single-sided
+  ---
+  duration_ms: 16.457947
+  type: 'test'
+  ...
+# Subtest: nonSlipGrey actual procedural triangles all face upward and remain single-sided
+ok 4 - nonSlipGrey actual procedural triangles all face upward and remain single-sided
+  ---
+  duration_ms: 10.734376
+  type: 'test'
+  ...
+# Subtest: all generated positions, UVs, primitive dimensions and persistent materials match original
+ok 5 - all generated positions, UVs, primitive dimensions and persistent materials match original
+  ---
+  duration_ms: 15.216108
+  type: 'test'
+  ...
+# Subtest: entire candidate differs only by approved winding and owned-effect cleanup edits
+ok 6 - entire candidate differs only by approved winding and owned-effect cleanup edits
+  ---
+  duration_ms: 0.955476
+  type: 'test'
+  ...
+# Subtest: salvo resources remain live before expiry then are removed and disposed exactly once
+ok 7 - salvo resources remain live before expiry then are removed and disposed exactly once
+  ---
+  duration_ms: 3.841955
+  type: 'test'
+  ...
+# Subtest: tracer resources obey disabled/enabled drill and expire with exactly-once cleanup
+ok 8 - tracer resources obey disabled/enabled drill and expire with exactly-once cleanup
+  ---
+  duration_ms: 2.192768
+  type: 'test'
+  ...
+# Subtest: staggered effects preserve newer allocations while older effects expire
+ok 9 - staggered effects preserve newer allocations while older effects expire
+  ---
+  duration_ms: 2.975373
+  type: 'test'
+  ...
+# Subtest: 100 repeated mixed cycles release all private effect resources and preserve shared hull assets
+ok 10 - 100 repeated mixed cycles release all private effect resources and preserve shared hull assets
+  ---
+  duration_ms: 924.908807
+  type: 'test'
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 10
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1086.341246

@@ -1,0 +1,66 @@
+[
+  {
+    "label": "original",
+    "bytes": 156963,
+    "sha256": "228d3e4c4421965e21b50e49dbabf9116ae7b6a71ff8f269c60522746f893c1d",
+    "geometry": {
+      "teakDeck": {
+        "side": 0,
+        "triangles": 220,
+        "up": 0,
+        "down": 220,
+        "zero": 0,
+        "minCrossY": -93.00644552751328,
+        "maxCrossY": -1.5792518647867837
+      },
+      "nonSlipGrey": {
+        "side": 0,
+        "triangles": 52,
+        "up": 0,
+        "down": 52,
+        "zero": 0,
+        "minCrossY": -58.3927552740206,
+        "maxCrossY": -8.876402281021
+      }
+    },
+    "lifecycle": {
+      "allocatedPrivateResources": 62,
+      "disposedExactlyOnce": 0,
+      "notDisposed": 62,
+      "remainingEffects": 0
+    },
+    "evidenceLimit": "Actual extracted source functions with dependency-free test doubles; no browser, Three.js execution or GPU-memory measurement."
+  },
+  {
+    "label": "candidate",
+    "bytes": 157433,
+    "sha256": "3ef3661c981e2464869dc57de326a09651b14ad698034df5a574b81e84bff4f7",
+    "geometry": {
+      "teakDeck": {
+        "side": 0,
+        "triangles": 220,
+        "up": 220,
+        "down": 0,
+        "zero": 0,
+        "minCrossY": 1.5792518647867837,
+        "maxCrossY": 93.00644552751328
+      },
+      "nonSlipGrey": {
+        "side": 0,
+        "triangles": 52,
+        "up": 52,
+        "down": 0,
+        "zero": 0,
+        "minCrossY": 8.876402281021,
+        "maxCrossY": 58.3927552740206
+      }
+    },
+    "lifecycle": {
+      "allocatedPrivateResources": 62,
+      "disposedExactlyOnce": 62,
+      "notDisposed": 0,
+      "remainingEffects": 0
+    },
+    "evidenceLimit": "Actual extracted source functions with dependency-free test doubles; no browser, Three.js execution or GPU-memory measurement."
+  }
+]

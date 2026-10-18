@@ -1,0 +1,106 @@
+TAP version 13
+# Subtest: input listener delta is bound to exact approved geometry-cleanup baseline
+ok 1 - input listener delta is bound to exact approved geometry-cleanup baseline
+  ---
+  duration_ms: 8.398144
+  type: 'test'
+  ...
+# Subtest: ordinary case-insensitive WASD moves through actual animate and keyup stops movement
+ok 2 - ordinary case-insensitive WASD moves through actual animate and keyup stops movement
+  ---
+  duration_ms: 18.635259
+  type: 'test'
+  ...
+# Subtest: editable event targets and active controls cannot claim camera keyboard input
+ok 3 - editable event targets and active controls cannot claim camera keyboard input
+  ---
+  duration_ms: 19.896295
+  type: 'test'
+  ...
+# Subtest: modifier shortcuts and IME key events cannot latch movement
+ok 4 - modifier shortcuts and IME key events cannot latch movement
+  ---
+  duration_ms: 11.081512
+  type: 'test'
+  ...
+# Subtest: keyup always releases even when focus composition or modifiers changed
+ok 5 - keyup always releases even when focus composition or modifiers changed
+  ---
+  duration_ms: 2.14861
+  type: 'test'
+  ...
+# Subtest: focus transfer to editable controls immediately clears held movement and pan
+ok 6 - focus transfer to editable controls immediately clears held movement and pan
+  ---
+  duration_ms: 2.284997
+  type: 'test'
+  ...
+# Subtest: window blur cancels held movement and pointer ownership without resuming on focus
+ok 7 - window blur cancels held movement and pointer ownership without resuming on focus
+  ---
+  duration_ms: 1.983801
+  type: 'test'
+  ...
+# Subtest: hidden documents cancel input while visible visibility changes preserve a live key
+ok 8 - hidden documents cancel input while visible visibility changes preserve a live key
+  ---
+  duration_ms: 2.271256
+  type: 'test'
+  ...
+# Subtest: pagehide cancels input and pageshow does not synthesize a new hold
+ok 9 - pagehide cancels input and pageshow does not synthesize a new hold
+  ---
+  duration_ms: 1.948718
+  type: 'test'
+  ...
+# Subtest: unfocused documents reject new keyboard mouse touch and wheel input
+ok 10 - unfocused documents reject new keyboard mouse touch and wheel input
+  ---
+  duration_ms: 2.110263
+  type: 'test'
+  ...
+# Subtest: composition lifecycle clears held input and requires a fresh post-composition keydown
+ok 11 - composition lifecycle clears held input and requires a fresh post-composition keydown
+  ---
+  duration_ms: 2.204395
+  type: 'test'
+  ...
+# Subtest: ordinary mouse orbit shift/right pan wheel and mouseup retain original control math
+ok 12 - ordinary mouse orbit shift/right pan wheel and mouseup retain original control math
+  ---
+  duration_ms: 2.643298
+  type: 'test'
+  ...
+# Subtest: new mouse presses replace stale pan/drag and no-button move cancels missed mouseup
+ok 13 - new mouse presses replace stale pan/drag and no-button move cancels missed mouseup
+  ---
+  duration_ms: 2.154849
+  type: 'test'
+  ...
+# Subtest: ordinary one-touch orbit and two-touch pinch preserve original control math
+ok 14 - ordinary one-touch orbit and two-touch pinch preserve original control math
+  ---
+  duration_ms: 1.588252
+  type: 'test'
+  ...
+# Subtest: touchcancel and focus loss reject stale pinch moves until a fresh touchstart
+ok 15 - touchcancel and focus loss reject stale pinch moves until a fresh touchstart
+  ---
+  duration_ms: 4.912411
+  type: 'test'
+  ...
+# Subtest: touchend discards pinch ownership and zero-distance gestures cannot jump zoom
+ok 16 - touchend discards pinch ownership and zero-distance gestures cannot jump zoom
+  ---
+  duration_ms: 1.691508
+  type: 'test'
+  ...
+1..16
+# tests 16
+# suites 0
+# pass 16
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 194.079624

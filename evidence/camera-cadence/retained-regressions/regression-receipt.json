@@ -1,0 +1,92 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=tap",
+    "tests/regression.test.mjs"
+  ],
+  "input_command": [
+    "node",
+    "--test",
+    "--test-reporter=tap",
+    "tests/input.test.mjs"
+  ],
+  "node_version": "v24.19.0",
+  "results": {
+    "candidate": {
+      "returncode": 0,
+      "pass": 10,
+      "fail": 0,
+      "failed_tests": [],
+      "source_bytes": 160644,
+      "source_sha256": "14a976b94d621050d28efbab9090f3a72a59cc81cfe82fd812ce7a560fe324fd"
+    },
+    "original": {
+      "returncode": 1,
+      "pass": 4,
+      "fail": 6,
+      "failed_tests": [
+        "teakDeck actual procedural triangles all face upward and remain single-sided",
+        "nonSlipGrey actual procedural triangles all face upward and remain single-sided",
+        "salvo resources remain live before expiry then are removed and disposed exactly once",
+        "tracer resources obey disabled/enabled drill and expire with exactly-once cleanup",
+        "staggered effects preserve newer allocations while older effects expire",
+        "100 repeated mixed cycles release all private effect resources and preserve shared hull assets"
+      ],
+      "source_bytes": 156963,
+      "source_sha256": "228d3e4c4421965e21b50e49dbabf9116ae7b6a71ff8f269c60522746f893c1d"
+    }
+  },
+  "input_results": {
+    "candidate": {
+      "returncode": 0,
+      "pass": 16,
+      "fail": 0,
+      "failed_tests": [],
+      "source_bytes": 160644,
+      "source_sha256": "14a976b94d621050d28efbab9090f3a72a59cc81cfe82fd812ce7a560fe324fd"
+    },
+    "geometry-baseline": {
+      "returncode": 1,
+      "pass": 5,
+      "fail": 11,
+      "failed_tests": [
+        "editable event targets and active controls cannot claim camera keyboard input",
+        "modifier shortcuts and IME key events cannot latch movement",
+        "focus transfer to editable controls immediately clears held movement and pan",
+        "window blur cancels held movement and pointer ownership without resuming on focus",
+        "hidden documents cancel input while visible visibility changes preserve a live key",
+        "pagehide cancels input and pageshow does not synthesize a new hold",
+        "unfocused documents reject new keyboard mouse touch and wheel input",
+        "composition lifecycle clears held input and requires a fresh post-composition keydown",
+        "new mouse presses replace stale pan/drag and no-button move cancels missed mouseup",
+        "touchcancel and focus loss reject stale pinch moves until a fresh touchstart",
+        "touchend discards pinch ownership and zero-distance gestures cannot jump zoom"
+      ],
+      "source_bytes": 157433,
+      "source_sha256": "3ef3661c981e2464869dc57de326a09651b14ad698034df5a574b81e84bff4f7"
+    },
+    "original": {
+      "returncode": 1,
+      "pass": 5,
+      "fail": 11,
+      "failed_tests": [
+        "editable event targets and active controls cannot claim camera keyboard input",
+        "modifier shortcuts and IME key events cannot latch movement",
+        "focus transfer to editable controls immediately clears held movement and pan",
+        "window blur cancels held movement and pointer ownership without resuming on focus",
+        "hidden documents cancel input while visible visibility changes preserve a live key",
+        "pagehide cancels input and pageshow does not synthesize a new hold",
+        "unfocused documents reject new keyboard mouse touch and wheel input",
+        "composition lifecycle clears held input and requires a fresh post-composition keydown",
+        "new mouse presses replace stale pan/drag and no-button move cancels missed mouseup",
+        "touchcancel and focus loss reject stale pinch moves until a fresh touchstart",
+        "touchend discards pinch ownership and zero-distance gestures cannot jump zoom"
+      ],
+      "source_bytes": 156963,
+      "source_sha256": "228d3e4c4421965e21b50e49dbabf9116ae7b6a71ff8f269c60522746f893c1d"
+    }
+  },
+  "status": "PASS: candidate geometry/disposal 10/10 and input 16/16; original six and each input-baseline eleven expected failures verified",
+  "limit": "Dependency-free doubles around actual extracted functions and production-registered input listeners. No browser/WebGL/Three.js/GPU-memory test."
+}

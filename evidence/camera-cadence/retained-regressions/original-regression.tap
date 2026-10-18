@@ -1,0 +1,194 @@
+TAP version 13
+# Subtest: preserved supplied baseline has exact original byte identity
+ok 1 - preserved supplied baseline has exact original byte identity
+  ---
+  duration_ms: 1.762527
+  type: 'test'
+  ...
+# Subtest: complete inline script compiles without executing remote dependencies
+ok 2 - complete inline script compiles without executing remote dependencies
+  ---
+  duration_ms: 2.384288
+  type: 'test'
+  ...
+# Subtest: teakDeck actual procedural triangles all face upward and remain single-sided
+not ok 3 - teakDeck actual procedural triangles all face upward and remain single-sided
+  ---
+  duration_ms: 14.100935
+  type: 'test'
+  location: '/workspace/scratch/7de9d41380ed/yamato-camera-cadence-candidate-20261016/tests/regression.test.mjs:26:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"triangles":220,"up":0,"down":220,"zero":0,"minCrossY":-93.00644552751328,"maxCrossY":-1.5792518647867837}
+
+    0 !== 220
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 220
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/7de9d41380ed/yamato-camera-cadence-candidate-20261016/tests/regression.test.mjs:33:12)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: nonSlipGrey actual procedural triangles all face upward and remain single-sided
+not ok 4 - nonSlipGrey actual procedural triangles all face upward and remain single-sided
+  ---
+  duration_ms: 7.813679
+  type: 'test'
+  location: '/workspace/scratch/7de9d41380ed/yamato-camera-cadence-candidate-20261016/tests/regression.test.mjs:26:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"triangles":52,"up":0,"down":52,"zero":0,"minCrossY":-58.3927552740206,"maxCrossY":-8.876402281021}
+
+    0 !== 52
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 52
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/7de9d41380ed/yamato-camera-cadence-candidate-20261016/tests/regression.test.mjs:33:12)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: all generated positions, UVs, primitive dimensions and persistent materials match original
+ok 5 - all generated positions, UVs, primitive dimensions and persistent materials match original
+  ---
+  duration_ms: 14.863624
+  type: 'test'
+  ...
+# Subtest: entire candidate differs only by approved winding and owned-effect cleanup edits
+ok 6 - entire candidate differs only by approved winding and owned-effect cleanup edits
+  ---
+  duration_ms: 2.549757
+  type: 'test'
+  ...
+# Subtest: salvo resources remain live before expiry then are removed and disposed exactly once
+not ok 7 - salvo resources remain live before expiry then are removed and disposed exactly once
+  ---
+  duration_ms: 3.194122
+  type: 'test'
+  location: '/workspace/scratch/7de9d41380ed/yamato-camera-cadence-candidate-20261016/tests/regression.test.mjs:96:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    owned material 21 must be disposed exactly once
+
+    0 !== 1
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    assertReleased (file:///workspace/scratch/7de9d41380ed/yamato-camera-cadence-candidate-20261016/tests/regression.test.mjs:85:12)
+    TestContext.<anonymous> (file:///workspace/scratch/7de9d41380ed/yamato-camera-cadence-candidate-20261016/tests/regression.test.mjs:109:3)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: tracer resources obey disabled/enabled drill and expire with exactly-once cleanup
+not ok 8 - tracer resources obey disabled/enabled drill and expire with exactly-once cleanup
+  ---
+  duration_ms: 1.79157
+  type: 'test'
+  location: '/workspace/scratch/7de9d41380ed/yamato-camera-cadence-candidate-20261016/tests/regression.test.mjs:115:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    owned material 21 must be disposed exactly once
+
+    0 !== 1
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    assertReleased (file:///workspace/scratch/7de9d41380ed/yamato-camera-cadence-candidate-20261016/tests/regression.test.mjs:85:12)
+    TestContext.<anonymous> (file:///workspace/scratch/7de9d41380ed/yamato-camera-cadence-candidate-20261016/tests/regression.test.mjs:128:3)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: staggered effects preserve newer allocations while older effects expire
+not ok 9 - staggered effects preserve newer allocations while older effects expire
+  ---
+  duration_ms: 2.067066
+  type: 'test'
+  location: '/workspace/scratch/7de9d41380ed/yamato-camera-cadence-candidate-20261016/tests/regression.test.mjs:134:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    owned material 21 must be disposed exactly once
+
+    0 !== 1
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    assertReleased (file:///workspace/scratch/7de9d41380ed/yamato-camera-cadence-candidate-20261016/tests/regression.test.mjs:85:12)
+    TestContext.<anonymous> (file:///workspace/scratch/7de9d41380ed/yamato-camera-cadence-candidate-20261016/tests/regression.test.mjs:139:3)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: 100 repeated mixed cycles release all private effect resources and preserve shared hull assets
+not ok 10 - 100 repeated mixed cycles release all private effect resources and preserve shared hull assets
+  ---
+  duration_ms: 46.321779
+  type: 'test'
+  location: '/workspace/scratch/7de9d41380ed/yamato-camera-cadence-candidate-20261016/tests/regression.test.mjs:147:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    owned material 26 must be disposed exactly once
+
+    0 !== 1
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    assertReleased (file:///workspace/scratch/7de9d41380ed/yamato-camera-cadence-candidate-20261016/tests/regression.test.mjs:85:12)
+    TestContext.<anonymous> (file:///workspace/scratch/7de9d41380ed/yamato-camera-cadence-candidate-20261016/tests/regression.test.mjs:160:3)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 4
+# fail 6
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 220.730061

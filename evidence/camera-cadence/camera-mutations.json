@@ -1,0 +1,25 @@
+{
+  "status": "PASS: all four camera behavioral mutations detected",
+  "rows": [
+    {
+      "name": "fixed-0.1",
+      "detected": true,
+      "behavioral_failure": "pose 0/30Hz/0.1s component 0: 0.271 != 0.46855899999999995 (absolute tolerance 1e-10)"
+    },
+    {
+      "name": "theta-left-fixed",
+      "detected": true,
+      "behavioral_failure": "pose 0/30Hz/0.1s component 5: 0.20285 != -0.12312234999999994 (absolute tolerance 1e-10)"
+    },
+    {
+      "name": "missing-60",
+      "detected": true,
+      "behavioral_failure": "pose 0/30Hz/0.1s component 0: 0.010480741793785553 != 0.46855899999999995 (absolute tolerance 1e-10)"
+    },
+    {
+      "name": "uncapped-delta",
+      "detected": true,
+      "behavioral_failure": "raw 0.5 frame 1 component 0: 0.9576088417247838 != 0.46855899999999995 (absolute tolerance 1e-10)"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "base_commit": "f206799b4f05251e3e4e9fd4a6cb9704efce9988",
+  "base_source_sha256": "418f1d2ce3481a9d53e2c225889d4528fee57615c4beeb4fb1d545b17f8bdae1",
+  "candidate_source_sha256": "14a976b94d621050d28efbab9090f3a72a59cc81cfe82fd812ce7a560fe324fd",
+  "before_block": "                // Smoothly interpolate camera target & spherical coordinates\n                camState.target.lerp(camState.desiredTarget, 0.1);\n                camState.spherical.radius += (camState.desiredSpherical.radius - camState.spherical.radius) * 0.1;\n                camState.spherical.phi += (camState.desiredSpherical.phi - camState.spherical.phi) * 0.1;\n                camState.spherical.theta += (camState.desiredSpherical.theta - camState.spherical.theta) * 0.1;",
+  "after_block": "                // Preserve the 60 Hz camera feel across accepted frame deltas.\n                const cameraBlend = 1 - Math.pow(0.9, dt * 60);\n                camState.target.lerp(camState.desiredTarget, cameraBlend);\n                camState.spherical.radius += (camState.desiredSpherical.radius - camState.spherical.radius) * cameraBlend;\n                camState.spherical.phi += (camState.desiredSpherical.phi - camState.spherical.phi) * cameraBlend;\n                camState.spherical.theta += (camState.desiredSpherical.theta - camState.spherical.theta) * cameraBlend;",
+  "scope": "Only this camera smoothing block; existing clamped dt/clock/input/effects unchanged."
+}
