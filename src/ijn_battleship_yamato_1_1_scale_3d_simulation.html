@@ -143,7 +143,7 @@
                     <h1 class="title-font text-lg md:text-xl font-bold tracking-wider text-amber-400">IJN YAMATO (大和)</h1>
                     <span class="text-[10px] mono-font uppercase px-2 py-0.5 bg-amber-500/20 border border-amber-400/40 text-amber-300 rounded-full">1:1 Exact Metric Scale</span>
                 </div>
-                <p class="text-xs text-slate-300">263.0m LOA • 38.9m Beam • 72,800t Full Load • 9× 46cm/45 Type 94 Guns • Crew: 2,750</p>
+                <p class="text-xs text-slate-300">263.0m LOA • 38.9m Beam • 72,800t Full Load • 9× 46cm/45 Type 94 Guns • Crew: 2,750 (not rendered)</p>
             </div>
         </div>
 
@@ -160,8 +160,8 @@
             </div>
             <div class="h-7 w-px bg-slate-700"></div>
             <div>
-                <span class="text-slate-400 block text-[10px]">PERSONNEL RENDERED</span>
-                <span id="hud-crew-count" class="text-sky-400 font-semibold">158 Officers & Sailors</span>
+                <span class="text-slate-400 block text-[10px]">CREW DISPLAY</span>
+                <span id="hud-crew-count" class="text-sky-400 font-semibold">Crew not rendered (demo)</span>
             </div>
             <div class="h-7 w-px bg-slate-700"></div>
             <button id="btn-toggle-pins" class="btn-naval active px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5">
@@ -285,7 +285,7 @@
 
         <div id="inspector-body" class="space-y-3 text-xs leading-relaxed text-slate-300">
             <p id="inspect-desc">
-                Built in extreme secrecy at Kure Naval Arsenal, <strong class="text-white">Yamato</strong> was the heaviest and most powerfully armed battleship ever constructed. In this 1:1 scale simulation (1 unit = 1 meter), you can zoom from the full 263-meter hull right down to individual 1.72-meter sailors and Captain Kosaku Aruga on the bridge.
+                Built in extreme secrecy at Kure Naval Arsenal, <strong class="text-white">Yamato</strong> was the heaviest and most powerfully armed battleship ever constructed. In this 1:1 scale simulation (1 unit = 1 meter) you can inspect the full 263-meter hull, the pagoda bridge, the nine 46cm barrels and the sea-state model. Visible crew figures and crew animation are excluded from this demonstration.
             </p>
 
             <div class="bg-slate-900/80 border border-slate-700/70 rounded-lg p-2.5 mono-font text-[11px] space-y-1.5">
@@ -333,6 +333,22 @@
                         <span>🌅</span> Lighting: Golden
                     </button>
                 </div>
+
+                <div class="pt-2 mt-1 space-y-2 border-t border-slate-700/80">
+                    <div class="flex items-center justify-between text-[11px]">
+                        <span class="text-slate-300 font-medium">Sea State</span>
+                        <span id="hud-sea-state" class="mono-font text-sky-300">Moderate</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1.5">
+                        <button data-sea="calm" class="sea-btn btn-naval py-1.5 rounded-lg text-[11px] font-semibold" aria-pressed="false">Calm</button>
+                        <button data-sea="moderate" class="sea-btn btn-naval active py-1.5 rounded-lg text-[11px] font-semibold" aria-pressed="true">Moderate</button>
+                        <button data-sea="rough" class="sea-btn btn-naval py-1.5 rounded-lg text-[11px] font-semibold" aria-pressed="false">Rough</button>
+                    </div>
+                    <button id="btn-reduced-motion" class="btn-naval w-full py-1.5 rounded-lg text-[11px] font-semibold text-sky-300" aria-pressed="false">Reduced Motion: OFF</button>
+                    <p class="text-[10px] leading-snug text-slate-400">
+                        Illustrative visual sea-state model, not validated hydrodynamics. Crew figures and crew animation are excluded; the main battery uses illustrative visual recoil and blast lifetimes, not historical timings or ballistics.
+                    </p>
+                </div>
             </div>
         </div>
     </aside>
@@ -355,25 +371,25 @@
                 <span>🚢</span> Full 263m Ship
             </button>
             <button data-preset="captain" class="cam-preset btn-naval px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5">
-                <span>🔭</span> Captain & Compass Bridge
+                <span>🔭</span> Compass Bridge
             </button>
             <button data-preset="admiral" class="cam-preset btn-naval px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5">
-                <span>⚓</span> Admiral Ito & Flag Staff
+                <span>⚓</span> Admiral's Bridge
             </button>
             <button data-preset="bow_division" class="cam-preset btn-naval px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5">
-                <span>👨‍✈️</span> Bow Sailors & Chrysanthemum
+                <span>⚓</span> Forecastle & Chrysanthemum
             </button>
             <button data-preset="turrets" class="cam-preset btn-naval px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5">
                 <span>🎯</span> 46cm Triple Turrets
             </button>
             <button data-preset="aa_citadel" class="cam-preset btn-naval px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5">
-                <span>🛡️</span> 25mm AA Gun Crews
+                <span>🛡️</span> 25mm AA Mounts
             </button>
             <button data-preset="stern_air" class="cam-preset btn-naval px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5">
-                <span>✈️</span> Floatplanes & Flight Crew
+                <span>✈️</span> Floatplanes & Stern Deck
             </button>
             <button data-preset="sailor_pov" class="cam-preset btn-naval px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5">
-                <span>👁️</span> 1.7m Sailor Eye-Level
+                <span>🧭</span> Deck Eye-Level
             </button>
         </div>
     </footer>
@@ -399,11 +415,14 @@
             let radarArrays = [];
             let animatedCrew = [];
             let flagMeshes = [];
-            let shellEffects = [];
             let aaTracers = [];
             let aaDrillActive = false;
             let aaEmissionPhase = 0; // Fractional virtual 60 Hz AA ticks.
             let lightingMode = 0; // 0: Golden Hour, 1: High Noon Pacific, 2: Ten-Go Overcast
+            // YAM-DEMO-01: this demonstration renders no people. The original crew
+            // builders and assets remain untouched in the immutable baseline; crew
+            // creation and crew animation are excluded at this boundary.
+            const DEMO_CREW_RENDERED = false;
 
             // Camera Orbit & Smooth Target State
             const camState = {
@@ -433,11 +452,11 @@
                     pinPos: null
                 },
                 captain: {
-                    title: "Captain Kosaku Aruga & Compass Bridge",
+                    title: "First (Compass) Bridge",
                     category: "1ST BRIDGE COMMAND (+29.0m)",
-                    desc: "High atop the Pagoda Mast sits the First (Compass) Bridge. Captain Kosaku Aruga stands at the forward binnacle wearing his dark blue Imperial Japanese Navy command tunic, white cap, and binoculars, surrounded by his Navigator, Officer of the Deck, Helmsman, and Signalmen.",
-                    stat1: "Crew Scale: 1.72m Human Height",
-                    stat2: "Bridge Elevation: +29.0m WL",
+                    desc: "High atop the Pagoda Mast sits the First (Compass) Bridge, with its forward binnacle, brass engine-order telegraphs, chart table and protected bridge wings. The station is preserved as ship structure in this demo; no human figures are rendered.",
+                    stat1: "Bridge Elevation: +29.0m WL",
+                    stat2: "Open Bridge Wings & Binnacle",
                     stat3: "15m Duplex Rangefinder Above",
                     target: new THREE.Vector3(-0.3, 29.3, 0.0),
                     radius: 4.8,
@@ -446,11 +465,11 @@
                     pinPos: new THREE.Vector3(1.2, 30.8, 0)
                 },
                 admiral: {
-                    title: "Vice Admiral Seiichi Ito & 2nd Fleet Staff",
+                    title: "Second (Admiral's) Bridge",
                     category: "2ND ADMIRAL'S BRIDGE (+25.8m)",
-                    desc: "Directly beneath the Captain's bridge is the Admiral's Bridge, where Vice Admiral Seiichi Ito (Commander-in-Chief of the 2nd Fleet) and his Chief of Staff confer over the chart table and binocular pedestals overlooking the massive forward turrets.",
-                    stat1: "Staff Officers: 7 Rendered",
-                    stat2: "Bridge Elevation: +25.8m WL",
+                    desc: "Directly beneath the Compass Bridge is the Admiral's Bridge with its chart space, glazed cabin and open flag wings overlooking the forward turrets. No human figures are rendered in this demonstration.",
+                    stat1: "Bridge Elevation: +25.8m WL",
+                    stat2: "Glazed Cabin & Flag Wings",
                     stat3: "Conning Tower: 500mm Armor",
                     target: new THREE.Vector3(1.2, 26.2, 0.0),
                     radius: 5.2,
@@ -459,9 +478,9 @@
                     pinPos: new THREE.Vector3(2.8, 26.8, 0)
                 },
                 bow_division: {
-                    title: "Forecastle Divisions & Imperial Chrysanthemum",
+                    title: "Forecastle & Imperial Chrysanthemum",
                     category: "BOW WEATHER DECK (+10.0m)",
-                    desc: "At the extreme bow sits the 1.8-meter gilded 16-petal Imperial Chrysanthemum crest (Kikumon). On the hinoki cypress forecastle behind the twin 15-ton bower anchors and capstans, two divisions of enlisted sailors in white work uniforms stand at muster before their petty officers.",
+                    desc: "At the extreme bow sits the gilded 16-petal Imperial Chrysanthemum crest (Kikumon) above the hawsepipes and bower anchors, with capstans, chain runs and breakwater forward of Turret No. 1. This is a structural view; no division of sailors is rendered.",
                     stat1: "Crest Diameter: 1.80 Meters",
                     stat2: "Forecastle Sheer: +10.0m WL",
                     stat3: "Anchor Chains: 150mm Stud-Link",
@@ -485,9 +504,9 @@
                     pinPos: new THREE.Vector3(37.0, 17.8, 0)
                 },
                 aa_citadel: {
-                    title: "Central Anti-Aircraft Citadel & Gun Crews",
+                    title: "Central Anti-Aircraft Citadel",
                     category: "SECONDARY & AA BATTERY (+13.2m)",
-                    desc: "By April 1945, Yamato bristled with twenty-four 12.7cm Type 89 dual-purpose guns in six twin mounts and 152 barrels of 25mm Type 96 anti-aircraft cannons. Enlisted gunners and loaders in steel helmets man the sandbagged and shielded triple mounts around the raked funnel.",
+                    desc: "By April 1945, Yamato carried twenty-four 12.7cm Type 89 dual-purpose guns in six twin mounts and 152 barrels of 25mm Type 96 anti-aircraft cannons. Inspect the shielded triple mounts and splinter tubs around the raked funnel; gun crews are not rendered in this demo.",
                     stat1: "Heavy AA: 12× 12.7cm DP Guns",
                     stat2: "Light AA: 152× 25mm Type 96",
                     stat3: "Funnel Rake: 26° Aft Tilt",
@@ -500,7 +519,7 @@
                 stern_air: {
                     title: "Stern Aviation Deck & E13A 'Jake' Floatplanes",
                     category: "AVIATION FACILITIES (+6.4m)",
-                    desc: "Yamato's recessed quarterdeck houses two 19.5-meter gunpowder catapults, a lattice aircraft crane, and steel turntable rails leading to an underground hangar. Flight deck mechanics in green work overalls inspect the green Aichi E13A 'Jake' reconnaissance floatplanes.",
+                    desc: "Yamato's recessed quarterdeck houses two 19.5-meter gunpowder catapults, a lattice aircraft crane, and steel turntable rails leading to an underground hangar. The green Aichi E13A 'Jake' reconnaissance floatplanes are shown without flight-deck crew in this demo.",
                     stat1: "Aircraft: 2× E13A1 'Jake' Shown",
                     stat2: "Catapults: 2× Kure Type No. 2",
                     stat3: "Stern Turret: No. 3 46cm + 15.5cm",
@@ -511,10 +530,10 @@
                     pinPos: new THREE.Vector3(-102.0, 10.5, 0)
                 },
                 sailor_pov: {
-                    title: "Deck Sailor 1:1 Eye-Level Perspective",
-                    category: "HUMAN SCALE IMMERSION (+8.5m)",
-                    desc: "Standing on the starboard teak deck at exact human eye height (1.68 meters above the planking), look up at the colossal 46cm barrels of Turret No. 2 and the 45-meter Pagoda Mast towering overhead like a steel skyscraper.",
-                    stat1: "Eye Height: 1.68m Above Deck",
+                    title: "Deck Eye-Level View (+1.7m)",
+                    category: "DECK-LEVEL INSPECTION (+8.5m)",
+                    desc: "From a low viewpoint on the starboard teak deck, look up at the colossal 46cm barrels of Turret No. 2 and the 45-meter Pagoda Mast towering overhead. The observation height is preserved, but no sailor figure is rendered.",
+                    stat1: "View Height: 1.68m Above Deck",
                     stat2: "Mast Height: 38.2m Above Deck",
                     stat3: "Use WASD Keys to Walk Around",
                     target: new THREE.Vector3(24.0, 10.8, 4.5),
@@ -1113,37 +1132,50 @@
                 elevationPivot.position.set(6.8, 2.15, 0);
 
                 const muzzleOffsets = [];
+                const barrels = [];
                 for (let zOff of [-3.15, 0, 3.15]) {
                     const barrelGroup = new THREE.Group();
                     barrelGroup.position.set(0, 0, zOff);
+                    // Everything from the blast bag forward rides this local recoil rig;
+                    // its stored neutral transform stays in barrel-local space.
+                    const recoil = createBarrelRecoilRig(barrelGroup);
+                    const recoilRig = recoil.rig;
 
                     // White canvas blast bag (bloomer)
                     const bloomer = new THREE.Mesh(new THREE.SphereGeometry(0.92, 12, 10), MAT.canvasWhite);
                     bloomer.scale.set(1.5, 0.9, 0.95);
                     bloomer.position.set(0.7, 0, 0);
-                    barrelGroup.add(bloomer);
+                    recoilRig.add(bloomer);
 
                     // Heavy breech sleeve
                     const sleeve = new THREE.Mesh(new THREE.CylinderGeometry(0.46, 0.52, 6.5, 16), MAT.kureGrey);
                     sleeve.rotation.z = -Math.PI * 0.5;
                     sleeve.position.set(3.8, 0, 0);
                     sleeve.castShadow = true;
-                    barrelGroup.add(sleeve);
+                    recoilRig.add(sleeve);
 
                     // Tapered forward barrel tube
                     const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.44, 9.6, 16), MAT.kureGrey);
                     barrel.rotation.z = -Math.PI * 0.5;
                     barrel.position.set(11.6, 0, 0);
                     barrel.castShadow = true;
-                    barrelGroup.add(barrel);
+                    recoilRig.add(barrel);
 
                     // Dark bore hole at muzzle tip
                     const bore = new THREE.Mesh(new THREE.CylinderGeometry(0.23, 0.23, 0.2, 12), MAT.bootBlack);
                     bore.rotation.z = -Math.PI * 0.5;
                     bore.position.set(16.4, 0, 0);
-                    barrelGroup.add(bore);
+                    recoilRig.add(bore);
 
                     elevationPivot.add(barrelGroup);
+                    barrels.push({
+                        group: barrelGroup,
+                        rig: recoilRig,
+                        neutralPosition: recoil.neutralPosition,
+                        neutralRotation: recoil.neutralRotation,
+                        fireTime: -Infinity,
+                        recoiling: false
+                    });
                     muzzleOffsets.push(new THREE.Vector3(16.5, 0, zOff));
                 }
 
@@ -1155,6 +1187,7 @@
                     turretPivot,
                     elevationPivot,
                     baseYaw: facingAft ? Math.PI : 0,
+                    barrels,
                     muzzleOffsets
                 };
             }
@@ -1823,7 +1856,16 @@
                 };
             }
 
+            function updateCrewHud(count) {
+                const el = document.getElementById('hud-crew-count');
+                if (el) el.textContent = count > 0 ? `${count} Officers & Sailors` : 'Crew not rendered (demo)';
+            }
+
             function populateCrew(parent) {
+                if (!DEMO_CREW_RENDERED) {
+                    updateCrewHud(0);
+                    return;
+                }
                 const crewGroup = new THREE.Group();
                 let totalCrewCount = 0;
 
@@ -1953,45 +1995,552 @@
                 addCrewMember('sailor', 'salute', -128.5, 6.5, 0.8, 180, 0);
                 addCrewMember('sailor', 'attention', -128.5, 6.5, -0.8, 180, 0);
 
-                document.getElementById('hud-crew-count').textContent = `${totalCrewCount} Officers & Sailors`;
+                updateCrewHud(totalCrewCount);
                 parent.add(crewGroup);
             }
+
+            // ============================================================================
+            // 9b. DEMO RUNTIME: MAIN-BATTERY RECOIL, SALVO POLICY, BLAST LIFECYCLE
+            // ============================================================================
+            // YAM-DEMO-RUNTIME-BEGIN
+            // Illustrative visual values only. These are not historical firing timings,
+            // projectile ballistics, damage, dye colours or audio assets.
+            const DEMO_GUN = Object.freeze({
+                recoilTravel: 1.35,      // metres of local visual recoil travel
+                recoilRise: 0.075,       // seconds to build recoil
+                recoilDecay: 0.42,       // seconds for the damped return
+                recoilDuration: 2.4,     // declared lifetime; exact neutral after this
+                flashDuration: 0.14,     // brief muzzle flash lifetime
+                smokeDuration: 2.2,      // expanding smoke lifetime
+                smokePuffs: 5,           // puffs per barrel, kept local to the muzzle
+                smokeRadius: 0.85,       // base puff radius (metres)
+                turretStagger: 0.16,     // ripple between turrets
+                barrelStagger: 0.05,     // ripple between barrels of one turret
+                cooldown: 0.6            // settled repeat-fire spacing
+            });
+
+            const demoState = {
+                time: 0,
+                seaState: 'moderate',
+                reducedMotion: false,
+                reducedMotionExplicit: null,
+                activeSalvo: null,
+                queuedSalvo: false,
+                salvosFired: 0,
+                shotsFired: 0
+            };
+
+            let mainBlastEffects = [];
+
+            // ---------------- Illustrative three-state visual sea model ----------------
+            // One shared water function drives the ocean mesh, foam cues and restrained
+            // hull pose. Amplitudes/directions/choppiness are invented for visual variety;
+            // this is explicitly not validated hydrodynamics or historical weather data.
+            const DEMO_SEA_PRESETS = Object.freeze({
+                calm: Object.freeze({ key: 'calm', label: 'Calm', amplitude: 0.28, wavelength: 172, direction: 0.35, speed: 0.55, chop: 0.10, foam: 0.10, hullResponse: 0.32 }),
+                moderate: Object.freeze({ key: 'moderate', label: 'Moderate', amplitude: 0.85, wavelength: 118, direction: 1.05, speed: 0.85, chop: 0.34, foam: 0.18, hullResponse: 0.55 }),
+                rough: Object.freeze({ key: 'rough', label: 'Rough', amplitude: 1.90, wavelength: 82, direction: 2.05, speed: 1.15, chop: 0.62, foam: 0.30, hullResponse: 0.85 })
+            });
+            const DEMO_SEA_KEYS = Object.freeze(['calm', 'moderate', 'rough']);
+            const DEMO_MOTION_REDUCED_SCALE = 0.12;
+            let oceanSurface = null;
+            let foamRibbons = [];
+
+            function demoSeaPreset(key) {
+                return Object.prototype.hasOwnProperty.call(DEMO_SEA_PRESETS, key) ? DEMO_SEA_PRESETS[key] : DEMO_SEA_PRESETS.moderate;
+            }
+
+            function sampleWaterHeight(x, z, time, key) {
+                const preset = demoSeaPreset(key);
+                const px = Number.isFinite(x) ? x : 0;
+                const pz = Number.isFinite(z) ? z : 0;
+                const t = Number.isFinite(time) ? time : 0;
+                const k = (Math.PI * 2) / preset.wavelength;
+                const crossDirection = preset.direction + 0.92;
+                const chopDirection = preset.direction - 1.37;
+                const primary = Math.sin(k * (px * Math.cos(preset.direction) + pz * Math.sin(preset.direction)) - t * preset.speed * 1.7 + 0.6);
+                const cross = Math.sin(k * 0.62 * (px * Math.cos(crossDirection) + pz * Math.sin(crossDirection)) + t * preset.speed * 1.13 + 1.3);
+                const chopWave = Math.sin(k * 1.9 * (px * Math.cos(chopDirection) + pz * Math.sin(chopDirection)) + t * preset.speed * 1.9 + 0.4);
+                const height = preset.amplitude * (0.70 * primary + 0.20 * cross + 0.10 * preset.chop * chopWave);
+                return Number.isFinite(height) ? height : 0;
+            }
+
+            // Restrained, illustrative response from four sampled hull points.
+            function hullPoseFromHeights(bow, stern, port, starboard, hullResponse) {
+                const halfLength = SHIP_LOA * 0.42;
+                const halfBeam = SHIP_BEAM * 0.40;
+                const average = (bow + stern + port + starboard) * 0.25;
+                return {
+                    heave: average * 0.5,
+                    pitch: Math.atan2(bow - stern, 2 * halfLength) * hullResponse,
+                    roll: Math.atan2(starboard - port, 2 * halfBeam) * hullResponse
+                };
+            }
+
+            function sampleHullPose(time, key) {
+                const preset = demoSeaPreset(key);
+                const halfLength = SHIP_LOA * 0.42;
+                const halfBeam = SHIP_BEAM * 0.40;
+                return hullPoseFromHeights(
+                    sampleWaterHeight(halfLength, 0, time, preset.key),
+                    sampleWaterHeight(-halfLength, 0, time, preset.key),
+                    sampleWaterHeight(0, -halfBeam, time, preset.key),
+                    sampleWaterHeight(0, halfBeam, time, preset.key),
+                    preset.hullResponse
+                );
+            }
+
+            // World axes: +X bow, +Y up, +Z starboard. The sign contract below is
+            // checked with independent world-coordinate matrices in the demo suite.
+            function applyHullPoseValues(group, pose, reducedMotion) {
+                const scale = reducedMotion ? DEMO_MOTION_REDUCED_SCALE : 1;
+                const applied = { heave: pose.heave * scale, pitch: pose.pitch * scale, roll: pose.roll * scale, motionScale: scale };
+                if (group) {
+                    group.position.y = applied.heave;
+                    // +Z rotation lifts the +X bow; -X rotation lifts +Z starboard.
+                    group.rotation.z = applied.pitch;
+                    group.rotation.x = -applied.roll;
+                }
+                return applied;
+            }
+
+            function applyHullPose(group, time, key, reducedMotion) {
+                return applyHullPoseValues(group, sampleHullPose(time, key), reducedMotion);
+            }
+
+            // Pure height field for the ocean mesh; sampled from the same function as
+            // hull response and foam so the three cues cannot disagree.
+            function createOceanGrid(size, segments) {
+                const steps = Math.max(1, Math.floor(Number.isFinite(segments) ? segments : 1));
+                const side = steps + 1;
+                const count = side * side;
+                const spacing = size / steps;
+                const x = new Float32Array(count);
+                const z = new Float32Array(count);
+                const y = new Float32Array(count);
+                const positions = new Float32Array(count * 3);
+                const normals = new Float32Array(count * 3);
+                const indices = new Uint32Array(steps * steps * 6);
+                let vertex = 0;
+                for (let row = 0; row < side; row++) {
+                    const vz = -size * 0.5 + row * spacing;
+                    for (let column = 0; column < side; column++, vertex++) {
+                        const vx = -size * 0.5 + column * spacing;
+                        x[vertex] = vx;
+                        z[vertex] = vz;
+                        positions[vertex * 3] = vx;
+                        positions[vertex * 3 + 2] = vz;
+                    }
+                }
+                let index = 0;
+                for (let row = 0; row < steps; row++) {
+                    for (let column = 0; column < steps; column++) {
+                        const a = row * side + column, b = a + 1, c = a + side, d = c + 1;
+                        indices[index++] = a; indices[index++] = c; indices[index++] = b;
+                        indices[index++] = b; indices[index++] = c; indices[index++] = d;
+                    }
+                }
+                return { size, segments: steps, side, spacing, count, x, z, y, positions, normals, indices };
+            }
+
+            function updateOceanGrid(grid, time, key) {
+                for (let i = 0; i < grid.count; i++) {
+                    const height = sampleWaterHeight(grid.x[i], grid.z[i], time, key);
+                    grid.y[i] = height;
+                    grid.positions[i * 3 + 1] = height;
+                }
+                const side = grid.side, spacing = grid.spacing;
+                for (let row = 0; row < side; row++) {
+                    for (let column = 0; column < side; column++) {
+                        const i = row * side + column;
+                        const left = grid.y[row * side + Math.max(0, column - 1)];
+                        const right = grid.y[row * side + Math.min(side - 1, column + 1)];
+                        const up = grid.y[Math.max(0, row - 1) * side + column];
+                        const down = grid.y[Math.min(side - 1, row + 1) * side + column];
+                        const nx = left - right;
+                        const ny = 2 * spacing;
+                        const nz = up - down;
+                        const inv = 1 / (Math.hypot(nx, ny, nz) || 1);
+                        grid.normals[i * 3] = nx * inv;
+                        grid.normals[i * 3 + 1] = ny * inv;
+                        grid.normals[i * 3 + 2] = nz * inv;
+                    }
+                }
+                return grid;
+            }
+
+            function createOceanGeometry(grid) {
+                const geometry = new THREE.BufferGeometry();
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(grid.positions, 3));
+                geometry.setAttribute('normal', new THREE.Float32BufferAttribute(grid.normals, 3));
+                geometry.setIndex(Array.from(grid.indices));
+                return geometry;
+            }
+
+            // Narrow foam ribbons follow the water. They replace the previous static,
+            // visibly filled wake patch.
+            function createFoamRibbonSpecs() {
+                const specs = [];
+                const hullLine = (side) => {
+                    const points = [];
+                    for (let i = 0; i <= 36; i++) {
+                        const x = 118 - (236 * i) / 36;
+                        points.push({ x, z: side * getHalfBeamAtX(x) * 1.04 });
+                    }
+                    specs.push({ name: side > 0 ? 'starboard-hull-foam' : 'port-hull-foam', points, width: 1.5, opacityScale: 1 });
+                };
+                const bowWave = (side) => {
+                    const points = [];
+                    for (let i = 0; i <= 12; i++) {
+                        const u = i / 12;
+                        points.push({ x: 124 - u * 66, z: side * (2 + u * 20) });
+                    }
+                    specs.push({ name: side > 0 ? 'starboard-bow-foam' : 'port-bow-foam', points, width: 2.6, opacityScale: 1.5 });
+                };
+                const sternWake = (side) => {
+                    const points = [];
+                    for (let i = 0; i <= 14; i++) {
+                        const u = i / 14;
+                        points.push({ x: -116 - u * 92, z: side * (6 + u * 24) });
+                    }
+                    specs.push({ name: side > 0 ? 'starboard-stern-wake' : 'port-stern-wake', points, width: 2.2, opacityScale: 1.2 });
+                };
+                hullLine(-1); hullLine(1);
+                bowWave(-1); bowWave(1);
+                sternWake(-1); sternWake(1);
+                return specs;
+            }
+
+            function updateFoamRibbon(descriptor, time, key, sampleSurface) {
+                const { points, width, positions } = descriptor;
+                const sample = typeof sampleSurface === 'function' ? sampleSurface : sampleWaterHeight;
+                for (let i = 0; i < points.length; i++) {
+                    const point = points[i];
+                    const previous = points[Math.max(0, i - 1)];
+                    const next = points[Math.min(points.length - 1, i + 1)];
+                    const dx = next.x - previous.x;
+                    const dz = next.z - previous.z;
+                    const length = Math.hypot(dx, dz);
+                    const halfWidth = width * 0.5;
+                    const nx = length > 1e-9 ? (-dz / length) * halfWidth : halfWidth;
+                    const nz = length > 1e-9 ? (dx / length) * halfWidth : 0;
+                    const leftX = point.x + nx, leftZ = point.z + nz;
+                    const rightX = point.x - nx, rightZ = point.z - nz;
+                    // Each vertex samples the surface at its own position, not the centre line.
+                    const leftY = sample(leftX, leftZ, time, key) + 0.06;
+                    const rightY = sample(rightX, rightZ, time, key) + 0.06;
+                    const offset = i * 6;
+                    positions[offset] = leftX; positions[offset + 1] = leftY; positions[offset + 2] = leftZ;
+                    positions[offset + 3] = rightX; positions[offset + 4] = rightY; positions[offset + 5] = rightZ;
+                }
+                if (descriptor.material) descriptor.material.opacity = demoSeaPreset(key).foam * descriptor.spec.opacityScale;
+                return descriptor;
+            }
+
+            function createFoamRibbon(spec, key) {
+                const count = spec.points.length;
+                const positions = new Float32Array(count * 6);
+                const indices = new Uint32Array((count - 1) * 6);
+                for (let i = 0; i < count - 1; i++) {
+                    const a = i * 2, b = a + 1, c = a + 2, d = a + 3;
+                    indices.set([a, c, b, b, c, d], i * 6);
+                }
+                const geometry = new THREE.BufferGeometry();
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+                geometry.setIndex(Array.from(indices));
+                const material = new THREE.MeshBasicMaterial({ color: 0xe0f2fe, transparent: true, opacity: demoSeaPreset(key).foam * spec.opacityScale, depthWrite: false });
+                const mesh = new THREE.Mesh(geometry, material);
+                const descriptor = { spec, points: spec.points, width: spec.width, positions, geometry, material, mesh };
+                updateFoamRibbon(descriptor, demoState.time, key);
+                geometry.attributes.position.array.set(positions);
+                return descriptor;
+            }
+
+            // ---------------- Demo UI: sea presets and reduced motion ----------------
+            function updateSeaControlUI() {
+                const label = document.getElementById('hud-sea-state');
+                if (label) label.textContent = demoSeaPreset(demoState.seaState).label;
+                document.querySelectorAll('[data-sea]').forEach(button => {
+                    const active = button.dataset.sea === demoState.seaState;
+                    button.classList.toggle('active', active);
+                    if (button.setAttribute) button.setAttribute('aria-pressed', String(active));
+                });
+            }
+
+            function setSeaState(key) {
+                if (!Object.prototype.hasOwnProperty.call(DEMO_SEA_PRESETS, key)) return false;
+                demoState.seaState = key;
+                updateSeaControlUI();
+                return true;
+            }
+
+            function resolveReducedMotion(explicit, mediaMatches) {
+                if (explicit === true || explicit === false) return explicit;
+                return !!mediaMatches;
+            }
+
+            function updateReducedMotionUI() {
+                const button = document.getElementById('btn-reduced-motion');
+                if (!button) return;
+                const active = demoState.reducedMotion;
+                button.classList.toggle('active', active);
+                if (button.setAttribute) button.setAttribute('aria-pressed', String(active));
+                button.innerHTML = `Reduced Motion: ${active ? 'ON' : 'OFF'}`;
+            }
+
+            function setReducedMotion(value, explicit) {
+                demoState.reducedMotion = !!value;
+                if (explicit === true || explicit === false) demoState.reducedMotionExplicit = explicit;
+                updateReducedMotionUI();
+            }
+
+            // New isolated setup function; the inherited camera/input listeners stay intact.
+            function setupDemoControls() {
+                document.querySelectorAll('[data-sea]').forEach(button => {
+                    button.addEventListener('click', () => setSeaState(button.dataset.sea));
+                });
+                const media = typeof window.matchMedia === 'function'
+                    ? window.matchMedia('(prefers-reduced-motion: reduce)')
+                    : null;
+                setReducedMotion(resolveReducedMotion(demoState.reducedMotionExplicit, media ? media.matches : false));
+                if (media) {
+                    const onMediaChange = event => {
+                        setReducedMotion(resolveReducedMotion(demoState.reducedMotionExplicit, event.matches));
+                    };
+                    if (typeof media.addEventListener === 'function') media.addEventListener('change', onMediaChange);
+                    else if (typeof media.addListener === 'function') media.addListener(onMediaChange);
+                }
+                const motionButton = document.getElementById('btn-reduced-motion');
+                if (motionButton) motionButton.addEventListener('click', () => {
+                    setReducedMotion(!demoState.reducedMotion, !demoState.reducedMotion);
+                });
+                updateSeaControlUI();
+                updateReducedMotionUI();
+            }
+
+            function mainGunRecoilOffset(age) {
+                if (!Number.isFinite(age) || age < 0 || age >= DEMO_GUN.recoilDuration) return 0;
+                const rise = 1 - Math.exp(-age / DEMO_GUN.recoilRise);
+                const dampedReturn = Math.exp(-age / DEMO_GUN.recoilDecay);
+                return -DEMO_GUN.recoilTravel * rise * dampedReturn;
+            }
+
+            // The neutral transform is captured once in the barrel's own local space.
+            // Sea pose, traverse and elevation live on ancestors and cannot drift it.
+            function createBarrelRecoilRig(parent) {
+                const rig = new THREE.Group();
+                rig.position.set(0, 0, 0);
+                const neutralPosition = rig.position.clone();
+                const neutralRotation = new THREE.Euler(rig.rotation.x, rig.rotation.y, rig.rotation.z);
+                parent.add(rig);
+                return { rig, neutralPosition, neutralRotation };
+            }
+
+            function setBarrelRecoil(barrel, age) {
+                const travel = mainGunRecoilOffset(age);
+                const neutral = barrel.neutralPosition;
+                barrel.rig.position.set(neutral.x + travel, neutral.y, neutral.z);
+                barrel.rig.rotation.set(barrel.neutralRotation.x, barrel.neutralRotation.y, barrel.neutralRotation.z);
+            }
+
+            function restoreBarrelNeutral(barrel) {
+                barrel.rig.position.copy(barrel.neutralPosition);
+                barrel.rig.rotation.set(barrel.neutralRotation.x, barrel.neutralRotation.y, barrel.neutralRotation.z);
+                barrel.fireTime = -Infinity;
+                barrel.recoiling = false;
+            }
+
+            function spawnMainBlast(worldPos, dir, now) {
+                const flashMaterial = new THREE.MeshBasicMaterial({ color: 0xfef3c7, transparent: true, opacity: 1 });
+                const flash = new THREE.Mesh(new THREE.SphereGeometry(1.8, 12, 8), flashMaterial);
+                flash.position.copy(worldPos);
+                flash.visible = true;
+                scene.add(flash);
+                mainBlastEffects.push({
+                    kind: 'flash', mesh: flash, born: now, life: DEMO_GUN.flashDuration,
+                    origin: worldPos.clone(), velocity: dir.clone().multiplyScalar(4),
+                    baseScale: 1, growth: 2.2
+                });
+
+                const lateral = new THREE.Vector3(-dir.z, 0, dir.x);
+                for (let i = 0; i < DEMO_GUN.smokePuffs; i++) {
+                    const bornAt = now + i * 0.04;
+                    const baseOpacity = 0.5 - i * 0.035;
+                    const material = new THREE.MeshLambertMaterial({ color: 0x9aa4ae, transparent: true, opacity: baseOpacity });
+                    const puff = new THREE.Mesh(new THREE.SphereGeometry(DEMO_GUN.smokeRadius, 10, 8), material);
+                    const origin = worldPos.clone()
+                        .addScaledVector(dir, 2.2 + i * 0.85)
+                        .addScaledVector(lateral, (i - (DEMO_GUN.smokePuffs - 1) * 0.5) * 0.85);
+                    origin.y += 0.4 + (i % 3) * 0.3;
+                    puff.position.copy(origin);
+                    // Future puffs exist as owned allocations but must not be visible
+                    // before their own declared birth time.
+                    const visibleAtBirth = bornAt <= now;
+                    puff.visible = visibleAtBirth;
+                    if (!visibleAtBirth) material.opacity = 0;
+                    scene.add(puff);
+                    mainBlastEffects.push({
+                        kind: 'smoke', mesh: puff, born: bornAt, life: DEMO_GUN.smokeDuration,
+                        origin: origin.clone(),
+                        velocity: dir.clone().multiplyScalar(4.2 + i * 0.35).add(new THREE.Vector3(0, 1.0 + (i % 2) * 0.35, 0)),
+                        baseScale: 1, growth: 1.9 + (i % 3) * 0.3,
+                        baseOpacity
+                    });
+                }
+            }
+
+            function updateMainBlastEffects() {
+                for (let i = mainBlastEffects.length - 1; i >= 0; i--) {
+                    const effect = mainBlastEffects[i];
+                    const age = demoState.time - effect.born;
+                    if (age < 0) {
+                        effect.mesh.visible = false;
+                        effect.mesh.material.opacity = 0;
+                        continue;
+                    }
+                    if (!Number.isFinite(age) || age >= effect.life) {
+                        removeOwnedEffectMesh(effect.mesh);
+                        mainBlastEffects.splice(i, 1);
+                        continue;
+                    }
+                    effect.mesh.visible = true;
+                    const progress = age / effect.life;
+                    effect.mesh.position.copy(effect.origin).addScaledVector(effect.velocity, age);
+                    const scale = effect.baseScale * (1 + effect.growth * progress);
+                    effect.mesh.scale.set(scale, scale, scale);
+                    effect.mesh.material.opacity = effect.kind === 'flash'
+                        ? 1 - progress
+                        : effect.baseOpacity * (1 - progress) * (1 - progress);
+                }
+            }
+
+            function updateBarrelRecoil() {
+                mainTurrets.forEach(turret => {
+                    (turret.barrels || []).forEach(barrel => {
+                        if (!barrel.recoiling) return;
+                        const age = demoState.time - barrel.fireTime;
+                        if (!Number.isFinite(age) || age >= DEMO_GUN.recoilDuration) restoreBarrelNeutral(barrel);
+                        else setBarrelRecoil(barrel, age);
+                    });
+                });
+            }
+
+            function fireMainShot(shot, now) {
+                shot.fired = true;
+                shot.fireTime = now;
+                const barrel = shot.barrel;
+                barrel.fireTime = now;
+                barrel.recoiling = true;
+                setBarrelRecoil(barrel, 0);
+
+                const worldPos = barrel.rig.localToWorld(new THREE.Vector3(16.5, 0, 0));
+                const worldQuat = new THREE.Quaternion();
+                barrel.rig.getWorldQuaternion(worldQuat);
+                const dir = new THREE.Vector3(1, 0, 0).applyQuaternion(worldQuat).normalize();
+                spawnMainBlast(worldPos, dir, now);
+            }
+
+            function startMainSalvo() {
+                const shots = [];
+                mainTurrets.forEach((turret, turretIndex) => {
+                    (turret.barrels || []).forEach((barrel, barrelIndex) => {
+                        shots.push({
+                            barrel,
+                            delay: turretIndex * DEMO_GUN.turretStagger + barrelIndex * DEMO_GUN.barrelStagger,
+                            fired: false,
+                            fireTime: 0
+                        });
+                    });
+                });
+                const span = shots.reduce((longest, shot) => Math.max(longest, shot.delay), 0);
+                demoState.salvosFired++;
+                demoState.shotsFired += shots.length;
+                demoState.activeSalvo = {
+                    id: demoState.salvosFired,
+                    startedAt: demoState.time,
+                    endsAt: demoState.time + span + DEMO_GUN.recoilDuration + DEMO_GUN.cooldown,
+                    shots
+                };
+            }
+
+            // Deliberate repeat policy: one live salvo, at most one coalesced queued
+            // repeat, every queued shot/effect owned and expiring on a declared lifetime.
+            function requestMainSalvo() {
+                if (demoState.activeSalvo) {
+                    demoState.queuedSalvo = true;
+                    return { accepted: false, queued: true, reason: 'busy' };
+                }
+                startMainSalvo();
+                return { accepted: true, queued: false, reason: 'fired' };
+            }
+
+            function updateMainBattery() {
+                updateBarrelRecoil();
+                updateMainBlastEffects();
+                const salvo = demoState.activeSalvo;
+                if (!salvo) return;
+                salvo.shots.forEach(shot => {
+                    if (!shot.fired && demoState.time >= salvo.startedAt + shot.delay) fireMainShot(shot, demoState.time);
+                });
+                if (demoState.time >= salvo.endsAt) {
+                    mainTurrets.forEach(turret => (turret.barrels || []).forEach(restoreBarrelNeutral));
+                    demoState.activeSalvo = null;
+                    if (demoState.queuedSalvo) {
+                        demoState.queuedSalvo = false;
+                        startMainSalvo();
+                    }
+                }
+            }
+
+            function updateDemoSimulation(dt) {
+                const step = Number.isFinite(dt) && dt > 0 ? dt : 0;
+                demoState.time += step;
+                updateMainBattery();
+                if (oceanSurface) {
+                    updateOceanGrid(oceanSurface.grid, demoState.time, demoState.seaState);
+                    oceanSurface.positionAttribute.array.set(oceanSurface.grid.positions);
+                    oceanSurface.positionAttribute.needsUpdate = true;
+                    oceanSurface.normalAttribute.array.set(oceanSurface.grid.normals);
+                    oceanSurface.normalAttribute.needsUpdate = true;
+                }
+                foamRibbons.forEach(descriptor => {
+                    updateFoamRibbon(descriptor, demoState.time, demoState.seaState);
+                    descriptor.geometry.attributes.position.array.set(descriptor.positions);
+                    descriptor.geometry.attributes.position.needsUpdate = true;
+                });
+                applyHullPose(yamatoGroup, demoState.time, demoState.seaState, demoState.reducedMotion);
+            }
+            // YAM-DEMO-RUNTIME-END
 
             // ============================================================================
             // 10. OCEAN WATER SURFACE, BOW WAVE & WAKE FOAM
             // ============================================================================
             function buildEnvironment() {
-                // Deep ocean plane
-                const oceanGeo = new THREE.PlaneGeometry(2400, 2400, 96, 96);
-                oceanGeo.rotateX(-Math.PI * 0.5);
+                // Shared water height field drives this mesh every animation frame.
                 const oceanMat = new THREE.MeshStandardMaterial({
                     color: 0x0c2d48,
                     roughness: 0.22,
                     metalness: 0.68
                 });
+                const grid = createOceanGrid(2000, 112);
+                updateOceanGrid(grid, demoState.time, demoState.seaState);
+                const oceanGeo = createOceanGeometry(grid);
                 oceanMesh = new THREE.Mesh(oceanGeo, oceanMat);
                 oceanMesh.receiveShadow = true;
                 scene.add(oceanMesh);
+                oceanSurface = {
+                    grid,
+                    positionAttribute: oceanGeo.attributes.position,
+                    normalAttribute: oceanGeo.attributes.normal
+                };
 
-                // White Foam Wake Outline around Hull Waterline
-                const wakeShape = new THREE.Shape();
-                wakeShape.moveTo(134.0, 0);
-                wakeShape.quadraticCurveTo(60, 22.5, -40, 22.0);
-                wakeShape.quadraticCurveTo(-115, 18.0, -185, 28.0);
-                wakeShape.lineTo(-185, -28.0);
-                wakeShape.quadraticCurveTo(-115, -18.0, -40, -22.0);
-                wakeShape.quadraticCurveTo(60, -22.5, 134.0, 0);
-
-                const wakeGeo = new THREE.ShapeGeometry(wakeShape, 24);
-                wakeGeo.rotateX(-Math.PI * 0.5);
-                const wakeMat = new THREE.MeshBasicMaterial({
-                    color: 0xdbeafe,
-                    transparent: true,
-                    opacity: 0.22
+                // Narrow foam ribbons follow the same water surface; no static filled wake.
+                foamRibbons = [];
+                createFoamRibbonSpecs().forEach(spec => {
+                    const descriptor = createFoamRibbon(spec, demoState.seaState);
+                    scene.add(descriptor.mesh);
+                    foamRibbons.push(descriptor);
                 });
-                const wakeMesh = new THREE.Mesh(wakeGeo, wakeMat);
-                wakeMesh.position.y = 0.08;
-                scene.add(wakeMesh);
             }
 
             // ============================================================================
@@ -2005,56 +2554,10 @@
                 mesh.material.dispose();
             }
 
+            // UI/AI entry point: the deterministic scheduler owns all timing, recoil,
+            // blast effects and the single-queued-repeat policy.
             function triggerMainSalvo() {
-                mainTurrets.forEach((turret, tIdx) => {
-                    setTimeout(() => {
-                        turret.muzzleOffsets.forEach((offset, bIdx) => {
-                            const worldPos = offset.clone();
-                            turret.elevationPivot.localToWorld(worldPos);
-
-                            // Muzzle direction vector
-                            const dir = new THREE.Vector3(1, 0, 0);
-                            const worldQuat = new THREE.Quaternion();
-                            turret.elevationPivot.getWorldQuaternion(worldQuat);
-                            dir.applyQuaternion(worldQuat).normalize();
-
-                            // Bright core flash sphere
-                            const flashMat = new THREE.MeshBasicMaterial({
-                                color: 0xfef08a,
-                                transparent: true,
-                                opacity: 1.0
-                            });
-                            const flash = new THREE.Mesh(new THREE.SphereGeometry(2.2, 12, 12), flashMat);
-                            flash.position.copy(worldPos);
-                            scene.add(flash);
-
-                            // Expanding orange-grey smoke ring
-                            const smokeMat = new THREE.MeshLambertMaterial({
-                                color: 0xf97316,
-                                transparent: true,
-                                opacity: 0.9
-                            });
-                            const smoke = new THREE.Mesh(new THREE.DodecahedronGeometry(3.2, 1), smokeMat);
-                            smoke.position.copy(worldPos).addScaledVector(dir, 2.5);
-                            scene.add(smoke);
-
-                            // High-velocity 1,460kg AP Shell streak
-                            const shellMat = new THREE.MeshBasicMaterial({ color: 0xfef9c3 });
-                            const shell = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.23, 3.2, 8), shellMat);
-                            shell.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
-                            shell.position.copy(worldPos);
-                            scene.add(shell);
-
-                            shellEffects.push({
-                                flash,
-                                smoke,
-                                shell,
-                                dir,
-                                age: 0
-                            });
-                        });
-                    }, tIdx * 160);
-                });
+                return requestMainSalvo();
             }
 
             // Use only the accepted simulation delta; keep each trial/factory interleaved.
@@ -2959,6 +3462,7 @@
                 createFloatingPins();
                 setupEventListeners();
                 setupAIControls();
+                setupDemoControls();
                 selectCameraPreset('overview');
             }
 
@@ -2967,11 +3471,9 @@
                 const dt = Math.min(clock.getDelta(), 0.1);
                 const elapsed = clock.getElapsedTime();
 
-                // Gentle heavy battleship ocean swell
-                if (yamatoGroup) {
-                    yamatoGroup.rotation.x = Math.sin(elapsed * 0.55) * 0.0035;
-                    yamatoGroup.rotation.z = Math.cos(elapsed * 0.42) * 0.0022;
-                }
+                // YAM-DEMO-01 integrated simulation. Sea state, hull response and
+                // main-battery recoil advance only from the accepted frame delta.
+                if (typeof updateDemoSimulation === 'function') updateDemoSimulation(dt);
 
                 // Keyboard WASD movement for walking the deck
                 const moveSpeed = Math.max(4.0, camState.spherical.radius * 0.45) * dt;
@@ -3032,27 +3534,6 @@
                     }
                     pos.needsUpdate = true;
                 });
-
-                // Update 46cm Salvo Fireballs & Shells
-                for (let i = shellEffects.length - 1; i >= 0; i--) {
-                    const eff = shellEffects[i];
-                    eff.age += dt;
-                    eff.flash.scale.addScalar(dt * 18.0);
-                    eff.flash.material.opacity = Math.max(0, 1.0 - eff.age * 4.5);
-
-                    eff.smoke.scale.addScalar(dt * 9.0);
-                    eff.smoke.position.addScaledVector(eff.dir, dt * 8.0);
-                    eff.smoke.material.opacity = Math.max(0, 0.9 - eff.age * 0.65);
-
-                    eff.shell.position.addScaledVector(eff.dir, dt * 260.0);
-
-                    if (eff.age > 1.5) {
-                        removeOwnedEffectMesh(eff.flash);
-                        removeOwnedEffectMesh(eff.smoke);
-                        removeOwnedEffectMesh(eff.shell);
-                        shellEffects.splice(i, 1);
-                    }
-                }
 
                 // Update 25mm AA Drill Tracers
                 if (aaDrillActive) {

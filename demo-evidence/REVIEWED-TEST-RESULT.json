@@ -1,0 +1,72 @@
+{
+  "Task": "YAM-DEMO-01",
+  "SourceSHA256": "98672004417f0f18ebd821cda506d91ef1b7da04de55d572bc0d6f61a4f21490",
+  "SourceBytes": 188484,
+  "IndependentReview": "Sol, separate from Pi implementation",
+  "CandidateGroups": {
+    "returncode": 0,
+    "pass": 19,
+    "fail": 0
+  },
+  "NegativeControlsDetected": 7,
+  "IndependentCases": [
+    {
+      "name": "rising bow wave raises the transformed bow waterline point",
+      "pass": true,
+      "observed": {
+        "bowY": 0.9349575774113231
+      }
+    },
+    {
+      "name": "rising starboard wave raises the transformed starboard waterline point",
+      "pass": true,
+      "observed": {
+        "starboardY": 0.2549537307461984
+      }
+    },
+    {
+      "name": "each foam edge samples water at that edge vertex position",
+      "pass": true,
+      "observed": {
+        "maximumError": 1.4305114648394124E-08
+      }
+    },
+    {
+      "name": "scheduled future smoke is invisible before its own birth time",
+      "pass": true,
+      "observed": {
+        "futureSmokeCount": 4
+      }
+    }
+  ],
+  "BaselineOnly": {
+    "regression.test.mjs": {
+      "pass": 10,
+      "fail": 0
+    },
+    "input.test.mjs": {
+      "pass": 16,
+      "fail": 0
+    },
+    "camera.test.mjs": {
+      "pass": 7,
+      "fail": 0
+    },
+    "aa.test.mjs": {
+      "pass": 9,
+      "fail": 0
+    },
+    "source": {
+      "bytes": 161488,
+      "sha256": "f59f4c1d3cdb0ad691b4a9c20dc65cdef4774489e2837b39e81031999545e61d"
+    }
+  },
+  "CleanupGuard": {
+    "checkedBeforeEachRecursiveDelete": true,
+    "rejectionChecksPassed": true
+  },
+  "Runtime": "NOT RUN: supported browser attachment held",
+  "Performance": "UNKNOWN: no device sample",
+  "HistoricalFidelity": "Illustrative parameters; no physical/historical acceptance",
+  "FixtureWhitespaceException": "Exact inherited source-pin.html is immutable at f59f4c1d3cdb0ad691b4a9c20dc65cdef4774489e2837b39e81031999545e61d; retains original blank-line whitespace. All other changed files pass git diff --check."
+}

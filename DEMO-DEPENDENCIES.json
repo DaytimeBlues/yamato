@@ -1,0 +1,26 @@
+{
+  "task": "YAM-DEMO-01",
+  "dependency_execution_in_this_task": "None: no install, vendoring, remote script execution, browser, WebGL/GPU, AI or TTS invocation.",
+  "new_npm_or_python_dependencies": [],
+  "package_or_lock_changes": false,
+  "test_dependencies": {
+    "node": "built-in node:test, node:vm, node:assert, node:fs, node:crypto, node:child_process, node:os, node:path",
+    "python_optional": "standard library only; inherited Windows hosts may need PYTHONUTF8=1 for the pre-existing input mutation probe"
+  },
+  "runtime": [
+    { "name": "Three.js", "version": "r128", "url": "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js", "status": "Inherited version-pinned URL, not vendored; remote response bytes and SRI not captured." },
+    { "name": "Tailwind CDN", "version": null, "url": "https://cdn.tailwindcss.com", "status": "Inherited unversioned script, not vendored." },
+    { "name": "Google Fonts CSS", "version": null, "url": "https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap", "status": "Inherited external CSS; font URLs resolved by that CSS were not captured." }
+  ],
+  "optional_network_features": [
+    { "provider": "Google Gemini", "model": "gemini-3-flash-preview", "status": "Inherited API requests; empty key unchanged; not invoked." },
+    { "provider": "Google Gemini TTS", "model": "gemini-2.5-flash-preview-tts", "status": "Inherited API requests; empty key unchanged; not invoked." }
+  ],
+  "demo_runtime": {
+    "local_modules_added": [],
+    "external_data_services_added": [],
+    "audio_assets_added": [],
+    "endpoint_invocations_added": 0
+  },
+  "offline_runtime_complete": false
+}
