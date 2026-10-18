@@ -28,7 +28,7 @@
       "name": "each foam edge samples water at that edge vertex position",
       "pass": true,
       "observed": {
-        "maximumError": 1.4305114648394124E-08
+        "maximumError": 1.4305114648394124e-08
       }
     },
     {
@@ -68,5 +68,14 @@
   "Runtime": "NOT RUN: supported browser attachment held",
   "Performance": "UNKNOWN: no device sample",
   "HistoricalFidelity": "Illustrative parameters; no physical/historical acceptance",
-  "FixtureWhitespaceException": "Exact inherited source-pin.html is immutable at f59f4c1d3cdb0ad691b4a9c20dc65cdef4774489e2837b39e81031999545e61d; retains original blank-line whitespace. All other changed files pass git diff --check."
+  "FixtureWhitespaceException": "Exact inherited source-pin.html is immutable at f59f4c1d3cdb0ad691b4a9c20dc65cdef4774489e2837b39e81031999545e61d; retains original blank-line whitespace. All other changed files pass git diff --check.",
+  "CheckoutPrerequisiteGuard": {
+    "exactRootRequired": true,
+    "missingGitRejected": true,
+    "enclosingRootRejected": true,
+    "pass": 2,
+    "fail": 0
+  },
+  "ContributionQualification": "Pi authored runtime; Sol independently reviewed runtime and authored the final checkout guard/tests plus restore docs. Support changes have red/green prerequisite fixtures; no separate support-code reviewer.",
+  "WorkerRouteLimit": "Final Pi correction returned literal tool-call markup twice with zero tools/edits; retained and held. Sol completed the bounded validation/recovery support correction, without changing runtime HTML."
 }

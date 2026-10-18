@@ -50,6 +50,8 @@ This sea model is an **illustrative visual model, not validated hydrodynamics**.
 
 ## Verification (source-level only)
 
+Run from the exact Git checkout root. A plain extracted source copy or a copy inside a different repository is deliberately rejected before tests or evidence writes. For ZIP/bundle restoration and transient Windows Git LF/Python UTF8 settings, follow [RESTORE.md](RESTORE.md).
+
 ```sh
 node --test --test-reporter=tap tests/demo.test.mjs
 node tools/run_demo_checks.mjs
@@ -58,7 +60,7 @@ node tools/probe_camera_mutations.mjs
 git diff --check
 ```
 
-`tools/run_demo_checks.mjs` also replays the unchanged historical suites against the exact pinned pre-edit source in a temporary directory. Results and receipts are under `demo-evidence/`.
+`tools/run_demo_checks.mjs` also checks two rejected checkout prerequisites and replays the unchanged historical suites against the exact pinned pre-edit source in a temporary directory. Results and receipts are under `demo-evidence/`. The exact inherited source-pin fixture retains its original blank-line whitespace; all other changed files pass `git diff --check`.
 
 ## Limits and open gates
 

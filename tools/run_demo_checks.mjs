@@ -11,6 +11,22 @@ import { createHash } from 'node:crypto';
 import vm from 'node:vm';
 
 const root = new URL('..', import.meta.url);
+// Validate the exact checkout before source reads, evidence writes or any suite.
+// Never query/report an enclosing repository's status on a portable source copy.
+function checkedGit(args) {
+  const result = spawnSync('git', args, { cwd: root, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 });
+  assert.ok(!result.error && result.status === 0, 'YAMATO_CHECKOUT_REQUIRED: Git command must succeed in the exact project checkout');
+  return result.stdout;
+}
+function rootIdentity(path) {
+  let value;
+  try { value = realpathSync(path).replace(/\\/g, '/'); }
+  catch { throw new Error('YAMATO_CHECKOUT_REQUIRED: Git root must resolve'); }
+  return process.platform === 'win32' ? value.toLowerCase() : value;
+}
+assert.ok(rootIdentity(checkedGit(['rev-parse', '--show-toplevel']).trim()) === rootIdentity(fileURLToPath(root)),
+  'YAMATO_CHECKOUT_REQUIRED: script project must be the exact Git root');
+
 const sourcePath = new URL('../src/ijn_battleship_yamato_1_1_scale_3d_simulation.html', import.meta.url);
 const source = readFileSync(sourcePath, 'utf8');
 const sha256 = text => createHash('sha256').update(text).digest('hex');
@@ -61,6 +77,13 @@ const receipt = {
   source: { bytes: Buffer.byteLength(source), sha256: sha256(source) },
   tempCleanupGuard: { checkedBeforeEachRecursiveDelete: true, rejectionChecksPassed: true }
 };
+const guardSuite = run(process.execPath, ['--test', '--test-reporter=tap', 'tests/checkout-guard.test.mjs']);
+writeFileSync(new URL('./checkout-guard.tap', evidence), guardSuite.stdout);
+const guardTap = parseTap(guardSuite.stdout);
+assert.equal(guardSuite.status, 0, guardSuite.stdout + guardSuite.stderr);
+assert.equal(guardTap.pass.length, 2);
+assert.equal(guardTap.fail.length, 0);
+receipt.checkoutGuard = { exactRootRequired: true, missingGitRejected: true, enclosingRootRejected: true, pass: 2, fail: 0 };
 const temp = assertOwnedTempDir(mkdtempSync(join(tmpdir(), 'yamato-demo-checks-')), 'yamato-demo-checks-');
 try {
   // 1. Real candidate suite.
@@ -102,14 +125,26 @@ try {
   }
 
   // 4. Write envelope: only the declared candidate paths may diverge.
-  const status = run('git', ['status', '--porcelain']).stdout.trim().split(/\r?\n/).filter(Boolean)
-    .map(line => line.trim().split(/\s+/).slice(1).join(' '));
+  const statusRecords = checkedGit(['status', '--porcelain=v1', '-z', '--untracked-files=all']).split('\0');
+  assert.equal(statusRecords.pop(), '', 'Git NUL-delimited status must terminate cleanly');
+  const status = [];
+  for (let index = 0; index < statusRecords.length; index += 1) {
+    const record = statusRecords[index];
+    assert.ok(record.length >= 4 && record[2] === ' ', 'Git status record must be well formed');
+    status.push(record.slice(3));
+    if (/[RC]/.test(record.slice(0, 2))) {
+      assert.ok(statusRecords[index + 1], 'Git rename/copy must include its original path');
+      status.push(statusRecords[++index]);
+    }
+  }
   const allowed = [
     /^src\/ijn_battleship_yamato_1_1_scale_3d_simulation\.html$/,
     /^tests\/demo\.test\.mjs$/,
     /^tests\/demo-harness\.mjs$/,
+    /^tests\/checkout-guard\.test\.mjs$/,
     /^tools\/run_demo_checks\.mjs$/,
     /^DEMO\.md$/,
+    /^RESTORE\.md$/,
     /^DEMO-IMPLEMENTATION-RESULT\.md$/,
     /^DEMO-DEPENDENCIES\.json$/,
     /^demo-evidence\//
