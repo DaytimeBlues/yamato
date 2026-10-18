@@ -87,7 +87,7 @@ receipt.checkoutGuard = { exactRootRequired: true, missingGitRejected: true, enc
 const temp = assertOwnedTempDir(mkdtempSync(join(tmpdir(), 'yamato-demo-checks-')), 'yamato-demo-checks-');
 try {
   // 1. Real candidate suite.
-  const suite = run(process.execPath, ['--test', '--test-reporter=tap', 'tests/demo.test.mjs']);
+  const suite = runDemoSuite(fileURLToPath(sourcePath));
   writeFileSync(new URL('./demo-suite.tap', evidence), suite.stdout);
   const suiteTap = parseTap(suite.stdout);
   assert.equal(suite.status, 0, suite.stdout + suite.stderr);
@@ -142,6 +142,7 @@ try {
     /^tests\/demo\.test\.mjs$/,
     /^tests\/demo-harness\.mjs$/,
     /^tests\/checkout-guard\.test\.mjs$/,
+    /^tests\/runner-source-binding\.test\.mjs$/,
     /^tools\/run_demo_checks\.mjs$/,
     /^DEMO\.md$/,
     /^RESTORE\.md$/,
