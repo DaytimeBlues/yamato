@@ -140,6 +140,8 @@ try {
   const allowed = [
     /^src\/ijn_battleship_yamato_1_1_scale_3d_simulation\.html$/,
     /^tests\/demo\.test\.mjs$/,
+    /^tests\/sea-readability\.test\.mjs$/,
+    /^VISUAL-READABILITY\.md$/,
     /^tests\/demo-harness\.mjs$/,
     /^tests\/checkout-guard\.test\.mjs$/,
     /^tests\/runner-source-binding\.test\.mjs$/,

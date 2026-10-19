@@ -141,7 +141,7 @@
             <div>
                 <div class="flex items-center gap-2">
                     <h1 class="title-font text-lg md:text-xl font-bold tracking-wider text-amber-400">IJN YAMATO (大和)</h1>
-                    <span class="text-[10px] mono-font uppercase px-2 py-0.5 bg-amber-500/20 border border-amber-400/40 text-amber-300 rounded-full">1:1 Exact Metric Scale</span>
+                    <span class="text-[10px] mono-font uppercase px-2 py-0.5 bg-amber-500/20 border border-amber-400/40 text-amber-300 rounded-full">1:1 Metres / Illustrative Detail</span>
                 </div>
                 <p class="text-xs text-slate-300">263.0m LOA • 38.9m Beam • 72,800t Full Load • 9× 46cm/45 Type 94 Guns • Crew: 2,750 (not rendered)</p>
             </div>
@@ -188,7 +188,7 @@
             </button>
         </div>
 
-        <div id="ai-panel-body" class="flex flex-col gap-3 overflow-hidden">
+        <div id="ai-panel-body" class="hidden flex flex-col gap-3 overflow-hidden">
             <!-- Persona Selector -->
             <div>
                 <label class="text-[10px] mono-font uppercase text-slate-400 block mb-1">Select Officer / Historical Specialist</label>
@@ -283,7 +283,7 @@
             </button>
         </div>
 
-        <div id="inspector-body" class="space-y-3 text-xs leading-relaxed text-slate-300">
+        <div id="inspector-body" class="hidden space-y-3 text-xs leading-relaxed text-slate-300">
             <p id="inspect-desc">
                 Built in extreme secrecy at Kure Naval Arsenal, <strong class="text-white">Yamato</strong> was the heaviest and most powerfully armed battleship ever constructed. In this 1:1 scale simulation (1 unit = 1 meter) you can inspect the full 263-meter hull, the pagoda bridge, the nine 46cm barrels and the sea-state model. Visible crew figures and crew animation are excluded from this demonstration.
             </p>
@@ -346,7 +346,7 @@
                     </div>
                     <button id="btn-reduced-motion" class="btn-naval w-full py-1.5 rounded-lg text-[11px] font-semibold text-sky-300" aria-pressed="false">Reduced Motion: OFF</button>
                     <p class="text-[10px] leading-snug text-slate-400">
-                        Illustrative visual sea-state model, not validated hydrodynamics. Crew figures and crew animation are excluded; the main battery uses illustrative visual recoil and blast lifetimes, not historical timings or ballistics.
+                        Illustrative visual sea-state model, not validated hydrodynamics. Wave detail fades into a flat distant ocean; geometry uses metres, while fittings and visual effects are approximate, not a surveyed historical reconstruction. Crew figures and crew animation are excluded; recoil and blast values are illustrative, not historical timings or ballistics.
                     </p>
                 </div>
             </div>
@@ -428,8 +428,8 @@
             const camState = {
                 target: new THREE.Vector3(10, 12, 0),
                 desiredTarget: new THREE.Vector3(10, 12, 0),
-                spherical: new THREE.Spherical(165, Math.PI / 2.55, 0.65),
-                desiredSpherical: new THREE.Spherical(165, Math.PI / 2.55, 0.65),
+                spherical: new THREE.Spherical(352, Math.PI / 2.55, 0.65),
+                desiredSpherical: new THREE.Spherical(352, Math.PI / 2.55, 0.65),
                 isDragging: false,
                 isPanning: false,
                 prevMouse: { x: 0, y: 0 },
@@ -446,7 +446,7 @@
                     stat2: "150,000 SHP (27.0 Knots)",
                     stat3: "410mm Vickers Hardened Belt",
                     target: new THREE.Vector3(5, 11, 0),
-                    radius: 165,
+                    radius: 352,
                     phi: 1.22,
                     theta: 0.65,
                     pinPos: null
@@ -2062,7 +2062,7 @@
                 const cross = Math.sin(k * 0.62 * (px * Math.cos(crossDirection) + pz * Math.sin(crossDirection)) + t * preset.speed * 1.13 + 1.3);
                 const chopWave = Math.sin(k * 1.9 * (px * Math.cos(chopDirection) + pz * Math.sin(chopDirection)) + t * preset.speed * 1.9 + 0.4);
                 const height = preset.amplitude * (0.70 * primary + 0.20 * cross + 0.10 * preset.chop * chopWave);
-                return Number.isFinite(height) ? height : 0;
+                return Number.isFinite(height) ? height * oceanDetailEnvelope(px, pz) : 0;
             }
 
             // Restrained, illustrative response from four sampled hull points.
@@ -2120,6 +2120,7 @@
                 const y = new Float32Array(count);
                 const positions = new Float32Array(count * 3);
                 const normals = new Float32Array(count * 3);
+                const colors = new Float32Array(count * 3);
                 const indices = new Uint32Array(steps * steps * 6);
                 let vertex = 0;
                 for (let row = 0; row < side; row++) {
@@ -2140,7 +2141,37 @@
                         indices[index++] = b; indices[index++] = c; indices[index++] = d;
                     }
                 }
-                return { size, segments: steps, side, spacing, count, x, z, y, positions, normals, indices };
+                return { size, segments: steps, side, spacing, count, x, z, y, positions, normals, colors, indices };
+            }
+
+            // Wave detail fades with distance so one mesh supplies both the near-ship
+            // surface and a flat, fog-blended far field without a second grid or seam.
+            // Interior of the envelope is unmodified, so hull and foam sample the
+            // same surface the mesh shows beneath them.
+            function oceanDetailEnvelope(x, z) {
+                const radius = Math.hypot(Number.isFinite(x) ? x : 0, Number.isFinite(z) ? z : 0);
+                const inner = 240;
+                const outer = 430;
+                if (radius <= inner) return 1;
+                if (radius >= outer) return 0;
+                const t = (radius - inner) / (outer - inner);
+                return 1 - t * t * (3 - 2 * t);
+            }
+
+            // Crest emphasis is illustrative and scaled by the sea preset, so the
+            // three states differ in shading as well as in height.
+            function writeOceanCrestColors(grid, key) {
+                const preset = demoSeaPreset(key);
+                const strength = preset.foam * 1.4;
+                const inv = preset.amplitude > 0 ? 1 / preset.amplitude : 0;
+                for (let i = 0; i < grid.count; i++) {
+                    const crest = Math.max(0, Math.min(1, grid.y[i] * inv * 0.5 + 0.5));
+                    const lift = crest * crest * strength;
+                    grid.colors[i * 3] = 0.047 + lift * 0.55;
+                    grid.colors[i * 3 + 1] = 0.176 + lift * 0.72;
+                    grid.colors[i * 3 + 2] = 0.282 + lift * 0.66;
+                }
+                return grid;
             }
 
             function updateOceanGrid(grid, time, key) {
@@ -2166,44 +2197,73 @@
                         grid.normals[i * 3 + 2] = nz * inv;
                     }
                 }
+                writeOceanCrestColors(grid, key);
                 return grid;
+            }
+
+            function createOceanHorizonGeometry(key) {
+                const positions = [], normals = [], indices = [];
+                const rectangles = [[-1000, -450, -1000, 1000], [450, 1000, -1000, 1000], [-450, 450, -1000, -450], [-450, 450, 450, 1000]];
+                rectangles.forEach(([x0, x1, z0, z1]) => {
+                    const first = positions.length / 3;
+                    positions.push(x0, 0, z0, x0, 0, z1, x1, 0, z0, x1, 0, z1);
+                    for (let i = 0; i < 4; i++) normals.push(0, 1, 0);
+                    indices.push(first, first + 1, first + 2, first + 2, first + 1, first + 3);
+                });
+                const grid = { count: positions.length / 3, y: new Float32Array(positions.length / 3), colors: new Float32Array(positions.length) };
+                writeOceanCrestColors(grid, key);
+                const geometry = new THREE.BufferGeometry();
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+                geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+                geometry.setAttribute('color', new THREE.Float32BufferAttribute(grid.colors, 3));
+                geometry.setIndex(indices);
+                return { geometry, grid };
             }
 
             function createOceanGeometry(grid) {
                 const geometry = new THREE.BufferGeometry();
                 geometry.setAttribute('position', new THREE.Float32BufferAttribute(grid.positions, 3));
                 geometry.setAttribute('normal', new THREE.Float32BufferAttribute(grid.normals, 3));
+                geometry.setAttribute('color', new THREE.Float32BufferAttribute(grid.colors, 3));
                 geometry.setIndex(Array.from(grid.indices));
                 return geometry;
             }
 
             // Narrow foam ribbons follow the water. They replace the previous static,
             // visibly filled wake patch.
+            // Foam is emitted as interrupted short runs instead of long full-length
+            // strips, so it reads as broken water rather than bright straight lines.
             function createFoamRibbonSpecs() {
                 const specs = [];
-                const hullLine = (side) => {
+                const run = (name, from, to, width, opacityScale, zAt, steps) => {
                     const points = [];
-                    for (let i = 0; i <= 36; i++) {
-                        const x = 118 - (236 * i) / 36;
-                        points.push({ x, z: side * getHalfBeamAtX(x) * 1.04 });
+                    for (let i = 0; i <= steps; i++) {
+                        const u = i / steps;
+                        const x = from + (to - from) * u;
+                        points.push({ x, z: zAt(x, u) });
                     }
-                    specs.push({ name: side > 0 ? 'starboard-hull-foam' : 'port-hull-foam', points, width: 1.5, opacityScale: 1 });
+                    specs.push({ name, points, width, opacityScale });
+                };
+                const hullLine = (side) => {
+                    const label = side > 0 ? 'starboard' : 'port';
+                    [[118, 78], [70, 34], [26, -16], [-24, -58], [-66, -96]].forEach(([from, to], index) => {
+                        run(`${label}-hull-foam-${index + 1}`, from, to, 1.25, 0.55 + 0.10 * (index % 3),
+                            x => side * getHalfBeamAtX(x) * 1.04, 9);
+                    });
                 };
                 const bowWave = (side) => {
-                    const points = [];
-                    for (let i = 0; i <= 12; i++) {
-                        const u = i / 12;
-                        points.push({ x: 124 - u * 66, z: side * (2 + u * 20) });
-                    }
-                    specs.push({ name: side > 0 ? 'starboard-bow-foam' : 'port-bow-foam', points, width: 2.6, opacityScale: 1.5 });
+                    const label = side > 0 ? 'starboard' : 'port';
+                    [[124, 96], [88, 58]].forEach(([from, to], index) => {
+                        run(`${label}-bow-foam-${index + 1}`, from, to, 2.0, 0.85 + 0.15 * index,
+                            (x, u) => side * (getHalfBeamAtX(x) * 1.04 + 0.8 + u * 4), 7);
+                    });
                 };
                 const sternWake = (side) => {
-                    const points = [];
-                    for (let i = 0; i <= 14; i++) {
-                        const u = i / 14;
-                        points.push({ x: -116 - u * 92, z: side * (6 + u * 24) });
-                    }
-                    specs.push({ name: side > 0 ? 'starboard-stern-wake' : 'port-stern-wake', points, width: 2.2, opacityScale: 1.2 });
+                    const label = side > 0 ? 'starboard' : 'port';
+                    [[-130, -155], [-164, -188], [-197, -223]].forEach(([from, to], index) => {
+                        run(`${label}-stern-wake-${index + 1}`, from, to, 1.7, 0.75 - 0.12 * index,
+                            (x, u) => side * (4 + (-130 - x) * 0.27 + u * 1.5), 6);
+                    });
                 };
                 hullLine(-1); hullLine(1);
                 bowWave(-1); bowWave(1);
@@ -2221,7 +2281,8 @@
                     const dx = next.x - previous.x;
                     const dz = next.z - previous.z;
                     const length = Math.hypot(dx, dz);
-                    const halfWidth = width * 0.5;
+                    const taper = 0.18 + 0.82 * Math.sin(Math.PI * (i / Math.max(1, points.length - 1)));
+                    const halfWidth = width * 0.5 * taper;
                     const nx = length > 1e-9 ? (-dz / length) * halfWidth : halfWidth;
                     const nz = length > 1e-9 ? (dx / length) * halfWidth : 0;
                     const leftX = point.x + nx, leftZ = point.z + nz;
@@ -2502,6 +2563,11 @@
                     oceanSurface.positionAttribute.needsUpdate = true;
                     oceanSurface.normalAttribute.array.set(oceanSurface.grid.normals);
                     oceanSurface.normalAttribute.needsUpdate = true;
+                    oceanSurface.colorAttribute.array.set(oceanSurface.grid.colors);
+                    oceanSurface.colorAttribute.needsUpdate = true;
+                    writeOceanCrestColors(oceanSurface.horizonGrid, demoState.seaState);
+                    oceanSurface.horizonColorAttribute.array.set(oceanSurface.horizonGrid.colors);
+                    oceanSurface.horizonColorAttribute.needsUpdate = true;
                 }
                 foamRibbons.forEach(descriptor => {
                     updateFoamRibbon(descriptor, demoState.time, demoState.seaState);
@@ -2518,20 +2584,31 @@
             function buildEnvironment() {
                 // Shared water height field drives this mesh every animation frame.
                 const oceanMat = new THREE.MeshStandardMaterial({
-                    color: 0x0c2d48,
-                    roughness: 0.22,
-                    metalness: 0.68
+                    color: 0xffffff,
+                    vertexColors: true,
+                    roughness: 0.26,
+                    metalness: 0.55
                 });
-                const grid = createOceanGrid(2000, 112);
+                // 5.0 m spacing resolves the 82 m rough state at ~16 samples per wave,
+                // replacing the previous 17.9 m grid that linearised near-ship crests.
+                const grid = createOceanGrid(900, 180);
                 updateOceanGrid(grid, demoState.time, demoState.seaState);
                 const oceanGeo = createOceanGeometry(grid);
                 oceanMesh = new THREE.Mesh(oceanGeo, oceanMat);
                 oceanMesh.receiveShadow = true;
+                oceanMesh.frustumCulled = false;
                 scene.add(oceanMesh);
+                const horizon = createOceanHorizonGeometry(demoState.seaState);
+                const horizonMesh = new THREE.Mesh(horizon.geometry, oceanMat);
+                horizonMesh.frustumCulled = false;
+                scene.add(horizonMesh);
                 oceanSurface = {
                     grid,
                     positionAttribute: oceanGeo.attributes.position,
-                    normalAttribute: oceanGeo.attributes.normal
+                    normalAttribute: oceanGeo.attributes.normal,
+                    colorAttribute: oceanGeo.attributes.color,
+                    horizonGrid: horizon.grid,
+                    horizonColorAttribute: horizon.geometry.attributes.color
                 };
 
                 // Narrow foam ribbons follow the same water surface; no static filled wake.
