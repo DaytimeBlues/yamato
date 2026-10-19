@@ -2050,18 +2050,50 @@
                 return Object.prototype.hasOwnProperty.call(DEMO_SEA_PRESETS, key) ? DEMO_SEA_PRESETS[key] : DEMO_SEA_PRESETS.moderate;
             }
 
-            function sampleWaterHeight(x, z, time, key) {
-                const preset = demoSeaPreset(key);
-                const px = Number.isFinite(x) ? x : 0;
-                const pz = Number.isFinite(z) ? z : 0;
-                const t = Number.isFinite(time) ? time : 0;
+            // Single source of truth for the three wave terms. The canonical point
+            // sampler and the grid kernel both read these coefficients, so the cached
+            // path cannot drift into a parallel formula. Presets are frozen, so the
+            // per-key cache can never go stale.
+            const demoWaveTermCache = Object.create(null);
+            function demoWaveTerms(preset) {
+                const cached = demoWaveTermCache[preset.key];
+                if (cached) return cached;
                 const k = (Math.PI * 2) / preset.wavelength;
                 const crossDirection = preset.direction + 0.92;
                 const chopDirection = preset.direction - 1.37;
-                const primary = Math.sin(k * (px * Math.cos(preset.direction) + pz * Math.sin(preset.direction)) - t * preset.speed * 1.7 + 0.6);
-                const cross = Math.sin(k * 0.62 * (px * Math.cos(crossDirection) + pz * Math.sin(crossDirection)) + t * preset.speed * 1.13 + 1.3);
-                const chopWave = Math.sin(k * 1.9 * (px * Math.cos(chopDirection) + pz * Math.sin(chopDirection)) + t * preset.speed * 1.9 + 0.4);
-                const height = preset.amplitude * (0.70 * primary + 0.20 * cross + 0.10 * preset.chop * chopWave);
+                const terms = {
+                    kPrimary: k,
+                    kCross: k * 0.62,
+                    kChop: k * 1.9,
+                    cosPrimary: Math.cos(preset.direction),
+                    sinPrimary: Math.sin(preset.direction),
+                    cosCross: Math.cos(crossDirection),
+                    sinCross: Math.sin(crossDirection),
+                    cosChop: Math.cos(chopDirection),
+                    sinChop: Math.sin(chopDirection),
+                    ratePrimary: preset.speed * 1.7,
+                    rateCross: preset.speed * 1.13,
+                    rateChop: preset.speed * 1.9,
+                    phasePrimary: 0.6,
+                    phaseCross: 1.3,
+                    phaseChop: 0.4,
+                    ampPrimary: 0.70 * preset.amplitude,
+                    ampCross: 0.20 * preset.amplitude,
+                    ampChop: 0.10 * preset.chop * preset.amplitude
+                };
+                demoWaveTermCache[preset.key] = terms;
+                return terms;
+            }
+
+            function sampleWaterHeight(x, z, time, key) {
+                const w = demoWaveTerms(demoSeaPreset(key));
+                const px = Number.isFinite(x) ? x : 0;
+                const pz = Number.isFinite(z) ? z : 0;
+                const t = Number.isFinite(time) ? time : 0;
+                const primary = Math.sin(w.kPrimary * (px * w.cosPrimary + pz * w.sinPrimary) - t * w.ratePrimary + w.phasePrimary);
+                const cross = Math.sin(w.kCross * (px * w.cosCross + pz * w.sinCross) + t * w.rateCross + w.phaseCross);
+                const chopWave = Math.sin(w.kChop * (px * w.cosChop + pz * w.sinChop) + t * w.rateChop + w.phaseChop);
+                const height = w.ampPrimary * primary + w.ampCross * cross + w.ampChop * chopWave;
                 return Number.isFinite(height) ? height * oceanDetailEnvelope(px, pz) : 0;
             }
 
@@ -2120,7 +2152,7 @@
                 const y = new Float32Array(count);
                 const positions = new Float32Array(count * 3);
                 const normals = new Float32Array(count * 3);
-                const colors = new Float32Array(count * 3);
+                const colors = new Uint8Array(count * 3);
                 const indices = new Uint32Array(steps * steps * 6);
                 let vertex = 0;
                 for (let row = 0; row < side; row++) {
@@ -2160,23 +2192,81 @@
 
             // Crest emphasis is illustrative and scaled by the sea preset, so the
             // three states differ in shading as well as in height.
+            // Authored in 0..1, stored as bytes for a normalised Uint8 colour attribute.
+            // The shader divides by 255 in hardware, so hue and relative contrast are
+            // preserved within 1/255 and no raw 0..255 value ever becomes a colour.
             function writeOceanCrestColors(grid, key) {
                 const preset = demoSeaPreset(key);
                 const strength = preset.foam * 1.4;
                 const inv = preset.amplitude > 0 ? 1 / preset.amplitude : 0;
+                const colors = grid.colors;
                 for (let i = 0; i < grid.count; i++) {
                     const crest = Math.max(0, Math.min(1, grid.y[i] * inv * 0.5 + 0.5));
                     const lift = crest * crest * strength;
-                    grid.colors[i * 3] = 0.047 + lift * 0.55;
-                    grid.colors[i * 3 + 1] = 0.176 + lift * 0.72;
-                    grid.colors[i * 3 + 2] = 0.282 + lift * 0.66;
+                    colors[i * 3] = Math.round((0.047 + lift * 0.55) * 255);
+                    colors[i * 3 + 1] = Math.round((0.176 + lift * 0.72) * 255);
+                    colors[i * 3 + 2] = Math.round((0.282 + lift * 0.66) * 255);
                 }
                 return grid;
             }
 
+            // sin(A + B) with A vertex-only and B time-only. A's sin/cos and the detail
+            // envelope are cached per (grid, preset); B costs six trig per frame. Storing
+            // sin/cos of A (bounded in [-1,1]) rather than the raw phase keeps Float32
+            // storage error near 6e-8, so surface values stay within 1e-6 of the sampler.
+            function buildWaterKernel(grid, key) {
+                const preset = demoSeaPreset(key);
+                const n = grid.count;
+                let kernel = grid.kernel;
+                if (kernel && kernel.key === preset.key && kernel.count === n) return kernel;
+                kernel = grid.kernel = {
+                    key: preset.key,
+                    count: n,
+                    sinPrimary: new Float32Array(n), cosPrimary: new Float32Array(n),
+                    sinCross: new Float32Array(n), cosCross: new Float32Array(n),
+                    sinChop: new Float32Array(n), cosChop: new Float32Array(n),
+                    envelope: new Float32Array(n)
+                };
+                const w = demoWaveTerms(preset);
+                for (let i = 0; i < n; i++) {
+                    const px = grid.x[i], pz = grid.z[i];
+                    const aPrimary = w.kPrimary * (px * w.cosPrimary + pz * w.sinPrimary);
+                    const aCross = w.kCross * (px * w.cosCross + pz * w.sinCross);
+                    const aChop = w.kChop * (px * w.cosChop + pz * w.sinChop);
+                    kernel.sinPrimary[i] = Math.sin(aPrimary);
+                    kernel.cosPrimary[i] = Math.cos(aPrimary);
+                    kernel.sinCross[i] = Math.sin(aCross);
+                    kernel.cosCross[i] = Math.cos(aCross);
+                    kernel.sinChop[i] = Math.sin(aChop);
+                    kernel.cosChop[i] = Math.cos(aChop);
+                    kernel.envelope[i] = oceanDetailEnvelope(px, pz);
+                }
+                return kernel;
+            }
+
             function updateOceanGrid(grid, time, key) {
-                for (let i = 0; i < grid.count; i++) {
-                    const height = sampleWaterHeight(grid.x[i], grid.z[i], time, key);
+                const w = demoWaveTerms(demoSeaPreset(key));
+                const kernel = buildWaterKernel(grid, key);
+                const t = Number.isFinite(time) ? time : 0;
+                const phasePrimary = -t * w.ratePrimary + w.phasePrimary;
+                const phaseCross = t * w.rateCross + w.phaseCross;
+                const phaseChop = t * w.rateChop + w.phaseChop;
+                const sinPrimaryAt = Math.sin(phasePrimary), cosPrimaryAt = Math.cos(phasePrimary);
+                const sinCrossAt = Math.sin(phaseCross), cosCrossAt = Math.cos(phaseCross);
+                const sinChopAt = Math.sin(phaseChop), cosChopAt = Math.cos(phaseChop);
+                // Above eleven days, huge phase sums lose spatial precision differently
+                // from sin(A+B). Preserve the canonical finite-input contract there.
+                if (Math.abs(t) > 1e6) {
+                    for (let i = 0; i < grid.count; i++) {
+                        const height = sampleWaterHeight(grid.x[i], grid.z[i], t, key);
+                        grid.y[i] = height;
+                        grid.positions[i * 3 + 1] = height;
+                    }
+                } else for (let i = 0; i < grid.count; i++) {
+                    const primary = kernel.sinPrimary[i] * cosPrimaryAt + kernel.cosPrimary[i] * sinPrimaryAt;
+                    const cross = kernel.sinCross[i] * cosCrossAt + kernel.cosCross[i] * sinCrossAt;
+                    const chopWave = kernel.sinChop[i] * cosChopAt + kernel.cosChop[i] * sinChopAt;
+                    const height = (w.ampPrimary * primary + w.ampCross * cross + w.ampChop * chopWave) * kernel.envelope[i];
                     grid.y[i] = height;
                     grid.positions[i * 3 + 1] = height;
                 }
@@ -2210,21 +2300,23 @@
                     for (let i = 0; i < 4; i++) normals.push(0, 1, 0);
                     indices.push(first, first + 1, first + 2, first + 2, first + 1, first + 3);
                 });
-                const grid = { count: positions.length / 3, y: new Float32Array(positions.length / 3), colors: new Float32Array(positions.length) };
+                const grid = { count: positions.length / 3, y: new Float32Array(positions.length / 3), colors: new Uint8Array(positions.length) };
                 writeOceanCrestColors(grid, key);
                 const geometry = new THREE.BufferGeometry();
                 geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
                 geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
-                geometry.setAttribute('color', new THREE.Float32BufferAttribute(grid.colors, 3));
+                geometry.setAttribute('color', new THREE.BufferAttribute(grid.colors, 3, true));
                 geometry.setIndex(indices);
                 return { geometry, grid };
             }
 
             function createOceanGeometry(grid) {
                 const geometry = new THREE.BufferGeometry();
-                geometry.setAttribute('position', new THREE.Float32BufferAttribute(grid.positions, 3));
-                geometry.setAttribute('normal', new THREE.Float32BufferAttribute(grid.normals, 3));
-                geometry.setAttribute('color', new THREE.Float32BufferAttribute(grid.colors, 3));
+                // BufferAttribute keeps the supplied typed array, so the per-frame update
+                // writes into the uploaded storage instead of copying into it.
+                geometry.setAttribute('position', new THREE.BufferAttribute(grid.positions, 3));
+                geometry.setAttribute('normal', new THREE.BufferAttribute(grid.normals, 3));
+                geometry.setAttribute('color', new THREE.BufferAttribute(grid.colors, 3, true));
                 geometry.setIndex(Array.from(grid.indices));
                 return geometry;
             }
@@ -2558,16 +2650,17 @@
                 demoState.time += step;
                 updateMainBattery();
                 if (oceanSurface) {
+                    // Attribute arrays are the update buffers, so marking dirty is enough.
                     updateOceanGrid(oceanSurface.grid, demoState.time, demoState.seaState);
-                    oceanSurface.positionAttribute.array.set(oceanSurface.grid.positions);
                     oceanSurface.positionAttribute.needsUpdate = true;
-                    oceanSurface.normalAttribute.array.set(oceanSurface.grid.normals);
                     oceanSurface.normalAttribute.needsUpdate = true;
-                    oceanSurface.colorAttribute.array.set(oceanSurface.grid.colors);
                     oceanSurface.colorAttribute.needsUpdate = true;
-                    writeOceanCrestColors(oceanSurface.horizonGrid, demoState.seaState);
-                    oceanSurface.horizonColorAttribute.array.set(oceanSurface.horizonGrid.colors);
-                    oceanSurface.horizonColorAttribute.needsUpdate = true;
+                    // The far field never moves and only changes shade with the preset.
+                    if (oceanSurface.horizonSea !== demoState.seaState) {
+                        writeOceanCrestColors(oceanSurface.horizonGrid, demoState.seaState);
+                        oceanSurface.horizonColorAttribute.needsUpdate = true;
+                        oceanSurface.horizonSea = demoState.seaState;
+                    }
                 }
                 foamRibbons.forEach(descriptor => {
                     updateFoamRibbon(descriptor, demoState.time, demoState.seaState);
@@ -2608,7 +2701,8 @@
                     normalAttribute: oceanGeo.attributes.normal,
                     colorAttribute: oceanGeo.attributes.color,
                     horizonGrid: horizon.grid,
-                    horizonColorAttribute: horizon.geometry.attributes.color
+                    horizonColorAttribute: horizon.geometry.attributes.color,
+                    horizonSea: demoState.seaState
                 };
 
                 // Narrow foam ribbons follow the same water surface; no static filled wake.

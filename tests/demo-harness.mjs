@@ -35,6 +35,13 @@ export function installDemoDoubles(h) {
     degToRad: degrees => degrees * Math.PI / 180,
     radToDeg: radians => radians * 180 / Math.PI
   };
+  // Real Three.BufferAttribute shares typed storage and counts dirty versions.
+  h.THREE.BufferAttribute = class BufferAttribute {
+    constructor(array,itemSize,normalized=false) {
+      Object.assign(this,{array,itemSize,normalized,count:array.length/itemSize,version:0});
+    }
+    set needsUpdate(value) { if(value===true)this.version++; }
+  };
   const BaseGeometry = h.THREE.CylinderGeometry;
   for (const name of ['BoxGeometry', 'TorusGeometry', 'ExtrudeGeometry', 'PlaneGeometry', 'CircleGeometry', 'ConeGeometry']) {
     if (!h.THREE[name]) h.THREE[name] = class extends BaseGeometry {};
