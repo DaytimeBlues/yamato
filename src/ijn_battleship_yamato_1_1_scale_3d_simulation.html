@@ -157,6 +157,10 @@
         #camera-hint summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 600; }
         #camera-hint .camera-help-body { padding: 0 0 8px; max-height: 140px; overflow-y: auto; }
         #camera-hint p { margin: 0 0 4px; }
+        /* SAFE-DEMO-006: unavailable actions remain focusable for explanation. */
+        .ai-unavailable { flex-shrink: 0; margin: 0; padding: 8px; border: 1px solid #a88420; border-radius: 8px; background: #1c1a10; color: #fde68a; font-size: 12px; line-height: 1.45; }
+        button.ai-disabled { color: #e2e8f0; background: #111a26; border-color: #64748b; cursor: not-allowed; }
+        button.ai-disabled:hover { background: #111a26; border-color: #64748b; transform: none; box-shadow: none; }
     </style>
 </head>
 <body class="text-slate-100">
@@ -300,12 +304,13 @@
     </aside>
 
     <aside id="ai-command-panel" class="hud-panel rounded-xl" aria-label="Optional AI bridge comms">
-        <button id="btn-collapse-ai" type="button" class="hud-disclosure" aria-expanded="false" aria-controls="ai-panel-body" title="Expand AI bridge comms"><span class="hud-label">Optional AI comms</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button>
+        <button id="btn-collapse-ai" type="button" class="hud-disclosure" aria-expanded="false" aria-controls="ai-panel-body" title="Expand AI bridge comms"><span class="hud-label">AI unavailable</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button>
 
+        <p id="ai-status-note" class="ai-unavailable" role="status" aria-live="polite" hidden>AI and speech are unavailable in this review demo. Ship controls still work.</p>
         <div id="ai-panel-body" class="hidden flex flex-col gap-3 overflow-hidden">
             <!-- Persona Selector -->
             <div>
-                <label class="text-[10px] mono-font uppercase text-slate-400 block mb-1">Select Officer / Historical Specialist</label>
+                <label class="text-[10px] mono-font uppercase text-slate-400 block mb-1">Local camera views</label>
                 <div class="grid grid-cols-2 gap-1.5 text-[11px]">
                     <button data-persona="aruga" class="ai-persona-btn btn-naval active px-2.5 py-1.5 rounded-lg text-left truncate font-medium">
                         🔭 Capt. Kosaku Aruga
@@ -326,7 +331,7 @@
             <div class="bg-slate-900/90 border border-amber-500/30 rounded-lg p-2.5 space-y-2">
                 <div class="flex items-center justify-between">
                     <span class="text-[10px] mono-font uppercase tracking-wider text-amber-300 font-semibold">✨ AI 3D Tactical & Fire Control Director</span>
-                    <span id="ai-director-badge" class="text-[10px] mono-font text-slate-400">Ready</span>
+                    <span id="ai-director-badge" class="text-[10px] mono-font text-slate-400">Unavailable</span>
                 </div>
                 <div class="flex gap-1.5">
                     <input id="ai-scenario-input" aria-label="Tactical scenario" type="text" placeholder="e.g., Engage enemy fleet at 28km on port quarter..." class="flex-1 bg-slate-950/90 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400">
@@ -351,11 +356,11 @@
             <div id="ai-chat-history" class="bg-slate-950/80 border border-slate-800 rounded-lg p-3 h-52 overflow-y-auto space-y-2.5 text-xs leading-relaxed">
                 <div class="bg-slate-900/90 border-l-2 border-amber-400 p-2.5 rounded-r-lg">
                     <div class="flex items-center justify-between text-[10px] mono-font text-amber-400 mb-1">
-                        <span>CAPT. KOSAKU ARUGA • 1ST COMPASS BRIDGE</span>
-                        <span>+29.0m WL</span>
+                        <span>REVIEW DEMO</span>
+                        <span>AI / SPEECH UNAVAILABLE</span>
                     </div>
                     <p class="text-slate-200">
-                        Welcome aboard the flagship <em>Yamato</em>. From this compass bridge 29 meters above the waterline, we command 72,800 tons of Kure steel and nine 46cm Type 94 rifles. Ask me or my staff anything about our ship's architecture, gunnery, or history—or issue a tactical order above to see the ship respond in 3D.
+                        This review demo keeps AI replies, online search, tactical AI and speech unavailable. Explore stations, aim and fire using the local ship controls.
                     </p>
                 </div>
             </div>
@@ -364,13 +369,13 @@
             <div class="flex items-center justify-between text-[11px] px-0.5">
                 <label class="flex items-center gap-1.5 cursor-pointer text-slate-300">
                     <input id="chk-google-search" type="checkbox" class="rounded accent-amber-400">
-                    <span>🌐 Ground with Google Search</span>
+                    <span>🌐 Online search unavailable</span>
                 </label>
                 <div class="flex items-center gap-2">
                     <button id="btn- inspect-station-ai" class="text-amber-400 hover:text-amber-300 font-medium underline text-[11px]">
                         Analyze Current 3D View
                     </button>
-                    <button id="btn-tts-speak" class="btn-naval px-2 py-1 rounded text-[10px] text-sky-300 flex items-center gap-1" title="Read last response aloud with Gemini TTS">
+                    <button id="btn-tts-speak" class="btn-naval px-2 py-1 rounded text-[10px] text-sky-300 flex items-center gap-1" title="Speech is unavailable in this review demo">
                         <span>🔊</span> Voice Order
                     </button>
                 </div>
@@ -3285,8 +3290,18 @@
             // 13. GEMINI API INTEGRATION (TEXT, SEARCH GROUNDING, STRUCTURED JSON & TTS)
             // ============================================================================
             const apiKey = "";
+            // This review candidate has no runtime/UI/storage enable override.
+            // A future policy change requires a separately reviewed source candidate.
+            const OPTIONAL_AI_ENABLED = false;
+            const OPTIONAL_AI_NOTICE = 'AI and speech are unavailable in this review demo. Ship controls still work.';
+            function blockOptionalAI() {
+                if (OPTIONAL_AI_ENABLED) return false;
+                const note = document.getElementById('ai-status-note');
+                if (note) note.textContent = OPTIONAL_AI_NOTICE;
+                return true;
+            }
             let currentPersona = "aruga";
-            let lastAIResponseText = "All stations report ready aboard Battleship Yamato. Main battery 46-centimeter Type 94 turrets standing by.";
+            let lastAIResponseText = OPTIONAL_AI_NOTICE;
             let currentStationKey = "overview";
             let currentAudio = null;
 
@@ -3322,6 +3337,7 @@
             };
 
             async function fetchWithBackoff(url, options, maxRetries = 4) {
+                if (!OPTIONAL_AI_ENABLED) throw new Error('OPTIONAL_AI_DISABLED');
                 let delay = 1000;
                 for (let attempt = 0; attempt <= maxRetries; attempt++) {
                     try {
@@ -3384,6 +3400,7 @@
             }
 
             async function sendPersonaChat(userPromptText) {
+                if (blockOptionalAI()) return;
                 const inputEl = document.getElementById('ai-chat-input');
                 const sendBtn = document.getElementById('btn-ai-send');
                 const useSearch = document.getElementById('chk-google-search').checked;
@@ -3445,6 +3462,7 @@
 
             // Structured JSON Output: AI 3D Tactical & Fire Control Director
             async function executeAITacticalScenario(scenarioPrompt) {
+                if (blockOptionalAI()) return;
                 const inputEl = document.getElementById('ai-scenario-input');
                 const btnDirector = document.getElementById('btn-ai-director');
                 const badge = document.getElementById('ai-director-badge');
@@ -3613,6 +3631,7 @@
             }
 
             async function speakLastResponseWithTTS() {
+                if (blockOptionalAI()) return;
                 const btnTTS = document.getElementById('btn-tts-speak');
                 if (!lastAIResponseText) return;
 
@@ -3678,6 +3697,28 @@
             }
 
             function setupAIControls() {
+                if (!OPTIONAL_AI_ENABLED) {
+                    const note = document.getElementById('ai-status-note');
+                    const syncNotice = () => { note.hidden = document.getElementById('ai-panel-body').classList.contains('hidden'); };
+                    document.getElementById('btn-collapse-ai').addEventListener('click',syncNotice);
+                    syncNotice();
+                    const actions = ['btn-ai-send','btn-ai-director','btn- inspect-station-ai','btn-tts-speak'];
+                    const controls = actions.map(id => document.getElementById(id)).concat([...document.querySelectorAll('.ai-quick-scen')]);
+                    controls.forEach(control => {
+                        control.setAttribute('aria-disabled','true');
+                        control.setAttribute('aria-describedby','ai-status-note');
+                        control.classList.add('ai-disabled');
+                    });
+                    const search = document.getElementById('chk-google-search');
+                    search.disabled = true; search.checked = false;
+                    search.setAttribute('aria-describedby','ai-status-note');
+                    ['ai-chat-input','ai-scenario-input'].forEach(id => {
+                        const input = document.getElementById(id);
+                        input.placeholder = 'AI unavailable in this demo';
+                        input.setAttribute('aria-describedby','ai-status-note');
+                    });
+                    ['btn-collapse-ai','btn-toggle-ai-panel'].forEach(id => document.getElementById(id).setAttribute('aria-describedby','ai-status-note'));
+                }
                 // Persona switching buttons
                 document.querySelectorAll('.ai-persona-btn').forEach((btn) => {
                     btn.addEventListener('click', () => {
@@ -3711,6 +3752,7 @@
                 // Quick Tactical Scenario Pills
                 document.querySelectorAll('.ai-quick-scen').forEach((btn) => {
                     btn.addEventListener('click', () => {
+                        if (blockOptionalAI()) return;
                         const scen = btn.dataset.scen;
                         document.getElementById('ai-scenario-input').value = scen;
                         executeAITacticalScenario(scen);

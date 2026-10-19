@@ -146,6 +146,8 @@ try {
     /^UI-LAYOUT\.md$/,
     /^tests\/landmarks\.test\.mjs$/,
     /^EXPLORATION\.md$/,
+    /^tests\/optional-services\.test\.mjs$/,
+    /^SAFE-DEMO\.md$/,
     /^tests\/water-field-reference\.json$/,
     /^WATER-PERFORMANCE\.md$/,
     /^VISUAL-READABILITY\.md$/,
