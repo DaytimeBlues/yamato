@@ -109,6 +109,50 @@
             transform: translate(-50%, -50%) scale(1.1);
             z-index: 20;
         }
+        /* YAM-UI-003: measured HUD rails; no animation-frame layout polling. */
+        :root { --hud-top: 152px; --hud-bottom: 100px; }
+        #ship-header { display: grid; grid-template-columns: minmax(0,1fr); align-items: start; }
+        #ship-header .hud-panel, .hud-dock > .hud-panel, #camera-hint, #camera-nav { background: #0a121c; }
+        .hud-identity { min-width: 0; width: 100%; }
+        .hud-identity > div:first-child { flex-shrink: 0; }
+        .hud-identity > div:last-child { min-width: 0; }
+        .hud-identity > div:last-child > div { flex-wrap: wrap; }
+        .hud-identity p { line-height: 1.4; }
+        #ship-header .hud-telemetry { display: grid; width: 100%; grid-template-columns: repeat(3,minmax(0,1fr)) auto auto; gap: 12px; }
+        .hud-telemetry > div { min-width: 0; overflow-wrap: anywhere; }
+        .hud-telemetry > .h-7 { display: none; }
+        .hud-dock { position: fixed; top: var(--hud-top); bottom: var(--hud-bottom); left: 12px; right: 12px; z-index: 20; display: grid; grid-template-columns: minmax(0,320px) minmax(0,384px); justify-content: space-between; align-items: start; align-content: start; gap: 12px; overflow-y: auto; overscroll-behavior: contain; pointer-events: none; }
+        .hud-dock > .hud-panel { display: flex; flex-direction: column; min-width: 0; min-height: 0; max-height: calc(100dvh - var(--hud-top) - var(--hud-bottom)); padding: 10px; overflow: hidden; pointer-events: auto; }
+        .hud-dock > .hud-panel.hidden { display: none; }
+        .hud-dock [id$="-body"] { min-height: 0; overflow: auto; padding: 8px 2px 2px; }
+        .hud-disclosure { display: flex; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: 40px; padding: 6px 8px; border-radius: 8px; color: #e2e8f0; text-align: left; font-size: 14px; font-weight: 600; }
+        .hud-disclosure svg { flex-shrink: 0; }
+        .hud-disclosure[aria-expanded="true"] svg { transform: rotate(180deg); }
+        .hud-label { color: #cbd5e1; font-size: 12px; line-height: 1.4; }
+        #ship-header [class~="text-[10px]"], .hud-dock [class~="text-[10px]"], .hud-dock [class~="text-[11px]"], #camera-hint { font-size: 12px; line-height: 1.4; }
+        .hud-dock [class~="text-slate-500"] { color: #94a3b8; }
+        .hud-dock input::placeholder { color: #94a3b8; opacity: 1; }
+        #ai-panel-body input[type="text"] { min-width: 0; }
+        #ai-panel-body > .flex.items-center.justify-between { flex-wrap: wrap; gap: 8px; }
+        #ship-header button, #camera-nav button { min-height: 36px; }
+        #ship-header button:focus-visible, .hud-dock button:focus-visible, .hud-dock input:focus-visible, #camera-nav button:focus-visible { outline: 2px solid #fde047; outline-offset: 2px; }
+        #camera-hint { max-width: 100%; flex-wrap: wrap; justify-content: center; gap: 4px 12px; border-radius: 12px; padding: 6px 10px; }
+        #camera-hint > span:nth-child(even) { display: none; }
+        #camera-nav { min-width: 0; max-width: 100%; justify-content: flex-start; scroll-padding-inline: 8px; }
+        #camera-nav .cam-preset { flex-shrink: 0; scroll-margin-inline: 8px; }
+        @media (max-width: 767px) {
+            #ship-header .hud-telemetry { grid-template-columns: repeat(6,minmax(0,1fr)); gap: 8px; }
+            .hud-telemetry > div { grid-column: span 2; }
+            .hud-telemetry > button { grid-column: span 3; justify-content: center; }
+            .hud-identity { gap: 10px; padding: 10px; }
+            .hud-identity h1 { font-size: 18px; }
+            .hud-dock { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+            .hud-dock > .hud-panel { padding: 6px; }
+            .hud-dock > .panel-expanded { grid-column: 1 / -1; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #ship-header *, .hud-dock *, #camera-nav * { animation: none !important; transition: none !important; }
+        }
     </style>
 </head>
 <body class="text-slate-100">
@@ -119,9 +163,9 @@
     <!-- 3D Floating Pin Container -->
     <div id="labels-container" class="absolute inset-0 pointer-events-none overflow-hidden z-10"></div>
 
-    <header class="fixed top-3 left-3 right-3 z-20 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
+    <header id="ship-header" class="fixed top-3 left-3 right-3 z-30 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
         <!-- Ship Identity -->
-        <div class="hud-panel px-4 py-2.5 rounded-xl pointer-events-auto flex items-center gap-4">
+        <div class="hud-identity hud-panel px-4 py-2.5 rounded-xl pointer-events-auto flex items-center gap-4">
             <div class="w-10 h-10 rounded-full bg-amber-500/20 border border-amber-400/60 flex items-center justify-center shadow-inner">
                 <!-- 16-Petal Chrysanthemum SVG -->
                 <svg class="w-7 h-7 text-amber-400" viewBox="0 0 100 100" fill="currentColor">
@@ -148,7 +192,7 @@
         </div>
 
         <!-- Live Scale & Telemetry Readout -->
-        <div class="hud-panel px-4 py-2 rounded-xl pointer-events-auto hidden lg:flex items-center gap-5 text-xs mono-font">
+        <div class="hud-telemetry hud-panel px-4 py-2 rounded-xl pointer-events-auto items-center gap-5 text-xs mono-font">
             <div>
                 <span class="text-slate-400 block text-[10px]">CAMERA FOCUS</span>
                 <span id="hud-focus-name" class="text-amber-400 font-semibold">Full Ship Overview</span>
@@ -164,29 +208,95 @@
                 <span id="hud-crew-count" class="text-sky-400 font-semibold">Crew not rendered (demo)</span>
             </div>
             <div class="h-7 w-px bg-slate-700"></div>
-            <button id="btn-toggle-pins" class="btn-naval active px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5">
+            <button id="btn-toggle-pins" aria-pressed="true" aria-controls="labels-container" class="btn-naval active px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5">
                 <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
                 3D Markers: ON
             </button>
-            <button id="btn-toggle-ai-panel" class="btn-naval active px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 border-amber-400/60 text-amber-300">
+            <button id="btn-toggle-ai-panel" aria-expanded="true" aria-controls="ai-command-panel" class="btn-naval active px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 border-amber-400/60 text-amber-300">
                 <span>✨</span> AI Bridge Comms
             </button>
         </div>
     </header>
 
-    <aside id="ai-command-panel" class="fixed top-24 right-3 z-20 w-96 max-w-[calc(100vw-1.5rem)] hud-panel rounded-xl p-4 pointer-events-auto flex flex-col gap-3 max-h-[calc(100vh-11rem)] transition-transform duration-300">
-        <div class="flex items-center justify-between border-b border-slate-700/80 pb-2.5">
-            <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-                <div>
-                    <span class="text-[10px] mono-font uppercase tracking-widest text-amber-400 block">GEMINI 3 FLASH + TTS VOICE</span>
-                    <h2 class="text-sm font-bold text-white">IJN Yamato AI Bridge & Tactical Link</h2>
+    <div id="panel-dock" class="hud-dock">
+    <aside id="inspector-panel" class="hud-panel rounded-xl" aria-label="Ship explorer">
+        <button id="btn-collapse-inspector" type="button" class="hud-disclosure" aria-expanded="false" aria-controls="inspector-body" title="Expand ship explorer"><span>Ship explorer</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button>
+        <div id="inspector-body" class="hidden space-y-3 text-xs leading-relaxed text-slate-300">
+            <div class="border-b border-slate-700/80 pb-2">
+                <span id="inspect-category" class="hud-label block text-amber-300">STATION TELEMETRY</span>
+                <h2 id="inspect-title" class="text-base font-bold text-white">Battleship Yamato (1945)</h2>
+            </div>
+            <p id="inspect-desc">
+                Built in extreme secrecy at Kure Naval Arsenal, <strong class="text-white">Yamato</strong> was the heaviest and most powerfully armed battleship ever constructed. In this 1:1 scale simulation (1 unit = 1 meter) you can inspect the full 263-meter hull, the pagoda bridge, the nine 46cm barrels and the sea-state model. Visible crew figures and crew animation are excluded from this demonstration.
+            </p>
+
+            <div class="bg-slate-900/80 border border-slate-700/70 rounded-lg p-2.5 mono-font text-[11px] space-y-1.5">
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Scale Reference:</span>
+                    <span id="inspect-stat-1" class="text-amber-300">1.0 Unit = 1.00 Meter</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Elevation Above WL:</span>
+                    <span id="inspect-stat-2" class="text-sky-300">+0.0m to +45.0m</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Armor Protection:</span>
+                    <span id="inspect-stat-3" class="text-emerald-300">650mm Turret / 410mm Belt</span>
                 </div>
             </div>
-            <button id="btn-collapse-ai" class="text-slate-400 hover:text-white p-1 rounded-lg" title="Minimize AI Panel">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-            </button>
+
+            <!-- Interactive Controls inside Sidebar -->
+            <div class="pt-1 space-y-2.5 border-t border-slate-700/80">
+                <div>
+                    <div class="flex justify-between text-[11px] mb-1">
+                        <span id="turret-label" class="text-slate-300 font-medium">46cm & 15.5cm Turret Traverse</span>
+                        <span id="slider-turret-val" class="mono-font text-amber-400">0°</span>
+                    </div>
+                    <input id="slider-turret" aria-labelledby="turret-label" type="range" min="-135" max="135" value="0" class="w-full">
+                </div>
+
+                <div>
+                    <div class="flex justify-between text-[11px] mb-1">
+                        <span id="elevation-label" class="text-slate-300 font-medium">Main Gun Barrel Elevation</span>
+                        <span id="slider-elev-val" class="mono-font text-amber-400">+12°</span>
+                    </div>
+                    <input id="slider-elev" aria-labelledby="elevation-label" type="range" min="-3" max="45" value="12" class="w-full">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 pt-1">
+                    <button id="btn-salvo" class="btn-fire col-span-2 py-2 px-3 rounded-lg font-bold text-white text-xs tracking-wider uppercase flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        Fire 46cm Type 94 Broadside
+                    </button>
+                    <button id="btn-aa-barrage" class="btn-naval py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-amber-300 flex items-center justify-center gap-1.5">
+                        <span>💥</span> 25mm AA Drill
+                    </button>
+                    <button id="btn-time-of-day" class="btn-naval py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-sky-300 flex items-center justify-center gap-1.5">
+                        <span>🌅</span> Lighting: Golden
+                    </button>
+                </div>
+
+                <div class="pt-2 mt-1 space-y-2 border-t border-slate-700/80">
+                    <div class="flex items-center justify-between text-[11px]">
+                        <span class="text-slate-300 font-medium">Sea State</span>
+                        <span id="hud-sea-state" class="mono-font text-sky-300">Moderate</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1.5">
+                        <button data-sea="calm" class="sea-btn btn-naval py-1.5 rounded-lg text-[11px] font-semibold" aria-pressed="false">Calm</button>
+                        <button data-sea="moderate" class="sea-btn btn-naval active py-1.5 rounded-lg text-[11px] font-semibold" aria-pressed="true">Moderate</button>
+                        <button data-sea="rough" class="sea-btn btn-naval py-1.5 rounded-lg text-[11px] font-semibold" aria-pressed="false">Rough</button>
+                    </div>
+                    <button id="btn-reduced-motion" class="btn-naval w-full py-1.5 rounded-lg text-[11px] font-semibold text-sky-300" aria-pressed="false">Reduced Motion: OFF</button>
+                    <p class="text-[10px] leading-snug text-slate-400">
+                        Illustrative visual sea-state model, not validated hydrodynamics. Wave detail fades into a flat distant ocean; geometry uses metres, while fittings and visual effects are approximate, not a surveyed historical reconstruction. Crew figures and crew animation are excluded; recoil and blast values are illustrative, not historical timings or ballistics.
+                    </p>
+                </div>
+            </div>
         </div>
+    </aside>
+
+    <aside id="ai-command-panel" class="hud-panel rounded-xl" aria-label="Optional AI bridge comms">
+        <button id="btn-collapse-ai" type="button" class="hud-disclosure" aria-expanded="false" aria-controls="ai-panel-body" title="Expand AI bridge comms"><span class="hud-label">Optional AI comms</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button>
 
         <div id="ai-panel-body" class="hidden flex flex-col gap-3 overflow-hidden">
             <!-- Persona Selector -->
@@ -215,7 +325,7 @@
                     <span id="ai-director-badge" class="text-[10px] mono-font text-slate-400">Ready</span>
                 </div>
                 <div class="flex gap-1.5">
-                    <input id="ai-scenario-input" type="text" placeholder="e.g., Engage enemy fleet at 28km on port quarter..." class="flex-1 bg-slate-950/90 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400">
+                    <input id="ai-scenario-input" aria-label="Tactical scenario" type="text" placeholder="e.g., Engage enemy fleet at 28km on port quarter..." class="flex-1 bg-slate-950/90 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400">
                     <button id="btn-ai-director" class="btn-naval px-3 py-1.5 rounded-lg text-xs font-semibold text-amber-300 whitespace-nowrap">
                         Execute
                     </button>
@@ -264,98 +374,18 @@
 
             <!-- User Chat Prompt Input -->
             <div class="flex gap-1.5">
-                <input id="ai-chat-input" type="text" placeholder="Ask Captain Aruga or Naval Architect..." class="flex-1 bg-slate-950/90 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400">
+                <input id="ai-chat-input" aria-label="Message to bridge" type="text" placeholder="Ask Captain Aruga or Naval Architect..." class="flex-1 bg-slate-950/90 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400">
                 <button id="btn-ai-send" class="btn-naval px-3.5 py-2 rounded-lg text-xs font-bold text-amber-400 flex items-center gap-1">
                     <span>Send</span>
                 </button>
             </div>
         </div>
     </aside>
+    </div>
 
-    <aside id="inspector-panel" class="fixed top-24 left-3 z-20 w-80 max-w-[calc(100vw-1.5rem)] hud-panel rounded-xl p-4 pointer-events-auto transition-transform duration-300">
-        <div class="flex items-center justify-between border-b border-slate-700/80 pb-2.5 mb-3">
-            <div>
-                <span id="inspect-category" class="text-[10px] mono-font uppercase tracking-widest text-amber-400 block">STATION TELEMETRY</span>
-                <h2 id="inspect-title" class="text-base font-bold text-white">Battleship Yamato (1945)</h2>
-            </div>
-            <button id="btn-collapse-inspector" class="text-slate-400 hover:text-white p-1 rounded-lg" title="Minimize Inspector">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-            </button>
-        </div>
-
-        <div id="inspector-body" class="hidden space-y-3 text-xs leading-relaxed text-slate-300">
-            <p id="inspect-desc">
-                Built in extreme secrecy at Kure Naval Arsenal, <strong class="text-white">Yamato</strong> was the heaviest and most powerfully armed battleship ever constructed. In this 1:1 scale simulation (1 unit = 1 meter) you can inspect the full 263-meter hull, the pagoda bridge, the nine 46cm barrels and the sea-state model. Visible crew figures and crew animation are excluded from this demonstration.
-            </p>
-
-            <div class="bg-slate-900/80 border border-slate-700/70 rounded-lg p-2.5 mono-font text-[11px] space-y-1.5">
-                <div class="flex justify-between">
-                    <span class="text-slate-400">Scale Reference:</span>
-                    <span id="inspect-stat-1" class="text-amber-300">1.0 Unit = 1.00 Meter</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-slate-400">Elevation Above WL:</span>
-                    <span id="inspect-stat-2" class="text-sky-300">+0.0m to +45.0m</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-slate-400">Armor Protection:</span>
-                    <span id="inspect-stat-3" class="text-emerald-300">650mm Turret / 410mm Belt</span>
-                </div>
-            </div>
-
-            <!-- Interactive Controls inside Sidebar -->
-            <div class="pt-1 space-y-2.5 border-t border-slate-700/80">
-                <div>
-                    <div class="flex justify-between text-[11px] mb-1">
-                        <span class="text-slate-300 font-medium">46cm & 15.5cm Turret Traverse</span>
-                        <span id="slider-turret-val" class="mono-font text-amber-400">0°</span>
-                    </div>
-                    <input id="slider-turret" type="range" min="-135" max="135" value="0" class="w-full">
-                </div>
-
-                <div>
-                    <div class="flex justify-between text-[11px] mb-1">
-                        <span class="text-slate-300 font-medium">Main Gun Barrel Elevation</span>
-                        <span id="slider-elev-val" class="mono-font text-amber-400">+12°</span>
-                    </div>
-                    <input id="slider-elev" type="range" min="-3" max="45" value="12" class="w-full">
-                </div>
-
-                <div class="grid grid-cols-2 gap-2 pt-1">
-                    <button id="btn-salvo" class="btn-fire col-span-2 py-2 px-3 rounded-lg font-bold text-white text-xs tracking-wider uppercase flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                        Fire 46cm Type 94 Broadside
-                    </button>
-                    <button id="btn-aa-barrage" class="btn-naval py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-amber-300 flex items-center justify-center gap-1.5">
-                        <span>💥</span> 25mm AA Drill
-                    </button>
-                    <button id="btn-time-of-day" class="btn-naval py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-sky-300 flex items-center justify-center gap-1.5">
-                        <span>🌅</span> Lighting: Golden
-                    </button>
-                </div>
-
-                <div class="pt-2 mt-1 space-y-2 border-t border-slate-700/80">
-                    <div class="flex items-center justify-between text-[11px]">
-                        <span class="text-slate-300 font-medium">Sea State</span>
-                        <span id="hud-sea-state" class="mono-font text-sky-300">Moderate</span>
-                    </div>
-                    <div class="grid grid-cols-3 gap-1.5">
-                        <button data-sea="calm" class="sea-btn btn-naval py-1.5 rounded-lg text-[11px] font-semibold" aria-pressed="false">Calm</button>
-                        <button data-sea="moderate" class="sea-btn btn-naval active py-1.5 rounded-lg text-[11px] font-semibold" aria-pressed="true">Moderate</button>
-                        <button data-sea="rough" class="sea-btn btn-naval py-1.5 rounded-lg text-[11px] font-semibold" aria-pressed="false">Rough</button>
-                    </div>
-                    <button id="btn-reduced-motion" class="btn-naval w-full py-1.5 rounded-lg text-[11px] font-semibold text-sky-300" aria-pressed="false">Reduced Motion: OFF</button>
-                    <p class="text-[10px] leading-snug text-slate-400">
-                        Illustrative visual sea-state model, not validated hydrodynamics. Wave detail fades into a flat distant ocean; geometry uses metres, while fittings and visual effects are approximate, not a surveyed historical reconstruction. Crew figures and crew animation are excluded; recoil and blast values are illustrative, not historical timings or ballistics.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </aside>
-
-    <footer class="fixed bottom-3 left-3 right-3 z-20 flex flex-col items-center pointer-events-none gap-2">
+    <footer class="fixed bottom-3 left-3 right-3 z-30 flex flex-col items-center pointer-events-none gap-2">
         <!-- Quick Camera Hint -->
-        <div class="hud-panel px-3 py-1 rounded-full text-[11px] text-slate-300 pointer-events-auto flex items-center gap-3">
+        <div id="camera-hint" class="hud-panel px-3 py-1 rounded-full text-[11px] text-slate-300 pointer-events-auto flex items-center gap-3">
             <span>🖱️ <strong>Left Drag:</strong> Orbit</span>
             <span>•</span>
             <span><strong>Right Drag / Shift+Drag:</strong> Pan</span>
@@ -366,7 +396,7 @@
         </div>
 
         <!-- Station Camera Presets -->
-        <div class="hud-panel p-2 rounded-2xl pointer-events-auto flex items-center gap-1.5 overflow-x-auto max-w-full">
+        <div id="camera-nav" role="navigation" aria-label="Ship camera presets" class="hud-panel p-2 rounded-2xl pointer-events-auto flex items-center gap-1.5 overflow-x-auto max-w-full">
             <button data-preset="overview" class="cam-preset btn-naval active px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5">
                 <span>🚢</span> Full 263m Ship
             </button>
@@ -2823,10 +2853,12 @@
                 const st = STATIONS[key];
                 if (!st) return;
 
-                camState.desiredTarget.copy(st.target);
-                camState.desiredSpherical.radius = st.radius;
-                camState.desiredSpherical.phi = st.phi;
-                camState.desiredSpherical.theta = st.theta;
+                const pose = key === 'overview' ? overviewForViewport(window.innerWidth,window.innerHeight) : st;
+                camState.desiredTarget.copy(pose.target);
+                camState.desiredSpherical.radius = pose.radius;
+                camState.desiredSpherical.phi = pose.phi;
+                camState.desiredSpherical.theta = pose.theta;
+                currentStationKey = key;
 
                 // Update Inspector UI
                 document.getElementById('inspect-category').textContent = st.category;
@@ -2840,6 +2872,59 @@
                 document.querySelectorAll('.cam-preset').forEach((btn) => {
                     btn.classList.toggle('active', btn.dataset.preset === key);
                 });
+            }
+
+            // Overview-only responsive fit; other authored station poses are unchanged.
+            function overviewForViewport(width, height) {
+                const aspect = (Number.isFinite(width) && width > 0 ? width : 1280) / (Number.isFinite(height) && height > 0 ? height : 720);
+                const base = STATIONS.overview, narrow = aspect < 1.05;
+                const phi = narrow ? 1.30 : base.phi, theta = narrow ? Math.PI / 2 + 0.22 : base.theta;
+                const target = base.target.clone();
+                if (narrow) target.y = 18;
+                const tanY = Math.tan(Math.PI / 8), tanX = tanY * aspect;
+                const z = [Math.sin(phi) * Math.sin(theta), Math.cos(phi), Math.sin(phi) * Math.cos(theta)];
+                const x = [z[2], 0, -z[0]], length = Math.hypot(...x);
+                for (let i = 0; i < 3; i++) x[i] /= length;
+                const y = [z[1]*x[2]-z[2]*x[1], z[2]*x[0]-z[0]*x[2], z[0]*x[1]-z[1]*x[0]];
+                let radius = base.radius;
+                for (const px of [-131.5,131.5]) for (const py of [-2,47]) for (const pz of [-19.45,19.45]) {
+                    const d = [px-target.x, py-target.y, pz-target.z], dot = a => d[0]*a[0]+d[1]*a[1]+d[2]*a[2];
+                    radius = Math.max(radius, dot(z)+Math.abs(dot(x))/(0.84*tanX), dot(z)+Math.abs(dot(y))/(0.84*tanY));
+                }
+                return { target, radius: Math.min(radius,440), phi, theta };
+            }
+
+            // Native buttons still use the inherited toggle handlers; reconcile after
+            // their click, and measure rails only on layout/viewport changes.
+            function setupHUDLayout() {
+                const header = document.querySelector('header'), footer = document.querySelector('footer');
+                const dock = document.getElementById('panel-dock');
+                if (!header || !footer || !dock) return;
+                const ai = document.getElementById('ai-command-panel'), aiToggle = document.getElementById('btn-toggle-ai-panel');
+                const pairs = [['btn-collapse-inspector','inspector-body','ship explorer'],['btn-collapse-ai','ai-panel-body','AI bridge comms']];
+                function sync() {
+                    pairs.forEach(([buttonId,bodyId,label]) => {
+                        const button = document.getElementById(buttonId), body = document.getElementById(bodyId), open = !body.classList.contains('hidden');
+                        button.setAttribute('aria-expanded',String(open)); button.setAttribute('aria-controls',bodyId);
+                        button.setAttribute('aria-label',`${open ? 'Collapse' : 'Expand'} ${label}`); button.title = `${open ? 'Collapse' : 'Expand'} ${label}`;
+                        body.parentElement.classList.toggle('panel-expanded',open);
+                    });
+                    const visible = !ai.classList.contains('hidden');
+                    aiToggle.setAttribute('aria-expanded',String(visible)); aiToggle.setAttribute('aria-label',`${visible ? 'Hide' : 'Show'} optional AI panel`);
+                    document.getElementById('btn-toggle-pins').setAttribute('aria-pressed',String(pinsVisible));
+                }
+                function measure() {
+                    document.documentElement.style.setProperty('--hud-top',`${Math.ceil(header.getBoundingClientRect().bottom+8)}px`);
+                    document.documentElement.style.setProperty('--hud-bottom',`${Math.ceil(window.innerHeight-footer.getBoundingClientRect().top+8)}px`);
+                }
+                pairs.forEach(([id]) => document.getElementById(id).addEventListener('click',sync));
+                aiToggle.addEventListener('click',sync); document.getElementById('btn-toggle-pins').addEventListener('click',sync);
+                document.getElementById('camera-nav').addEventListener('focusin',event => {
+                    if (event.target.classList.contains('cam-preset')) event.target.scrollIntoView({block:'nearest',inline:'nearest',behavior:'auto'});
+                });
+                if (typeof ResizeObserver === 'function') { const observer = new ResizeObserver(measure); observer.observe(header); observer.observe(footer); }
+                window.addEventListener('resize',() => { measure(); if (currentStationKey === 'overview') selectCameraPreset('overview'); });
+                measure(); sync();
             }
 
             function setupEventListeners() {
@@ -3634,6 +3719,7 @@
                 setupEventListeners();
                 setupAIControls();
                 setupDemoControls();
+                setupHUDLayout();
                 selectCameraPreset('overview');
             }
 

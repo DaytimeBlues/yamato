@@ -142,6 +142,8 @@ try {
     /^tests\/demo\.test\.mjs$/,
     /^tests\/sea-readability\.test\.mjs$/,
     /^tests\/water-performance\.test\.mjs$/,
+    /^tests\/ui-layout\.test\.mjs$/,
+    /^UI-LAYOUT\.md$/,
     /^tests\/water-field-reference\.json$/,
     /^WATER-PERFORMANCE\.md$/,
     /^VISUAL-READABILITY\.md$/,
