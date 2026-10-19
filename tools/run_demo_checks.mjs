@@ -144,6 +144,8 @@ try {
     /^tests\/water-performance\.test\.mjs$/,
     /^tests\/ui-layout\.test\.mjs$/,
     /^UI-LAYOUT\.md$/,
+    /^tests\/landmarks\.test\.mjs$/,
+    /^EXPLORATION\.md$/,
     /^tests\/water-field-reference\.json$/,
     /^WATER-PERFORMANCE\.md$/,
     /^VISUAL-READABILITY\.md$/,

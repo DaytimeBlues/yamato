@@ -97,18 +97,12 @@
             background: rgba(148, 163, 184, 0.4);
             border-radius: 3px;
         }
-        .label-3d {
-            position: absolute;
-            pointer-events: auto;
-            cursor: pointer;
-            transform: translate(-50%, -50%);
-            transition: opacity 0.2s, transform 0.2s;
-            z-index: 10;
-        }
-        .label-3d:hover {
-            transform: translate(-50%, -50%) scale(1.1);
-            z-index: 20;
-        }
+        .label-3d { position: absolute; display: flex; align-items: center; gap: 6px; pointer-events: auto; cursor: pointer; transform: translate(-50%,-50%); z-index: 10; max-width: min(44vw,360px); min-height: 36px; padding: 6px 10px; border: 1px solid #a88420; border-radius: 999px; background: #0a121c; color: #fde68a; font: 600 12px/1.4 Inter,sans-serif; }
+        .label-3d > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .label-3d:hover, .label-3d[aria-current="location"] { border-color: #fde047; }
+        .label-3d:focus-visible { outline: 2px solid #fde047; outline-offset: 2px; }
+        .label-3d[hidden], .labels-off .label-3d { display: none !important; }
+        .label-dot { width: 8px; height: 8px; flex-shrink: 0; border-radius: 50%; background: #fbbf24; }
         /* YAM-UI-003: measured HUD rails; no animation-frame layout polling. */
         :root { --hud-top: 152px; --hud-bottom: 100px; }
         #ship-header { display: grid; grid-template-columns: minmax(0,1fr); align-items: start; }
@@ -153,6 +147,16 @@
         @media (prefers-reduced-motion: reduce) {
             #ship-header *, .hud-dock *, #camera-nav * { animation: none !important; transition: none !important; }
         }
+        /* YAM-EXPLORE-004: stable discovery stays outside the vessel view. */
+        #landmark-bar { display: grid; grid-template-columns: auto minmax(0,1fr); align-items: center; gap: 4px 10px; width: min(100%,760px); padding: 6px 10px; background: #0a121c; }
+        #landmark-select { min-width: 0; width: 100%; min-height: 44px; padding: 6px 8px; border: 1px solid #64748b; border-radius: 8px; background: #0a121c; color: #e2e8f0; font: 600 12px/1.4 Inter,sans-serif; }
+        #selected-landmark { grid-column: 1 / -1; color: #fde68a; font-size: 12px; line-height: 1.4; overflow-wrap: anywhere; }
+        #selected-landmark[hidden] { display: none; }
+        #landmark-select:focus-visible, #camera-hint summary:focus-visible { outline: 2px solid #fde047; outline-offset: 2px; }
+        #camera-hint { display: block; width: min(100%,760px); padding: 0 10px; background: #0a121c; }
+        #camera-hint summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 600; }
+        #camera-hint .camera-help-body { padding: 0 0 8px; max-height: 140px; overflow-y: auto; }
+        #camera-hint p { margin: 0 0 4px; }
     </style>
 </head>
 <body class="text-slate-100">
@@ -385,14 +389,19 @@
 
     <footer class="fixed bottom-3 left-3 right-3 z-30 flex flex-col items-center pointer-events-none gap-2">
         <!-- Quick Camera Hint -->
-        <div id="camera-hint" class="hud-panel px-3 py-1 rounded-full text-[11px] text-slate-300 pointer-events-auto flex items-center gap-3">
-            <span>🖱️ <strong>Left Drag:</strong> Orbit</span>
-            <span>•</span>
-            <span><strong>Right Drag / Shift+Drag:</strong> Pan</span>
-            <span>•</span>
-            <span><strong>Scroll:</strong> Zoom (0.8m to 450m)</span>
-            <span>•</span>
-            <span><strong>WASD:</strong> Walk Deck</span>
+        <details id="camera-hint" class="hud-panel rounded-xl text-slate-300 pointer-events-auto">
+            <summary>Mouse / touch / keyboard help</summary>
+            <div class="camera-help-body">
+                <p><strong>Mouse:</strong> left-drag to orbit; right-drag or Shift+drag to pan; wheel to zoom.</p>
+                <p><strong>Touch:</strong> one finger orbits; two fingers pinch to zoom. Touch pan is not supported.</p>
+                <p><strong>Keyboard:</strong> WASD shifts the free camera without collision. Use any ship view below to return.</p>
+            </div>
+        </details>
+        <div id="landmark-bar" class="hud-panel rounded-xl pointer-events-auto">
+            <label for="landmark-select" class="hud-label">Explore ship</label>
+            <select id="landmark-select" aria-describedby="landmark-mode"></select>
+            <span id="selected-landmark" role="status" aria-live="polite"></span>
+            <span id="landmark-mode" class="sr-only">All eight ship views are available here. On narrow screens landmark labels stay in this footer to keep the vessel clear. Open Ship explorer for the selected view's description.</span>
         </div>
 
         <!-- Station Camera Presets -->
@@ -2805,48 +2814,110 @@
             let pinsVisible = true;
             const pinElements = [];
 
+            const calloutCache = { bounds: null, obstacles: [], narrow: false };
+
+            function calloutRectsOverlap(a,b,gap) {
+                return a.x < b.x+b.width+gap && b.x < a.x+a.width+gap && a.y < b.y+b.height+gap && b.y < a.y+a.height+gap;
+            }
+
+            // Pure policy: labels keep their projected anchor; colliding labels
+            // yield to focus/selection. Every station stays in the native picker.
+            function layoutCallouts(items,bounds,obstacles) {
+                const placed = [], culled = [], right = bounds.x+bounds.width, bottom = bounds.y+bounds.height;
+                const ordered = items.slice().sort((a,b) =>
+                    (b.focused ? 2 : b.selected ? 1 : 0) - (a.focused ? 2 : a.selected ? 1 : 0) || a.order-b.order);
+                for (const item of ordered) {
+                    const width = item.width, height = item.height;
+                    if (![item.x,item.y,width,height,bounds.x,bounds.y,bounds.width,bounds.height].every(Number.isFinite) || width<=0 || height<=0 || bounds.width<=0 || bounds.height<=0 || width>bounds.width || height>bounds.height) { culled.push({id:item.id,reason:'invalid-size'}); continue; }
+                    if (!item.focused && (item.x<bounds.x || item.x>right || item.y<bounds.y || item.y>bottom)) { culled.push({id:item.id,reason:'offscreen'}); continue; }
+                    const candidate = {id:item.id,x:Math.min(Math.max(item.x-width/2,bounds.x),right-width),y:Math.min(Math.max(item.y-height/2,bounds.y),bottom-height),width,height};
+                    if (placed.some(box => calloutRectsOverlap(candidate,box,8)) || obstacles.some(box => calloutRectsOverlap(candidate,box,6))) { culled.push({id:item.id,reason:'collision'}); continue; }
+                    placed.push(candidate);
+                }
+                return {placed,culled};
+            }
+
             function createFloatingPins() {
                 const container = document.getElementById('labels-container');
-                container.innerHTML = '';
+                container.innerHTML = ''; pinElements.length = 0;
+                Object.keys(STATIONS).forEach(key => {
+                    const st = STATIONS[key]; if (!st.pinPos) return;
+                    const el = document.createElement('button'); el.type = 'button'; el.className = 'label-3d';
+                    el.dataset.landmark = key; el.setAttribute('aria-label',`Explore ${st.title}`); el.title = st.title;
+                    const dot = document.createElement('span'); dot.className = 'label-dot'; dot.setAttribute('aria-hidden','true');
+                    const text = document.createElement('span'); text.textContent = st.title.split('&')[0].trim(); el.append(dot,text);
+                    el.addEventListener('click',() => { selectCameraPreset(key); syncLandmarkUI(); });
+                    container.appendChild(el); pinElements.push({key,el,pos:st.pinPos.clone(),width:0,height:0});
+                });
+            }
 
-                Object.keys(STATIONS).forEach((key) => {
-                    const st = STATIONS[key];
-                    if (!st.pinPos) return;
+            function syncLandmarkUI() {
+                const picker = document.getElementById('landmark-select'), selected = document.getElementById('selected-landmark');
+                if (!picker) return;
+                picker.value = currentStationKey;
+                const title = `Selected: ${STATIONS[currentStationKey].title}`;
+                if (selected.textContent !== title) selected.textContent = title;
+                selected.hidden = !pinsVisible;
+                document.querySelectorAll('.cam-preset').forEach(button => {
+                    if (button.dataset.preset === currentStationKey) button.setAttribute('aria-current','location');
+                    else button.removeAttribute('aria-current');
+                });
+                pinElements.forEach(p => {
+                    if (p.key === currentStationKey) p.el.setAttribute('aria-current','location');
+                    else p.el.removeAttribute('aria-current');
+                });
+                const toggle = document.getElementById('btn-toggle-pins');
+                toggle.innerHTML = `<span class="w-2 h-2 rounded-full ${pinsVisible ? 'bg-amber-400' : 'bg-slate-500'}"></span> Landmarks: ${pinsVisible ? 'ON' : 'OFF'}`;
+                toggle.setAttribute('aria-pressed',String(pinsVisible)); toggle.setAttribute('aria-describedby','landmark-mode');
+            }
 
-                    const el = document.createElement('div');
-                    el.className = 'label-3d hud-panel px-2.5 py-1 rounded-full text-[11px] font-semibold text-amber-300 flex items-center gap-1.5 border border-amber-400/50 shadow-lg';
-                    el.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400"></span><span>${st.title.split('&')[0].trim()}</span>`;
-                    el.addEventListener('click', () => selectCameraPreset(key));
-                    container.appendChild(el);
-
-                    pinElements.push({
-                        key,
-                        el,
-                        pos: st.pinPos.clone()
-                    });
+            // DOM geometry is cached only on layout changes, never in animate.
+            function refreshCalloutLayout() {
+                const container = document.getElementById('labels-container'), picker = document.getElementById('landmark-select');
+                calloutCache.narrow = window.innerWidth < 900;
+                if (calloutCache.narrow && pinElements.some(p => p.el === document.activeElement)) picker.focus({preventScroll:true});
+                container.classList.remove('labels-off');
+                pinElements.forEach(p => { const hidden = p.el.hidden; p.el.hidden = false; p.width = p.el.offsetWidth; p.height = p.el.offsetHeight; p.el.hidden = hidden; });
+                container.classList.toggle('labels-off',calloutCache.narrow || !pinsVisible);
+                const top = Math.ceil(document.querySelector('header').getBoundingClientRect().bottom+8);
+                const bottom = Math.floor(document.querySelector('footer').getBoundingClientRect().top-8);
+                calloutCache.bounds = {x:12,y:top,width:Math.max(0,window.innerWidth-24),height:Math.max(0,bottom-top)};
+                calloutCache.obstacles = [...document.querySelectorAll('#panel-dock > aside')].filter(e => e.getClientRects().length).map(e => {
+                    const r = e.getBoundingClientRect(); return {x:r.x,y:r.y,width:r.width,height:r.height};
                 });
             }
 
             function updateFloatingPins() {
-                const width = window.innerWidth;
-                const height = window.innerHeight;
-
-                pinElements.forEach((p) => {
-                    if (!pinsVisible) {
-                        p.el.style.display = 'none';
-                        return;
-                    }
-                    const proj = p.pos.clone().project(camera);
-                    if (proj.z > 1.0) {
-                        p.el.style.display = 'none';
-                    } else {
-                        const x = (proj.x * 0.5 + 0.5) * width;
-                        const y = (-(proj.y * 0.5) + 0.5) * height;
-                        p.el.style.display = 'flex';
-                        p.el.style.left = `${x}px`;
-                        p.el.style.top = `${y}px`;
-                    }
+                if (!calloutCache.bounds) return;
+                if (calloutCache.narrow || !pinsVisible) { pinElements.forEach(p => { p.el.hidden = true; }); return; }
+                const items = [];
+                pinElements.forEach((p,order) => {
+                    const proj = p.pos.clone().project(camera), focused = p.el === document.activeElement;
+                    if ((proj.z>1 || proj.z< -1) && !focused) return;
+                    items.push({id:p.key,order,focused,selected:p.key===currentStationKey,x:(proj.x*.5+.5)*window.innerWidth,y:(-proj.y*.5+.5)*window.innerHeight,width:p.width,height:p.height});
                 });
+                const result = layoutCallouts(items,calloutCache.bounds,calloutCache.obstacles), visible = new Map(result.placed.map(box => [box.id,box]));
+                pinElements.forEach(p => {
+                    const box = visible.get(p.key);
+                    if (!box && p.el === document.activeElement) document.getElementById('landmark-select').focus({preventScroll:true});
+                    p.el.hidden = !box;
+                    if (box) { p.el.style.left = `${box.x+box.width/2}px`; p.el.style.top = `${box.y+box.height/2}px`; }
+                });
+            }
+
+            function setupLandmarkUI() {
+                const picker = document.getElementById('landmark-select');
+                Object.keys(STATIONS).forEach(key => { const option = document.createElement('option'); option.value = key; option.textContent = STATIONS[key].title; picker.appendChild(option); });
+                picker.addEventListener('change',() => { selectCameraPreset(picker.value); syncLandmarkUI(); });
+                document.getElementById('camera-nav').addEventListener('click',event => { if (event.target.closest('.cam-preset')) syncLandmarkUI(); });
+                document.getElementById('btn-toggle-pins').addEventListener('click',() => { syncLandmarkUI(); refreshCalloutLayout(); });
+                if (typeof ResizeObserver === 'function') {
+                    const observer = new ResizeObserver(refreshCalloutLayout);
+                    document.querySelectorAll('header,footer,#panel-dock > aside').forEach(e => observer.observe(e));
+                }
+                window.addEventListener('resize',() => { syncLandmarkUI(); refreshCalloutLayout(); });
+                if (document.fonts) document.fonts.ready.then(refreshCalloutLayout);
+                syncLandmarkUI(); refreshCalloutLayout();
             }
 
             function selectCameraPreset(key) {
@@ -3721,6 +3792,7 @@
                 setupDemoControls();
                 setupHUDLayout();
                 selectCameraPreset('overview');
+                setupLandmarkUI();
             }
 
             function animate() {
